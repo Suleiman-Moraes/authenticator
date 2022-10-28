@@ -1,0 +1,26 @@
+package br.com.moraes.authenticator.api.exception;
+
+import org.springframework.http.HttpStatus;
+
+import lombok.Getter;
+
+public class PatternException extends RuntimeException {
+
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+    @Getter
+    protected HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+
+    public PatternException(String message, HttpStatus httpStatus) {
+        super(message);
+        this.httpStatus = httpStatus;
+    }
+
+    public PatternException(String message, Throwable cause, HttpStatus httpStatus) {
+        super(message, cause);
+        this.httpStatus = httpStatus;
+    }
+}
