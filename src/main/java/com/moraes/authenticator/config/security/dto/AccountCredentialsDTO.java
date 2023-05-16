@@ -1,10 +1,8 @@
-package com.moraes.authenticator.api.model.dto;
+package com.moraes.authenticator.config.security.dto;
 
 import java.io.Serializable;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,12 +12,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDTO implements Serializable {
+public class AccountCredentialsDTO implements Serializable {
 
     @NotBlank
     private String username;
 
-    @NotNull
-    @Valid
-    private KeyDTO profile;
+    @NotBlank
+    private String password;
 }
