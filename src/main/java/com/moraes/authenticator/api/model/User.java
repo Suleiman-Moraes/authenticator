@@ -40,9 +40,10 @@ public class User implements IModel<Long>, UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long key;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 50)
     private String username;
 
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "account_non_expired")

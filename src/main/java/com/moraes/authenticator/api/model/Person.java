@@ -30,7 +30,7 @@ public class Person implements Serializable, IModel<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long key;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150)
     private String name;
 
     private String address;

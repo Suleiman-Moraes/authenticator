@@ -38,10 +38,11 @@ public class Profile implements Serializable, IModel<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long key;
 
+    @Column(length = 150)
     private String description;
 
     @ElementCollection
-    @CollectionTable(name = "profile_role", joinColumns = @JoinColumn(name = "profile_id"))
+    @CollectionTable(name = "profile_role", joinColumns = @JoinColumn(name = "id_profile"))
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Set<RoleEnum> roles;
