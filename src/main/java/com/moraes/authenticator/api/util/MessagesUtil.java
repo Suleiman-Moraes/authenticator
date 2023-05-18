@@ -14,6 +14,7 @@ public final class MessagesUtil {
 
     public static final String RESOURCE_NOT_FOUND = "resource_not_found";
     public static final String USER_NOT_PERMISSION = "user_not_permission";
+    public static final String NOT_BLANK = "not_blank";
 
     private MessagesUtil() {
     }

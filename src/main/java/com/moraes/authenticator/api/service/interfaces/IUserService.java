@@ -12,4 +12,6 @@ public interface IUserService extends UserDetailsService, IServiceDelete<User, L
     void update(UserDTO object, Long key);
 
     Long insert(User entity, Long personKey);
+
+    User getMe();
 }

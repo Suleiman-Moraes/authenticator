@@ -1,11 +1,15 @@
 package com.moraes.authenticator.api.service;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.Profile;
 import com.moraes.authenticator.api.model.User;
@@ -49,9 +53,22 @@ public class UserService implements IUserService {
     @Transactional
     @Override
     public Long insert(User entity, Long personKey) {
+        if (!StringUtils.hasText(entity.getPassword())) {
+            throw new ValidException(
+                    MessagesUtil.getMessage(MessagesUtil.NOT_BLANK, MessagesUtil.getMessage("user.password")));
+        }
         entity.setPerson(Person.builder().key(personKey).build());
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         repository.save(entity);
         return entity.getKey();
+    }
+
+    @Override
+    public User getMe() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() != null) {
+            return (User) authentication.getPrincipal();
+        }
+        return null;
     }
 }

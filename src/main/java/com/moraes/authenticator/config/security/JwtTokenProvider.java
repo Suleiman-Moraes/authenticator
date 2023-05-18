@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -63,6 +64,7 @@ public class JwtTokenProvider {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public Authentication getAuthentication(String token) {
         final DecodedJWT decodedJWT = decodedToken(token);
         final UserDetails userDetails = userDetailsService.loadUserByUsername(decodedJWT.getSubject());

@@ -21,7 +21,9 @@ import org.mockito.Spy;
 
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.mock.MockPerson;
+import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.Person;
+import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.PersonDTO;
 import com.moraes.authenticator.api.repository.IPersonRepository;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
@@ -101,5 +103,13 @@ class PersonServiceTest {
         assertNotNull(dto.getUser(), "Return not equal");
         assertNotNull(dto.getUser().getUsername(), "Return not equal");
         assertNull(service.parseObjectForUpdate(dto).getUser(), "Return not equal");
+    }
+
+    @Test
+    void testGetMe() {
+        User user = new MockUser().mockEntity(1);
+        when(userService.getMe()).thenReturn(user);
+        when(repository.findByUserKey(user.getKey())).thenReturn(Optional.of(entity));
+        assertEquals(entity, service.getMe(), "Return not equal");
     }
 }

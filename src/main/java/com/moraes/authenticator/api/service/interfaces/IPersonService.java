@@ -6,4 +6,6 @@ import com.moraes.authenticator.api.model.dto.PersonDTO;
 public interface IPersonService extends IService<Person, Long> {
 
     void update(PersonDTO object, Long id);
+
+    Person getMe();
 }

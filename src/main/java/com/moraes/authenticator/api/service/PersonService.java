@@ -5,6 +5,7 @@ import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.dto.PersonDTO;
 import com.moraes.authenticator.api.repository.IPersonRepository;
@@ -60,5 +61,11 @@ public class PersonService implements IPersonService {
             }
         });
         return modelMapper.map(object, Person.class);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Person getMe() {
+        return repository.findByUserKey(userService.getMe().getKey()).orElseThrow(ResourceNotFoundException::new);
     }
 }

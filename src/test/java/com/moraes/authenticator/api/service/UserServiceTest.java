@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -17,6 +18,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -107,5 +111,19 @@ class UserServiceTest {
     void testDelete() {
         when(repository.findById(key)).thenReturn(Optional.of(entity));
         assertDoesNotThrow(() -> service.delete(key), "Does Not Throw");
+    }
+
+    @Test
+    void testGetMe() {
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(entity, "", entity.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        assertNotNull(service.getMe(), "Return not null");
+    }
+
+    @Test
+    void testGetMeNull() {
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(null, "", entity.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        assertNull(service.getMe(), "Return null");
     }
 }
