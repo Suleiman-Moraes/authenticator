@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -25,10 +27,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
+import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.UserDTO;
 import com.moraes.authenticator.api.repository.IUserRepository;
+import com.moraes.authenticator.api.util.MessagesUtil;
 
 class UserServiceTest {
 
@@ -44,6 +48,9 @@ class UserServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    private final Long key = 1l;
+    private User entity;
+
     @BeforeEach
     void setUp() {
         input = new MockUser();
@@ -51,10 +58,8 @@ class UserServiceTest {
 
         entity = input.mockEntity(1);
         entity.setKey(key);
+        entity.getProfile().setKey(2L);
     }
-
-    private final Long key = 1l;
-    private User entity;
 
     @Test
     void testExistsByUsername() {
@@ -80,6 +85,7 @@ class UserServiceTest {
     void testUpdate() {
         User entity = input.mockEntity(2);
         entity.setKey(key);
+        when(repository.existsByUsernameAndKeyNot(anyString(), anyLong())).thenReturn(false);
         when(repository.save(any())).thenReturn(entity);
         when(repository.findById(key)).thenReturn(Optional.of(entity));
         UserDTO dto = input.mockUserDTO(2);
@@ -90,6 +96,7 @@ class UserServiceTest {
 
     @Test
     void testInsert() {
+        when(repository.existsByUsernameAndKeyNot(anyString(), anyLong())).thenReturn(false);
         assertEquals(key, service.insert(entity, key), "Return not equal");
     }
 
@@ -115,15 +122,37 @@ class UserServiceTest {
 
     @Test
     void testGetMe() {
-        final Authentication authentication = new UsernamePasswordAuthenticationToken(entity, "", entity.getAuthorities());
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(entity, "",
+                entity.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         assertNotNull(service.getMe(), "Return not null");
     }
 
     @Test
     void testGetMeNull() {
-        final Authentication authentication = new UsernamePasswordAuthenticationToken(null, "", entity.getAuthorities());
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(null, "",
+                entity.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         assertNull(service.getMe(), "Return null");
+    }
+
+    @Test
+    void testValidInsert() {
+        final User user = new User();
+        assertThrows(ValidException.class, () -> service.validInsert(user), "Does Not Throw - validInsert");
+    }
+
+    @Test
+    void testValid() {
+        when(repository.existsByUsernameAndKeyNot(anyString(), anyLong())).thenReturn(true);
+        try {
+            User entity = input.mockEntity(2);
+            entity.getProfile().setKey(1L);
+            service.valid(entity);
+        } catch (ValidException e) {
+            assertEquals(2, e.getErrs().size(), "Return not equal");
+            assertEquals(MessagesUtil.getMessage("user.username.unique"), e.getErrs().get(0), "Return not equal");
+            assertEquals(MessagesUtil.getMessage("user.profile.unavailable"), e.getErrs().get(1), "Return not equal");
+        }
     }
 }

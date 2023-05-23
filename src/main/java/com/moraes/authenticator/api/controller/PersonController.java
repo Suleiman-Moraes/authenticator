@@ -17,11 +17,4 @@ import lombok.AllArgsConstructor;
 public class PersonController {
 
     private IPersonService service;
-    
-    @GetMapping(value = "/me")
-    public ResponseEntity<PersonDTO> getMe() {
-        PersonDTO dto = Mapper.parseObject(service.getMe(), PersonDTO.class);
-        dto.getUser().setPassword(null);
-        return ResponseEntity.ok(dto);
-    }
 }

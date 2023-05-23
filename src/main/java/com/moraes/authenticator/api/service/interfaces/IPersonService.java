@@ -8,4 +8,6 @@ public interface IPersonService extends IService<Person, Long> {
     void update(PersonDTO object, Long id);
 
     Person getMe();
+
+    Long updateMe(PersonDTO object);
 }

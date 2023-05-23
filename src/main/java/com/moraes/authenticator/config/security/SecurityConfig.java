@@ -23,7 +23,8 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        final String[] patterns = { "/auth/signin", "/auth/refresh/**", "/swagger-ui/**", "/v3/api-docs/**" };
+        final String[] patterns = { "/auth/signin", "/auth/refresh/**", "/swagger-ui/**", "/v3/api-docs/**",
+                "/api/v1/person/me/new" };
         return http
                 .httpBasic(basic -> basic.disable())
                 .csrf(AbstractHttpConfigurer::disable)

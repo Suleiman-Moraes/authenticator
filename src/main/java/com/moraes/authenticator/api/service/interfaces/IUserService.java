@@ -14,4 +14,6 @@ public interface IUserService extends UserDetailsService, IServiceDelete<User, L
     Long insert(User entity, Long personKey);
 
     User getMe();
+
+    void validInsert(User entity);
 }

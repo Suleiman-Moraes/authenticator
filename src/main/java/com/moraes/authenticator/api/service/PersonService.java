@@ -28,12 +28,13 @@ public class PersonService implements IPersonService {
     @Override
     public void update(PersonDTO object, Long key) {
         Person entity = findByKey(key);
+        final Long userId = entity.getUser().getKey();
         Person entityNew = parseObjectForUpdate(object);
         // validate here
         entityNew.setKey(entity.getKey());
         repository.save(entityNew);
 
-        userService.update(object.getUser(), entity.getUser().getKey());
+        userService.update(object.getUser(), userId);
     }
 
     @Transactional
@@ -47,9 +48,24 @@ public class PersonService implements IPersonService {
     @Transactional
     @Override
     public Long insert(Person object) {
+        userService.validInsert(object.getUser());
         repository.save(object);
         userService.insert(object.getUser(), object.getKey());
         return object.getKey();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Person getMe() {
+        return repository.findByUserKey(userService.getMe().getKey()).orElseThrow(ResourceNotFoundException::new);
+    }
+
+    @Transactional
+    @Override
+    public Long updateMe(PersonDTO object) {
+        final Long key = getMe().getKey();
+        update(object, key);
+        return key;
     }
 
     public Person parseObjectForUpdate(PersonDTO object) {
@@ -61,11 +77,5 @@ public class PersonService implements IPersonService {
             }
         });
         return modelMapper.map(object, Person.class);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Person getMe() {
-        return repository.findByUserKey(userService.getMe().getKey()).orElseThrow(ResourceNotFoundException::new);
     }
 }

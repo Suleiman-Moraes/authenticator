@@ -13,10 +13,13 @@ import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.Profile;
 import com.moraes.authenticator.api.model.User;
+import com.moraes.authenticator.api.model.dto.ExceptionUtilDTO;
 import com.moraes.authenticator.api.model.dto.UserDTO;
 import com.moraes.authenticator.api.repository.IUserRepository;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
 import com.moraes.authenticator.api.util.MessagesUtil;
+import com.moraes.authenticator.api.util.ConstantsUtil;
+import com.moraes.authenticator.api.util.ExceptionsUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,19 +50,15 @@ public class UserService implements IUserService {
         User entity = findByKey(key);
         entity.setUsername(object.getUsername());
         entity.setProfile(Profile.builder().key(object.getProfile().getKey()).build());
-        repository.save(entity);
+        save(entity);
     }
 
     @Transactional
     @Override
     public Long insert(User entity, Long personKey) {
-        if (!StringUtils.hasText(entity.getPassword())) {
-            throw new ValidException(
-                    MessagesUtil.getMessage(MessagesUtil.NOT_BLANK, MessagesUtil.getMessage("user.password")));
-        }
         entity.setPerson(Person.builder().key(personKey).build());
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
-        repository.save(entity);
+        save(entity);
         return entity.getKey();
     }
 
@@ -70,5 +69,33 @@ public class UserService implements IUserService {
             return (User) authentication.getPrincipal();
         }
         return null;
+    }
+
+    @Override
+    public void validInsert(User entity) {
+        if (!StringUtils.hasText(entity.getPassword())) {
+            throw new ValidException(
+                    MessagesUtil.getMessage(MessagesUtil.NOT_BLANK, MessagesUtil.getMessage("user.password")));
+        }
+    }
+
+    public void valid(User entity) {
+        final Long key = entity.getKey() != null ? entity.getKey() : 0;
+        ExceptionsUtil.throwValidExceptions(
+                ExceptionUtilDTO.builder()
+                        .condition(!repository.existsByUsernameAndKeyNot(entity.getUsername(),
+                                key))
+                        .messageKey("user.username.unique")
+                        .build(),
+                ExceptionUtilDTO.builder()
+                        .condition(ConstantsUtil.ONE.longValue() != entity.getProfile().getKey()
+                                || ConstantsUtil.ONE.longValue() == key)
+                        .messageKey("user.profile.unavailable")
+                        .build());
+    }
+
+    private void save(User entity) {
+        valid(entity);
+        repository.save(entity);
     }
 }
