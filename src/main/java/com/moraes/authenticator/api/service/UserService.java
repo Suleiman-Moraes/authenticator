@@ -47,6 +47,7 @@ public class UserService implements IUserService {
     @Transactional
     @Override
     public void update(UserDTO object, Long key) {
+        valid(key, object.getProfile().getKey(), object.getUsername());
         User entity = findByKey(key);
         entity.setUsername(object.getUsername());
         entity.setProfile(Profile.builder().key(object.getProfile().getKey()).build());
@@ -77,25 +78,32 @@ public class UserService implements IUserService {
             throw new ValidException(
                     MessagesUtil.getMessage(MessagesUtil.NOT_BLANK, MessagesUtil.getMessage("user.password")));
         }
+        valid(entity.getKey(), entity.getProfile().getKey(), entity.getUsername());
     }
 
-    public void valid(User entity) {
-        final Long key = entity.getKey() != null ? entity.getKey() : 0;
+    /**
+     * Only pass fields not objects 
+     * as you can use with Entity and DTO
+     * @param key
+     * @param profileKey
+     * @param username
+     */
+    public void valid(Long key, Long profileKey, String username) {
+        key = key != null ? key : 0;
         ExceptionsUtil.throwValidExceptions(
                 ExceptionUtilDTO.builder()
-                        .condition(!repository.existsByUsernameAndKeyNot(entity.getUsername(),
+                        .condition(!repository.existsByUsernameAndKeyNot(username,
                                 key))
                         .messageKey("user.username.unique")
                         .build(),
                 ExceptionUtilDTO.builder()
-                        .condition(ConstantsUtil.ONE.longValue() != entity.getProfile().getKey()
+                        .condition(ConstantsUtil.ONE.longValue() != profileKey
                                 || ConstantsUtil.ONE.longValue() == key)
                         .messageKey("user.profile.unavailable")
                         .build());
     }
 
     private void save(User entity) {
-        valid(entity);
         repository.save(entity);
     }
 }

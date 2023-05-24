@@ -148,7 +148,7 @@ class UserServiceTest {
         try {
             User entity = input.mockEntity(2);
             entity.getProfile().setKey(1L);
-            service.valid(entity);
+            service.valid(entity.getKey(), entity.getProfile().getKey(), entity.getUsername());
         } catch (ValidException e) {
             assertEquals(2, e.getErrs().size(), "Return not equal");
             assertEquals(MessagesUtil.getMessage("user.username.unique"), e.getErrs().get(0), "Return not equal");

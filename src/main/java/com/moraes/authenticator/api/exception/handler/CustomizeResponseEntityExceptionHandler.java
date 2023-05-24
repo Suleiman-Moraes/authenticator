@@ -43,6 +43,7 @@ public class CustomizeResponseEntityExceptionHandler extends ResponseEntityExcep
                 .userMessages(Arrays.asList(ex.getMessage()))
                 .devMessage(ExceptionUtils.getRootCauseMessage(ex))
                 .description(request.getDescription(false))
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .build());
     }
 
@@ -52,6 +53,7 @@ public class CustomizeResponseEntityExceptionHandler extends ResponseEntityExcep
                 .userMessages(Arrays.asList(ex.getMessage()))
                 .devMessage(ExceptionUtils.getRootCauseMessage(ex))
                 .description(request.getDescription(false))
+                .status(HttpStatus.NOT_FOUND.value())
                 .build());
     }
 
@@ -61,6 +63,7 @@ public class CustomizeResponseEntityExceptionHandler extends ResponseEntityExcep
                 .userMessages(Arrays.asList(ex.getMessage()))
                 .devMessage(ExceptionUtils.getRootCauseMessage(ex))
                 .description(request.getDescription(false))
+                .status(HttpStatus.FORBIDDEN.value())
                 .build());
     }
 
