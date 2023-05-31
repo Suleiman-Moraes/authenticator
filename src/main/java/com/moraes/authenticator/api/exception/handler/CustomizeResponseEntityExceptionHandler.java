@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.moraes.authenticator.api.exception.JwtAuthenticationException;
 import com.moraes.authenticator.api.exception.PatternException;
+import com.moraes.authenticator.api.exception.UserInactiveException;
 import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.util.ConstantsUtil;
 import com.moraes.authenticator.api.util.MessagesUtil;
@@ -47,6 +49,17 @@ public class CustomizeResponseEntityExceptionHandler extends ResponseEntityExcep
                 .build());
     }
 
+    @ExceptionHandler(value = { PatternException.class })
+    public static final ResponseEntity<ExceptionResponse> handlePatternExceptions(PatternException ex,
+            WebRequest request) {
+        return ResponseEntity.status(ex.getHttpStatus()).body(ExceptionResponse.builder()
+                .userMessages(Arrays.asList(ex.getMessage()))
+                .devMessage(ExceptionUtils.getRootCauseMessage(ex))
+                .description(request.getDescription(false))
+                .status(ex.getHttpStatus().value())
+                .build());
+    }
+
     @ExceptionHandler(value = { UsernameNotFoundException.class })
     public static final ResponseEntity<ExceptionResponse> handleExceptionsNotFound(Exception ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionResponse.builder()
@@ -57,24 +70,14 @@ public class CustomizeResponseEntityExceptionHandler extends ResponseEntityExcep
                 .build());
     }
 
-    @ExceptionHandler({ JwtAuthenticationException.class, JWTDecodeException.class, AccessDeniedException.class })
+    @ExceptionHandler({ JwtAuthenticationException.class, JWTDecodeException.class, AccessDeniedException.class,
+            BadCredentialsException.class })
     public static final ResponseEntity<ExceptionResponse> handleExceptionsForbidden(Exception ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ExceptionResponse.builder()
                 .userMessages(Arrays.asList(ex.getMessage()))
                 .devMessage(ExceptionUtils.getRootCauseMessage(ex))
                 .description(request.getDescription(false))
                 .status(HttpStatus.FORBIDDEN.value())
-                .build());
-    }
-
-    @ExceptionHandler(value = { PatternException.class })
-    public static final ResponseEntity<ExceptionResponse> handlePatternExceptions(PatternException ex,
-            WebRequest request) {
-        return ResponseEntity.status(ex.getHttpStatus()).body(ExceptionResponse.builder()
-                .userMessages(Arrays.asList(ex.getMessage()))
-                .devMessage(ExceptionUtils.getRootCauseMessage(ex))
-                .description(request.getDescription(false))
-                .status(ex.getHttpStatus().value())
                 .build());
     }
 

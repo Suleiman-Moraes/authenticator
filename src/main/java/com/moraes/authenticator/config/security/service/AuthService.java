@@ -2,10 +2,12 @@ package com.moraes.authenticator.config.security.service;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.moraes.authenticator.api.exception.UserInactiveException;
 import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
 import com.moraes.authenticator.api.util.MessagesUtil;
@@ -34,8 +36,11 @@ public class AuthService implements IAuthService {
             final String username = data.getUsername();
             final String password = data.getPassword();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-            return tokenProvider.createAccessToken(username,
-                    ((User) userService.loadUserByUsername(username)).getRoles());
+            final User user = (User) userService.loadUserByUsername(username);
+            return tokenProvider.createAccessToken(username, user.getRoles());
+        } catch (DisabledException e) {
+            log.warn("signin " + e.getMessage(), e);
+            throw new UserInactiveException();
         } catch (Exception e) {
             log.warn("signin " + e.getMessage(), e);
             throw new BadCredentialsException(MessagesUtil.getMessage("invalid_username_password"));

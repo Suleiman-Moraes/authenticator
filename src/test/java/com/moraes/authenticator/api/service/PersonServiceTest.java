@@ -30,6 +30,9 @@ import com.moraes.authenticator.api.service.interfaces.IUserService;
 
 class PersonServiceTest {
 
+    private static final String RETURN_NOT_EQUAL = "Return not equal";
+    private static final Long KEY = 1L;
+
     private MockPerson input;
 
     @Spy
@@ -40,8 +43,6 @@ class PersonServiceTest {
     private IPersonRepository repository;
     @Mock
     private IUserService userService;
-
-    private final Long key = 1l;
     private Person entity;
 
     @BeforeEach
@@ -50,49 +51,49 @@ class PersonServiceTest {
         MockitoAnnotations.openMocks(this);
 
         entity = input.mockEntity(1);
-        entity.setKey(key);
+        entity.setKey(KEY);
     }
 
     @Test
     void testFindByKey() {
-        when(repository.findById(key)).thenReturn(Optional.of(entity));
-        Person ret = service.findByKey(key);
-        assertNotNull(ret, "Retunr null");
-        assertEquals(entity, ret, "Return not equal");
+        when(repository.findById(KEY)).thenReturn(Optional.of(entity));
+        Person ret = service.findByKey(KEY);
+        assertNotNull(ret, "Return null");
+        assertEquals(entity, ret, RETURN_NOT_EQUAL);
     }
 
     @Test
     void testFindByKeyThrowResourceNotFoundException() {
-        when(repository.findById(key)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> service.findByKey(key), "Does Not Throw");
+        when(repository.findById(KEY)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> service.findByKey(KEY), "Does Not Throw");
     }
 
     @Test
     void testDelete() {
-        when(repository.findById(key)).thenReturn(Optional.of(entity));
-        assertDoesNotThrow(() -> service.delete(key), "Does Not Throw");
+        when(repository.findById(KEY)).thenReturn(Optional.of(entity));
+        assertDoesNotThrow(() -> service.delete(KEY), "Does Not Throw");
     }
 
     @Test
     void testFindAll() {
         final List<Person> list = input.mockEntityList();
         when(repository.findAll()).thenReturn(list);
-        assertEquals(list, service.findAll(), "Return not equal");
+        assertEquals(list, service.findAll(), RETURN_NOT_EQUAL);
     }
 
     @Test
     void testInsert() {
-        assertEquals(key, service.insert(entity), "Return not equal");
+        assertEquals(KEY, service.insert(entity), RETURN_NOT_EQUAL);
     }
 
     @Test
     void testUpdate() {
         Person entity = input.mockEntity(2);
-        entity.setKey(key);
+        entity.setKey(KEY);
         when(repository.save(any())).thenReturn(entity);
-        when(repository.findById(key)).thenReturn(Optional.of(entity));
+        when(repository.findById(KEY)).thenReturn(Optional.of(entity));
         PersonDTO dto = input.mockPersonDTO(2);
-        assertDoesNotThrow(() -> service.update(dto, key), "Does Not Throw");
+        assertDoesNotThrow(() -> service.update(dto, KEY), "Does Not Throw");
         assertNotNull(entity, "Return null");
         assertNotEquals(this.entity, entity, "Return equal");
     }
@@ -100,9 +101,9 @@ class PersonServiceTest {
     @Test
     void testParseObjectForUpdate() {
         PersonDTO dto = input.mockPersonDTO(1);
-        assertNotNull(dto.getUser(), "Return not equal");
-        assertNotNull(dto.getUser().getUsername(), "Return not equal");
-        assertNull(service.parseObjectForUpdate(dto).getUser(), "Return not equal");
+        assertNotNull(dto.getUser(), RETURN_NOT_EQUAL);
+        assertNotNull(dto.getUser().getUsername(), RETURN_NOT_EQUAL);
+        assertNull(service.parseObjectForUpdate(dto).getUser(), RETURN_NOT_EQUAL);
     }
 
     @Test
@@ -110,6 +111,6 @@ class PersonServiceTest {
         User user = new MockUser().mockEntity(1);
         when(userService.getMe()).thenReturn(user);
         when(repository.findByUserKey(user.getKey())).thenReturn(Optional.of(entity));
-        assertEquals(entity, service.getMe(), "Return not equal");
+        assertEquals(entity, service.getMe(), RETURN_NOT_EQUAL);
     }
 }
