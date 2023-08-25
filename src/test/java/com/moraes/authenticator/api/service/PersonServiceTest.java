@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,13 +19,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.data.domain.Sort;
 
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
+import com.moraes.authenticator.api.mapper.Mapper;
 import com.moraes.authenticator.api.mock.MockPerson;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.User;
-import com.moraes.authenticator.api.model.dto.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonFilterDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
 import com.moraes.authenticator.api.repository.IPersonRepository;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
 
@@ -112,5 +117,22 @@ class PersonServiceTest {
         when(userService.getMe()).thenReturn(user);
         when(repository.findByUserKey(user.getKey())).thenReturn(Optional.of(entity));
         assertEquals(entity, service.getMe(), RETURN_NOT_EQUAL);
+    }
+
+    @Test
+    void testFindPageAll() {
+        final List<Person> list = input.mockEntityList();
+        when(repository.findAll(any(Sort.class))).thenReturn(list);
+        assertEquals(Mapper.parseObjects(list, PersonListDTO.class).get(),
+                service.findPageAll(new PersonFilterDTO()).getContent(), RETURN_NOT_EQUAL);
+    }
+
+    @Test
+    void testFindPageAllPagination() {
+        assertEquals(new LinkedList<>(),
+                service.findPageAll(PersonFilterDTO.builder()
+                        .paginate(true)
+                        .build()).getContent(),
+                RETURN_NOT_EQUAL);
     }
 }

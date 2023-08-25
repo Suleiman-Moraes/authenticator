@@ -1,5 +1,6 @@
 package com.moraes.authenticator.api.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.moraes.authenticator.api.controller.interfaces.IController;
 import com.moraes.authenticator.api.mapper.Mapper;
 import com.moraes.authenticator.api.model.Person;
-import com.moraes.authenticator.api.model.dto.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonFilterDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
 import com.moraes.authenticator.api.service.interfaces.IPersonService;
 
 import jakarta.validation.Valid;
@@ -48,4 +51,11 @@ public class PersonController implements IController<PersonDTO, Long> {
         service.update(object, key);
         return ResponseEntity.ok(key);
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping
+    public ResponseEntity<Page<PersonListDTO>> findAll(PersonFilterDTO personFilter) {
+        return ResponseEntity.ok(service.findPageAll(personFilter));
+    }
+
 }

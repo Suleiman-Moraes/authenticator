@@ -1,13 +1,24 @@
 package com.moraes.authenticator.api.service;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.moraes.authenticator.api.controller.PersonController;
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.model.Person;
-import com.moraes.authenticator.api.model.dto.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonFilterDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
 import com.moraes.authenticator.api.repository.IPersonRepository;
 import com.moraes.authenticator.api.service.interfaces.IPersonService;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
@@ -66,6 +77,20 @@ public class PersonService implements IPersonService {
         final Long key = getMe().getKey();
         update(object, key);
         return key;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PersonListDTO> findPageAll(PersonFilterDTO filter) {
+        if (filter.isPaginate()) {
+            final Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), filter.getDirection(),
+                    filter.getProperty());
+            return new PageImpl<>(new LinkedList<>(), pageable, 0);
+        }
+        final Sort sort = Sort.by(filter.getDirection(), filter.getProperty());
+        final List<Person> list = repository.findAll(sort);
+        final Pageable pageable = PageRequest.of(0, list.size(), sort);
+        return new PageImpl<>(parseObjects(list, PersonListDTO.class, PersonController.class), pageable, list.size());
     }
 
     public Person parseObjectForUpdate(PersonDTO object) {

@@ -26,7 +26,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.moraes.authenticator.api.exception.JwtAuthenticationException;
 import com.moraes.authenticator.api.exception.PatternException;
-import com.moraes.authenticator.api.exception.UserInactiveException;
 import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.util.ConstantsUtil;
 import com.moraes.authenticator.api.util.MessagesUtil;

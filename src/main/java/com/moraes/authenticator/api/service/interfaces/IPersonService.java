@@ -1,7 +1,11 @@
 package com.moraes.authenticator.api.service.interfaces;
 
+import org.springframework.data.domain.Page;
+
 import com.moraes.authenticator.api.model.Person;
-import com.moraes.authenticator.api.model.dto.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonFilterDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
 
 public interface IPersonService extends IService<Person, Long> {
 
@@ -10,4 +14,6 @@ public interface IPersonService extends IService<Person, Long> {
     Person getMe();
 
     Long updateMe(PersonDTO object);
+
+    Page<PersonListDTO> findPageAll(PersonFilterDTO filter);
 }

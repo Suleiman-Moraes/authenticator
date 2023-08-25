@@ -1,4 +1,4 @@
-package com.moraes.authenticator.api.model.dto;
+package com.moraes.authenticator.api.model.dto.person;
 
 import java.io.Serializable;
 
@@ -7,9 +7,6 @@ import org.springframework.hateoas.RepresentationModel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -26,14 +23,17 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PersonDTO extends RepresentationModel<PersonDTO> implements Serializable {
+public class PersonListDTO extends RepresentationModel<PersonListDTO> implements Serializable {
 
-    @NotBlank
+    private Long key;
+
     private String name;
 
     private String address;
 
-    @NotNull
-    @Valid
-    private UserDTO user;
+    // user
+    private String username;
+
+    // profile
+    private String profileDescription;
 }

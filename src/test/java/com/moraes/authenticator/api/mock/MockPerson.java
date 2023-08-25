@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.moraes.authenticator.api.mock.interfaces.AbstractMock;
 import com.moraes.authenticator.api.model.Person;
-import com.moraes.authenticator.api.model.dto.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonDTO;
 import com.moraes.authenticator.api.util.MockUtil;
 
 import lombok.extern.slf4j.Slf4j;

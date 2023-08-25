@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.moraes.authenticator.api.mapper.Mapper;
 import com.moraes.authenticator.api.model.Person;
-import com.moraes.authenticator.api.model.dto.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonDTO;
 import com.moraes.authenticator.api.service.interfaces.IBasicTokenService;
 import com.moraes.authenticator.api.service.interfaces.IPersonService;
 

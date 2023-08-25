@@ -7,15 +7,18 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.util.CollectionUtils;
 
+import com.moraes.authenticator.api.model.Person;
+import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
+
 public final class Mapper {
-    
-    private static ModelMapper modelMapper = new ModelMapper();
+
+    private static ModelMapper modelMapper = null;
 
     private Mapper() {
     }
 
     public static <O, D> D parseObject(O origin, Class<D> destination) {
-        return modelMapper.map(origin, destination);
+        return getModelMapper().map(origin, destination);
     }
 
     public static <O, D> Optional<List<D>> parseObjects(List<O> origins, Class<D> destination) {
@@ -24,5 +27,26 @@ public final class Mapper {
         }
         return Optional
                 .of(origins.stream().map(origin -> parseObject(origin, destination)).collect(Collectors.toList()));
+    }
+
+    private static ModelMapper getModelMapper() {
+        if (modelMapper == null) {
+            modelMapper = new ModelMapper();
+            customize();
+        }
+        return modelMapper;
+    }
+
+    private static void customize() {
+        customizePersonToPersonListDTO();
+    }
+
+    private static void customizePersonToPersonListDTO() {
+        modelMapper.typeMap(Person.class, PersonListDTO.class)
+                .addMappings(mapper -> {
+                    mapper.map(src -> src.getUser().getUsername(), PersonListDTO::setUsername);
+                    mapper.map(src -> src.getUser().getProfile().getDescription(),
+                            PersonListDTO::setProfileDescription);
+                });
     }
 }
