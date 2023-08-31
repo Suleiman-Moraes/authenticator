@@ -6,7 +6,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.moraes.authenticator.api.model.dto.user.UserDTO;
+import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -27,7 +27,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PersonDTO extends RepresentationModel<PersonDTO> implements Serializable, IPersonDTO {
+public class PersonMeDTO extends RepresentationModel<PersonDTO> implements Serializable, IPersonDTO {
 
     @NotBlank
     private String name;
@@ -36,5 +36,5 @@ public class PersonDTO extends RepresentationModel<PersonDTO> implements Seriali
 
     @NotNull
     @Valid
-    private UserDTO user;
+    private UserMeDTO user;
 }

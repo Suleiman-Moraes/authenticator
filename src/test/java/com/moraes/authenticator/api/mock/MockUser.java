@@ -6,7 +6,8 @@ import java.util.List;
 import com.moraes.authenticator.api.mock.interfaces.AbstractMock;
 import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.KeyDTO;
-import com.moraes.authenticator.api.model.dto.UserDTO;
+import com.moraes.authenticator.api.model.dto.user.UserDTO;
+import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.util.MockUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,26 @@ public class MockUser extends AbstractMock<User> {
         List<UserDTO> entitys = new LinkedList<>();
         for (int i = 1; i <= 14; i++) {
             entitys.add(mockUserDTO(i));
+        }
+        return entitys;
+    }
+
+    public UserMeDTO mockUserMeDTO(Integer number) {
+        try {
+            UserMeDTO entity = new UserMeDTO();
+            MockUtil.toFill(entity, number, ignoreFields);
+            // setOdersValues
+            return entity;
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public List<UserMeDTO> mockUserMeDTOList() {
+        List<UserMeDTO> entitys = new LinkedList<>();
+        for (int i = 1; i <= 14; i++) {
+            entitys.add(mockUserMeDTO(i));
         }
         return entitys;
     }

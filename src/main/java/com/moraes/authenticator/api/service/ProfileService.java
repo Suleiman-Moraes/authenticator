@@ -18,6 +18,8 @@ import lombok.Getter;
 @Service
 public class ProfileService implements IProfileService {
 
+    private static final Long COMMON_USER_PROFILE_ID = 3L;
+
     @Getter
     private IProfileRepository repository;
 
@@ -38,5 +40,11 @@ public class ProfileService implements IProfileService {
         entity.setDescription(object.getDescription());
         entity.setRoles(object.getRoles());
         repository.save(entity);
+    }
+
+    @Override
+    public Profile preInsertMe(Profile profile) {
+        profile.setKey(COMMON_USER_PROFILE_ID);
+        return profile;
     }
 }

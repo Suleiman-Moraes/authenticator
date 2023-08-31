@@ -28,6 +28,8 @@ import com.moraes.authenticator.api.repository.IProfileRepository;
 
 class ProfileServiceTest {
 
+    private static final Long COMMON_USER_PROFILE_ID = 3L;
+
     private MockProfile input;
 
     @Spy
@@ -100,5 +102,10 @@ class ProfileServiceTest {
         assertDoesNotThrow(() -> service.update(dto, key), "Does Not Throw");
         assertNotNull(entity, "Return null");
         assertNotEquals(this.entity, entity, "Return equal");
+    }
+
+    @Test
+    void testPreInsertMe() {
+        assertEquals(COMMON_USER_PROFILE_ID, service.preInsertMe(new Profile()).getKey(), "Return not equal");
     }
 }

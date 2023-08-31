@@ -1,9 +1,10 @@
-package com.moraes.authenticator.api.model.dto;
+package com.moraes.authenticator.api.model.dto.user;
 
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.moraes.authenticator.api.model.dto.KeyDTO;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDTO implements Serializable {
+public class UserDTO implements Serializable, IUserDTO {
 
     @NotBlank
     private String username;

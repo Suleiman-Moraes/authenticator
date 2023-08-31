@@ -14,12 +14,14 @@ import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.Profile;
 import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.ExceptionUtilDTO;
-import com.moraes.authenticator.api.model.dto.UserDTO;
+import com.moraes.authenticator.api.model.dto.user.UserDTO;
+import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.repository.IUserRepository;
+import com.moraes.authenticator.api.service.interfaces.IProfileService;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
-import com.moraes.authenticator.api.util.MessagesUtil;
 import com.moraes.authenticator.api.util.ConstantsUtil;
 import com.moraes.authenticator.api.util.ExceptionsUtil;
+import com.moraes.authenticator.api.util.MessagesUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +34,8 @@ public class UserService implements IUserService {
     private IUserRepository repository;
 
     private PasswordEncoder passwordEncoder;
+
+    private IProfileService profileService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -51,6 +55,15 @@ public class UserService implements IUserService {
         User entity = findByKey(key);
         entity.setUsername(object.getUsername());
         entity.setProfile(Profile.builder().key(object.getProfile().getKey()).build());
+        save(entity);
+    }
+
+    @Transactional
+    @Override
+    public void updateMe(UserMeDTO object, Long key) {
+        validMe(key, object.getUsername());
+        User entity = findByKey(key);
+        entity.setUsername(object.getUsername());
         save(entity);
     }
 
@@ -81,9 +94,28 @@ public class UserService implements IUserService {
         valid(entity.getKey(), entity.getProfile().getKey(), entity.getUsername());
     }
 
+    @Override
+    public void delete(Long key) {
+        // User one is root
+        ExceptionsUtil.throwValidExceptions(
+                ExceptionUtilDTO.builder()
+                        .condition(ConstantsUtil.ONE.longValue() != key)
+                        .messageKey("user.not.can.deleted")
+                        .build());
+        getRepository().delete(findByKey(key));
+    }
+
+    @Override
+    public User preInsertMe(User user) {
+        user.setProfile(new Profile());
+        profileService.preInsertMe(user.getProfile());
+        return user;
+    }
+
     /**
-     * Only pass fields not objects 
+     * Only pass fields not objects
      * as you can use with Entity and DTO
+     * 
      * @param key
      * @param profileKey
      * @param username
@@ -91,16 +123,33 @@ public class UserService implements IUserService {
     public void valid(Long key, Long profileKey, String username) {
         key = key != null ? key : 0;
         ExceptionsUtil.throwValidExceptions(
-                ExceptionUtilDTO.builder()
-                        .condition(!repository.existsByUsernameAndKeyNot(username,
-                                key))
-                        .messageKey("user.username.unique")
-                        .build(),
+                getValidUsernameUnique(key, username),
                 ExceptionUtilDTO.builder()
                         .condition(ConstantsUtil.ONE.longValue() != profileKey
                                 || ConstantsUtil.ONE.longValue() == key)
                         .messageKey("user.profile.unavailable")
                         .build());
+    }
+
+    /**
+     * Only pass fields not objects
+     * as you can use with Entity and DTO
+     * 
+     * @param key
+     * @param username
+     */
+    public void validMe(Long key, String username) {
+        key = key != null ? key : 0;
+        ExceptionsUtil.throwValidExceptions(
+                getValidUsernameUnique(key, username));
+    }
+
+    private ExceptionUtilDTO getValidUsernameUnique(Long key, String username) {
+        return ExceptionUtilDTO.builder()
+                .condition(!repository.existsByUsernameAndKeyNot(username,
+                        key))
+                .messageKey("user.username.unique")
+                .build();
     }
 
     private void save(User entity) {

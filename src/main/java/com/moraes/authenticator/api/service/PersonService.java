@@ -3,8 +3,6 @@ package com.moraes.authenticator.api.service;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -15,10 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.moraes.authenticator.api.controller.PersonController;
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
+import com.moraes.authenticator.api.mapper.Mapper;
 import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.dto.person.PersonDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonFilterDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonMeDTO;
 import com.moraes.authenticator.api.repository.IPersonRepository;
 import com.moraes.authenticator.api.service.interfaces.IPersonService;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
@@ -40,12 +40,18 @@ public class PersonService implements IPersonService {
     public void update(PersonDTO object, Long key) {
         Person entity = findByKey(key);
         final Long userId = entity.getUser().getKey();
-        Person entityNew = parseObjectForUpdate(object);
-        // validate here
-        entityNew.setKey(entity.getKey());
-        repository.save(entityNew);
-
+        saveForUpdate(Mapper.parseObject(object, Person.class), entity);
         userService.update(object.getUser(), userId);
+    }
+
+    @Transactional
+    @Override
+    public Long updateMe(PersonMeDTO object) {
+        Person entity = getMe();
+        final Long userId = entity.getUser().getKey();
+        saveForUpdate(Mapper.parseObject(object, Person.class), entity);
+        userService.updateMe(object.getUser(), userId);
+        return entity.getKey();
     }
 
     @Transactional
@@ -65,18 +71,17 @@ public class PersonService implements IPersonService {
         return object.getKey();
     }
 
+    @Transactional
+    @Override
+    public Long insertMe(Person object) {
+        userService.preInsertMe(object.getUser());
+        return insert(object);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Person getMe() {
         return repository.findByUserKey(userService.getMe().getKey()).orElseThrow(ResourceNotFoundException::new);
-    }
-
-    @Transactional
-    @Override
-    public Long updateMe(PersonDTO object) {
-        final Long key = getMe().getKey();
-        update(object, key);
-        return key;
     }
 
     @Override
@@ -93,14 +98,16 @@ public class PersonService implements IPersonService {
         return new PageImpl<>(parseObjects(list, PersonListDTO.class, PersonController.class), pageable, list.size());
     }
 
-    public Person parseObjectForUpdate(PersonDTO object) {
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(new PropertyMap<PersonDTO, Person>() {
-            @Override
-            protected void configure() {
-                skip(destination.getUser());
-            }
-        });
-        return modelMapper.map(object, Person.class);
+    /**
+     * 
+     * @param entityNew
+     * @param entity
+     */
+    private void saveForUpdate(Person entityNew, Person entity) {
+        // validate here
+        entityNew.setKey(entity.getKey());
+        repository.save(entityNew);
+        // Set user = null for avoid unsaved transient instance
+        entity.setUser(null);
     }
 }

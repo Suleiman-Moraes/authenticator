@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -104,14 +103,6 @@ class PersonServiceTest {
     }
 
     @Test
-    void testParseObjectForUpdate() {
-        PersonDTO dto = input.mockPersonDTO(1);
-        assertNotNull(dto.getUser(), RETURN_NOT_EQUAL);
-        assertNotNull(dto.getUser().getUsername(), RETURN_NOT_EQUAL);
-        assertNull(service.parseObjectForUpdate(dto).getUser(), RETURN_NOT_EQUAL);
-    }
-
-    @Test
     void testGetMe() {
         User user = new MockUser().mockEntity(1);
         when(userService.getMe()).thenReturn(user);
@@ -134,5 +125,10 @@ class PersonServiceTest {
                         .paginate(true)
                         .build()).getContent(),
                 RETURN_NOT_EQUAL);
+    }
+
+    @Test
+    void testInsertMe() {
+        assertEquals(KEY, service.insertMe(entity), RETURN_NOT_EQUAL);
     }
 }

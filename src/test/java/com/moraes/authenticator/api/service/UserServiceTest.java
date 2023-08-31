@@ -30,8 +30,10 @@ import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.User;
-import com.moraes.authenticator.api.model.dto.UserDTO;
+import com.moraes.authenticator.api.model.dto.user.UserDTO;
+import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.repository.IUserRepository;
+import com.moraes.authenticator.api.service.interfaces.IProfileService;
 import com.moraes.authenticator.api.util.MessagesUtil;
 
 class UserServiceTest {
@@ -44,6 +46,9 @@ class UserServiceTest {
 
     @Mock
     private IUserRepository repository;
+
+    @Mock
+    private IProfileService profileService;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -116,8 +121,14 @@ class UserServiceTest {
 
     @Test
     void testDelete() {
+        when(repository.findById(2L)).thenReturn(Optional.of(entity));
+        assertDoesNotThrow(() -> service.delete(2L), "Does Not Throw");
+    }
+
+    @Test
+    void testDeleteThrow() {
         when(repository.findById(key)).thenReturn(Optional.of(entity));
-        assertDoesNotThrow(() -> service.delete(key), "Does Not Throw");
+        assertThrows(ValidException.class, () -> service.delete(key), "Throw Exception");
     }
 
     @Test
@@ -153,6 +164,38 @@ class UserServiceTest {
             assertEquals(2, e.getErrs().size(), "Return not equal");
             assertEquals(MessagesUtil.getMessage("user.username.unique"), e.getErrs().get(0), "Return not equal");
             assertEquals(MessagesUtil.getMessage("user.profile.unavailable"), e.getErrs().get(1), "Return not equal");
+        }
+    }
+
+    @Test
+    void testPreInsertMe() {
+        User user = new User();
+        user.setProfile(null);
+        assertNotNull(service.preInsertMe(user).getProfile(), "Return not equal");
+    }
+
+    @Test
+    void testUpdateMe() {
+        User entity = input.mockEntity(2);
+        entity.setKey(key);
+        when(repository.existsByUsernameAndKeyNot(anyString(), anyLong())).thenReturn(false);
+        when(repository.save(any())).thenReturn(entity);
+        when(repository.findById(key)).thenReturn(Optional.of(entity));
+        UserMeDTO dto = input.mockUserMeDTO(2);
+        assertDoesNotThrow(() -> service.updateMe(dto, key), "Does Not Throw");
+        assertNotNull(entity, "Return null");
+        assertNotEquals(this.entity, entity, "Return equal");
+    }
+
+    @Test
+    void testValidMe() {
+        when(repository.existsByUsernameAndKeyNot(anyString(), anyLong())).thenReturn(false);
+        try {
+            final User entity = input.mockEntity(2);
+            service.validMe(entity.getKey(), entity.getUsername());
+        } catch (ValidException e) {
+            assertEquals(1, e.getErrs().size(), "Return not equal");
+            assertEquals(MessagesUtil.getMessage("user.username.unique"), e.getErrs().get(0), "Return not equal");
         }
     }
 }
