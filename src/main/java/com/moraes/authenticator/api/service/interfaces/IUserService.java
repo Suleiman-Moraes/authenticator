@@ -4,6 +4,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.user.UserDTO;
+import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
 import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 
 public interface IUserService extends UserDetailsService, IServiceDelete<User, Long> {
@@ -21,4 +22,8 @@ public interface IUserService extends UserDetailsService, IServiceDelete<User, L
     User getMe();
 
     void validInsert(User entity);
+
+    User updateEnabled(UserEnabledDTO entity, long key);
+
+    User updateEnabledMe();
 }

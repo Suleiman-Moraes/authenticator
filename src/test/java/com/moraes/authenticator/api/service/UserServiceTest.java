@@ -31,6 +31,7 @@ import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.user.UserDTO;
+import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
 import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.repository.IUserRepository;
 import com.moraes.authenticator.api.service.interfaces.IProfileService;
@@ -197,5 +198,21 @@ class UserServiceTest {
             assertEquals(1, e.getErrs().size(), "Return not equal");
             assertEquals(MessagesUtil.getMessage("user.username.unique"), e.getErrs().get(0), "Return not equal");
         }
+    }
+
+    @Test
+    void testUpdateEnabled() {
+        when(repository.findById(key)).thenReturn(Optional.of(entity));
+        when(repository.save(any())).thenReturn(entity);
+        assertFalse(service.updateEnabled(new UserEnabledDTO(false), key).isEnabled(), "Return not false");
+    }
+
+    @Test
+    void testUpdateEnabledMe() {
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(entity, "",
+                entity.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(repository.save(any())).thenReturn(entity);
+        assertFalse(service.updateEnabledMe().isEnabled(), "Return not false");
     }
 }

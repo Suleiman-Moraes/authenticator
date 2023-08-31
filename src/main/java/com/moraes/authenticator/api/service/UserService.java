@@ -15,6 +15,7 @@ import com.moraes.authenticator.api.model.Profile;
 import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.ExceptionUtilDTO;
 import com.moraes.authenticator.api.model.dto.user.UserDTO;
+import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
 import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.repository.IUserRepository;
 import com.moraes.authenticator.api.service.interfaces.IProfileService;
@@ -112,6 +113,18 @@ public class UserService implements IUserService {
         return user;
     }
 
+    @Override
+    public User updateEnabled(UserEnabledDTO entity, long key) {
+        User user = findByKey(key);
+        return updateEnabled(entity, user);
+    }
+
+    @Override
+    public User updateEnabledMe() {
+        User user = getMe();
+        return updateEnabled(new UserEnabledDTO(false), user);
+    }
+
     /**
      * Only pass fields not objects
      * as you can use with Entity and DTO
@@ -154,5 +167,11 @@ public class UserService implements IUserService {
 
     private void save(User entity) {
         repository.save(entity);
+    }
+
+    private User updateEnabled(UserEnabledDTO entity, User user) {
+        user.setEnabled(entity.enabled());
+        save(user);
+        return user;
     }
 }
