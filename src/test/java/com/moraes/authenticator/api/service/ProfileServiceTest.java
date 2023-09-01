@@ -23,7 +23,7 @@ import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.mock.MockProfile;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.Profile;
-import com.moraes.authenticator.api.model.dto.ProfileDTO;
+import com.moraes.authenticator.api.model.dto.profile.ProfileDTO;
 import com.moraes.authenticator.api.repository.IProfileRepository;
 
 class ProfileServiceTest {

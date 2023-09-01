@@ -15,53 +15,52 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.moraes.authenticator.api.controller.interfaces.IController;
 import com.moraes.authenticator.api.mapper.Mapper;
-import com.moraes.authenticator.api.model.Person;
-import com.moraes.authenticator.api.model.dto.person.PersonDTO;
-import com.moraes.authenticator.api.model.dto.person.PersonFilterDTO;
-import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
-import com.moraes.authenticator.api.service.interfaces.IPersonService;
+import com.moraes.authenticator.api.model.Profile;
+import com.moraes.authenticator.api.model.dto.KeyDescriptionDTO;
+import com.moraes.authenticator.api.model.dto.profile.ProfileDTO;
+import com.moraes.authenticator.api.model.dto.profile.ProfileFilterDTO;
+import com.moraes.authenticator.api.service.interfaces.IProfileService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/person")
+@RequestMapping("/api/v1/profile")
 @AllArgsConstructor
-public class PersonController implements IController<PersonDTO, Long> {
+public class ProfileController implements IController<ProfileDTO, Long> {
 
-    private IPersonService service;
+    private IProfileService service;
 
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/{key}")
-    public ResponseEntity<PersonDTO> findByKey(@PathVariable Long key) {
-        PersonDTO dto = service.parseObject(service.findByKey(key), PersonDTO.class, PersonController.class);
-        dto.getUser().setPassword(null);
+    public ResponseEntity<ProfileDTO> findByKey(@PathVariable Long key) {
+        ProfileDTO dto = service.parseObject(service.findByKey(key), ProfileDTO.class, ProfileController.class);
         return ResponseEntity.ok(dto);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
-    public ResponseEntity<Long> insert(@RequestBody @Valid PersonDTO object) {
-        final Long id = service.insert(Mapper.parseObject(object, Person.class));
+    public ResponseEntity<Long> insert(@RequestBody @Valid ProfileDTO object) {
+        final Long id = service.insert(Mapper.parseObject(object, Profile.class));
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/{key}")
-    public ResponseEntity<Long> update(@RequestBody @Valid PersonDTO object, @PathVariable long key) {
+    public ResponseEntity<Long> update(@RequestBody @Valid ProfileDTO object, @PathVariable long key) {
         service.update(object, key);
         return ResponseEntity.ok(key);
     }
 
+    @SuppressWarnings("rawtypes")
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
-    public ResponseEntity<Page<PersonListDTO>> findAll(PersonFilterDTO personFilter) {
-        return ResponseEntity.ok(service.findPageAll(personFilter));
+    public ResponseEntity<Page<KeyDescriptionDTO>> findAll(ProfileFilterDTO filter) {
+        return ResponseEntity.ok(service.findPageAll(filter));
     }
 
-    @DeleteMapping(value = "/{key}")
     @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping(value = "/{key}")
     public ResponseEntity<Void> delete(@PathVariable Long key) {
         service.delete(key);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

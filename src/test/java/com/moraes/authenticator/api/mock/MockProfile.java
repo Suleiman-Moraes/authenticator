@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.moraes.authenticator.api.mock.interfaces.AbstractMock;
 import com.moraes.authenticator.api.model.Profile;
-import com.moraes.authenticator.api.model.dto.ProfileDTO;
+import com.moraes.authenticator.api.model.dto.profile.ProfileDTO;
 import com.moraes.authenticator.api.model.enums.RoleEnum;
 import com.moraes.authenticator.api.util.MockUtil;
 

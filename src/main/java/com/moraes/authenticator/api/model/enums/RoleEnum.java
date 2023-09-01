@@ -7,12 +7,22 @@ import java.util.List;
 import org.springframework.util.CollectionUtils;
 
 import com.moraes.authenticator.api.model.dto.PermissionDTO;
+import com.moraes.authenticator.api.model.interfaces.IDescription;
 import com.moraes.authenticator.api.util.ConstantsUtil;
 
-public enum RoleEnum {
-    ROOT,
-    ADMIN,
-    COMMON_USER;
+import lombok.Getter;
+
+@Getter
+public enum RoleEnum implements IDescription {
+    ROOT("Root"),
+    ADMIN("Admin"),
+    COMMON_USER("Common user");
+
+    private String description;
+
+    private RoleEnum(String description) {
+        this.description = description;
+    }
 
     public String getRoleUnderline() {
         return new StringBuilder(ConstantsUtil.ROLE_UNDERLINE).append(this).toString();
