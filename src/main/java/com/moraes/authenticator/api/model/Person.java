@@ -2,6 +2,9 @@ package com.moraes.authenticator.api.model;
 
 import java.io.Serializable;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+
 import com.moraes.authenticator.api.model.interfaces.IModel;
 
 import jakarta.persistence.Column;
@@ -21,6 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Audited
 @Entity
 @Table(name = "person")
 public class Person implements Serializable, IModel<Long> {
@@ -35,6 +39,7 @@ public class Person implements Serializable, IModel<Long> {
 
     private String address;
 
+    @NotAudited
     @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
     private User user;
 }

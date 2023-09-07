@@ -1,6 +1,6 @@
 CREATE TABLE profile_role (
-    id_profile bigint NOT NULL,
-    `role` varchar(50)
+    id_profile BIGINT NOT NULL,
+    role VARCHAR(255) CHECK (ROLE IN ('ROOT', 'ADMIN', 'COMMON_USER'))
 );
 
 ALTER TABLE
