@@ -4,12 +4,15 @@
 ## Contempla:
 
 - JAVA 17
-- Spring Boot 3.0.5
+- Spring Boot 3.1.3
 - Spring HATEOAS
+- Hibernate Envers
+- Auditing
 - Unit Tests
 - JWT Authenticate
 - Lombok
 - H2
+- PostreSQL
 
 ## Plugins VSCode:
 
@@ -72,7 +75,8 @@ launch.json
             "mainClass": "com.moraes.authenticator.AuthenticatorApplication",
             "projectName": "authenticator",
             "env": {
-                "server.port": 8080
+                "server.port": 8080,
+                "spring.profiles.active": "postgre"
             }
         }
     ]
