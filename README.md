@@ -1,7 +1,7 @@
 # Authenticator
 ## _Project for Java Authenticator_
 
-## Contempla:
+## Contemplate:
 
 - JAVA 17
 - Spring Boot 3.1.3
@@ -13,6 +13,7 @@
 - Lombok
 - H2
 - PostreSQL
+- Postman Collection
 
 ## Plugins VSCode:
 
