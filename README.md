@@ -91,4 +91,4 @@ MIT
 
 **Free Software, Hell Yeah!**
 
-[![Linkedin](https://media.licdn.com/dms/image/C4D16AQHC7cR9vVD6Ow/profile-displaybackgroundimage-shrink_350_1400/0/1662490166630?e=1686787200&v=beta&t=1KkYwyylM7tx9nd4GE0sT4W-I1o3rU2EHJLi9c2vDTg)](https://www.linkedin.com/in/suleiman-alves-de-moraes-14b449145/)
+[![Linkedin]([https://media.licdn.com/dms/image/C4D16AQHC7cR9vVD6Ow/profile-displaybackgroundimage-shrink_350_1400/0/1662490166630?e=1686787200&v=beta&t=1KkYwyylM7tx9nd4GE0sT4W-I1o3rU2EHJLi9c2vDTg](https://media.licdn.com/dms/image/C4D16AQHC7cR9vVD6Ow/profile-displaybackgroundimage-shrink_350_1400/0/1662490166630?e=1699488000&v=beta&t=fNlp_wey-aT4MXVNTSS0fdXE2iqMqg1-TtjqgtcU4XM)https://media.licdn.com/dms/image/C4D16AQHC7cR9vVD6Ow/profile-displaybackgroundimage-shrink_350_1400/0/1662490166630?e=1699488000&v=beta&t=fNlp_wey-aT4MXVNTSS0fdXE2iqMqg1-TtjqgtcU4XM)](https://www.linkedin.com/in/suleiman-moraes/)
