@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MockProfile extends AbstractMock<Profile> {
 
-    private Set<RoleEnum> roles = Set.of(RoleEnum.ROOT);
+    private Set<RoleEnum> roles = Set.of(RoleEnum.ADMIN);
 
     @Override
     protected Class<Profile> getClazz() {

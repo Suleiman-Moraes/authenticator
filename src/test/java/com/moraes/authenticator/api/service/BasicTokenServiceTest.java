@@ -1,11 +1,12 @@
 package com.moraes.authenticator.api.service;
 
+import static com.moraes.authenticator.api.mock.MockBasicToken.PASSWORD_DECRYPTED;
+import static com.moraes.authenticator.api.mock.MockBasicToken.USERNAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,15 +65,15 @@ class BasicTokenServiceTest {
     @Test
     void testValidateBasicToken() {
         final String basicAuthorization = String.format("%s %s", ConstantsUtil.BASIC,
-                new String(Base64.getEncoder().encode(new String("test:123456").getBytes())));
+                input.getBasicTokenHash());
 
         assertThrows(UnauthorizedBasic.class, () -> service.validateBasicToken(), "Return not equal");
 
         when(request.getHeader(ConstantsUtil.AUTHORIZATION)).thenReturn(basicAuthorization);
         assertThrows(UnauthorizedBasic.class, () -> service.validateBasicToken(), "Return not equal");
 
-        when(repository.findByUsername("test")).thenReturn(Optional.of(entity));
-        when(passwordEncoder.matches("123456", entity.getPassword())).thenReturn(true);
+        when(repository.findByUsername(USERNAME)).thenReturn(Optional.of(entity));
+        when(passwordEncoder.matches(PASSWORD_DECRYPTED, entity.getPassword())).thenReturn(true);
         assertTrue(service.validateBasicToken(), "Return not equal");
     }
 }

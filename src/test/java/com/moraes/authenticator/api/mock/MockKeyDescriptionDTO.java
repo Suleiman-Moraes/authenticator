@@ -22,4 +22,34 @@ public class MockKeyDescriptionDTO {
         }
         return entitys;
     }
+
+    public KeyDescriptionDTO<Long> mockString(Long key) {
+        return KeyDescriptionDTO.<Long>builder()
+                .key(key)
+                .description("description" + key).build();
+    }
+
+    public List<KeyDescriptionDTO<Long>> mockLongList() {
+        List<KeyDescriptionDTO<Long>> entitys = new LinkedList<>();
+        for (int i = 1; i <= 14; i++) {
+            entitys.add(mockString(Long.valueOf(i)));
+        }
+        return entitys;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public KeyDescriptionDTO mock(Object key) {
+        return KeyDescriptionDTO.builder()
+                .key(key)
+                .description(key.toString()).build();
+    }
+
+    @SuppressWarnings("rawtypes")
+    public List<KeyDescriptionDTO> mockList() {
+        List<KeyDescriptionDTO> entitys = new LinkedList<>();
+        for (int i = 1; i <= 14; i++) {
+            entitys.add(mock(Long.valueOf(i)));
+        }
+        return entitys;
+    }
 }

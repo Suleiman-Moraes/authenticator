@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:mydb
+    username: sa
+    password: 
+    driverClassName: org.h2.Driver
+  h2:
+    console:
+      enabled: true # habilita a console do H2
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+    properties: 
+      hibernate: 
+        formatSql: true
+
+  flyway:
+    locations: db/h2
+
+springdoc:
+  pathsToMatch: 
+    - /api/v1/**
+  swagger-ui:
+    use-root-path: true
+
+cors:
+  originPatterns: http://localhost:8080,http://localhost:4200
+
+security:
+  jwt:
+    token:
+      secret-key: Secrettest3
+      expire-length: 3600000

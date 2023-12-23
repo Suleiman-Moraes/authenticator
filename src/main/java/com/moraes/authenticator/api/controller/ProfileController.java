@@ -39,6 +39,7 @@ public class ProfileController implements IController<ProfileDTO, Long> {
         return ResponseEntity.ok(dto);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<Long> insert(@RequestBody @Valid ProfileDTO object) {
         final Long id = service.insert(Mapper.parseObject(object, Profile.class));
@@ -56,7 +57,8 @@ public class ProfileController implements IController<ProfileDTO, Long> {
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public ResponseEntity<Page<KeyDescriptionDTO>> findAll(ProfileFilterDTO filter) {
-        return ResponseEntity.ok(service.findPageAll(filter));
+        final Page<KeyDescriptionDTO> page = service.findPageAll(filter);
+        return ResponseEntity.ok(page);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
