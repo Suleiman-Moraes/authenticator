@@ -6,6 +6,7 @@ import java.util.List;
 import com.moraes.authenticator.api.mock.interfaces.AbstractMock;
 import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.dto.person.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonMeDTO;
 import com.moraes.authenticator.api.util.MockUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,5 +43,18 @@ public class MockPerson extends AbstractMock<Person> {
             entitys.add(mockPersonDTO(i));
         }
         return entitys;
+    }
+
+    public PersonMeDTO mockPersonMeDTO(int number) {
+        try {
+            PersonMeDTO entity = new PersonMeDTO();
+            MockUtil.toFill(entity, number, ignoreFields);
+            // setOdersValues
+            entity.setUser(new MockUser().mockUserMeDTO(number));
+            return entity;
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+        return null;
     }
 }

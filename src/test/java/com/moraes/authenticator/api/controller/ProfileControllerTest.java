@@ -39,6 +39,8 @@ class ProfileControllerTest extends AbstractBasicControllerTest {
 
     private static final String BASE_URL = "/api/v1/profile";
 
+    private static final String BASE_URL_KEY = BASE_URL + "/{key}";
+
     private MockProfile input;
 
     private MockSecurity mockSecurity;
@@ -70,7 +72,7 @@ class ProfileControllerTest extends AbstractBasicControllerTest {
         given(profileService.parseObject(profile, ProfileDTO.class, ProfileController.class)).willReturn(profileDTO);
 
         // When / Act
-        ResultActions response = mockMvc.perform(get(BASE_URL + "/{key}", 1L));
+        ResultActions response = mockMvc.perform(get(BASE_URL_KEY, 1L));
 
         // Then / Assert
         response.andDo(print())
@@ -131,7 +133,7 @@ class ProfileControllerTest extends AbstractBasicControllerTest {
         final String json = objectMapper.writeValueAsString(profileDTO);
 
         // When / Act
-        ResultActions response = mockMvc.perform(put(BASE_URL + "/{key}", 1)
+        ResultActions response = mockMvc.perform(put(BASE_URL_KEY, 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
                 .with(csrf()));
@@ -149,7 +151,7 @@ class ProfileControllerTest extends AbstractBasicControllerTest {
         final Long key = 1L;
 
         // When / Act
-        ResultActions response = mockMvc.perform(delete(BASE_URL + "/{key}", key)
+        ResultActions response = mockMvc.perform(delete(BASE_URL_KEY, key)
                 .with(csrf()));
 
         // Then / Assert
