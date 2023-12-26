@@ -1,5 +1,6 @@
 package com.moraes.authenticator.api.controller;
 
+import static com.moraes.authenticator.api.util.ConstantsTestUtil.USER_MESSAGES;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,7 +31,7 @@ import com.moraes.authenticator.api.model.dto.person.PersonMeDTO;
 class PersonMeControllerTest extends AbstractBasicControllerTest {
 
     private static final String BASE_URL = "/api/v1/person/me";
-
+    
     private MockPerson input;
 
     private MockSecurity mockSecurity;
@@ -108,8 +109,10 @@ class PersonMeControllerTest extends AbstractBasicControllerTest {
         // Then / Assert
         response.andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.userMessages", hasItem("Campo \"personMeDTO.user\" deve ser informado.")))
-                .andExpect(jsonPath("$.userMessages", hasItem("Campo \"personMeDTO.name\" deve ser informado.")));
+                .andExpect(jsonPath(USER_MESSAGES,
+                        hasItem("Campo \"personMeDTO.user\" deve ser informado.")))
+                .andExpect(jsonPath(USER_MESSAGES,
+                        hasItem("Campo \"personMeDTO.name\" deve ser informado.")));
     }
 
     @Test
@@ -152,8 +155,10 @@ class PersonMeControllerTest extends AbstractBasicControllerTest {
         // Then / Assert
         response.andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.userMessages", hasItem("Campo \"personMeDTO.name\" deve ser informado.")))
-                .andExpect(jsonPath("$.userMessages", hasItem("Campo \"personMeDTO.user\" deve ser informado.")));
+                .andExpect(jsonPath(USER_MESSAGES,
+                        hasItem("Campo \"personMeDTO.name\" deve ser informado.")))
+                .andExpect(jsonPath(USER_MESSAGES,
+                        hasItem("Campo \"personMeDTO.user\" deve ser informado.")));
     }
 
 }

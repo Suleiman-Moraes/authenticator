@@ -6,13 +6,20 @@ import java.util.List;
 import com.moraes.authenticator.api.mock.interfaces.AbstractMock;
 import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.dto.person.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonMeDTO;
 import com.moraes.authenticator.api.util.MockUtil;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+@Setter
+@Getter
 @Slf4j
 public class MockPerson extends AbstractMock<Person> {
+
+    private int maxSize = 14;
 
     @Override
     protected Class<Person> getClazz() {
@@ -51,6 +58,26 @@ public class MockPerson extends AbstractMock<Person> {
             MockUtil.toFill(entity, number, ignoreFields);
             // setOdersValues
             entity.setUser(new MockUser().mockUserMeDTO(number));
+            return entity;
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public List<PersonListDTO> mockPersonListDTOList(int maxSize) {
+        List<PersonListDTO> entitys = new LinkedList<>();
+        for (int i = 1; i <= maxSize; i++) {
+            entitys.add(mockPersonListDTO(i));
+        }
+        return entitys;
+    }
+
+    private PersonListDTO mockPersonListDTO(int number) {
+        try {
+            PersonListDTO entity = new PersonListDTO();
+            MockUtil.toFill(entity, number, ignoreFields);
+            // setOdersValues
             return entity;
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
