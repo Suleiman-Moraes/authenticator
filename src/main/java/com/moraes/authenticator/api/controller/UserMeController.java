@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/user/me")
 @AllArgsConstructor
-public class UserControllerMe {
+public class UserMeController {
 
     private IUserService service;
 
