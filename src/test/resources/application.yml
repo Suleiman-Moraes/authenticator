@@ -1,23 +1,19 @@
+server:
+  port: 8180
 spring:
   datasource:
-    url: jdbc:h2:mem:mydb
-    username: sa
-    password: 
-    driverClassName: org.h2.Driver
-  h2:
-    console:
-      enabled: true # habilita a console do H2
+    driverClassName: org.postgresql.Driver
   jpa:
     show-sql: true
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties: 
       hibernate: 
         formatSql: true
 
   flyway:
-    locations: db/h2
+    locations: db/postgresql
 
 springdoc:
   pathsToMatch: 
