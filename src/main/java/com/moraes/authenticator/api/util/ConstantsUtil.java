@@ -7,6 +7,7 @@ public final class ConstantsUtil {
     public static final String ROLE_UNDERLINE = "ROLE_";
     public static final String JOKER = "####";
     public static final String KEY = "key";
+    public static final String APPLICATION_JSON = "application/json";
 
     // numbers
     public static final Integer ZERO = 0;

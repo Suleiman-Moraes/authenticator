@@ -1,5 +1,6 @@
 package com.moraes.authenticator.integration.api.controller;
 
+import static com.moraes.authenticator.api.util.ConstantsUtil.APPLICATION_JSON;
 import static com.moraes.authenticator.api.util.ConstantsUtil.AUTHORIZATION;
 import static com.moraes.authenticator.integration.api.IntegrationContextHolder.ACCESS_TOKEN_ME;
 import static com.moraes.authenticator.integration.api.IntegrationContextHolder.BASIC_TOKEN;
@@ -72,7 +73,7 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
         dto.getUser().setPassword(PASSWORD_ME);
         final Response response = given().spec(specification)
                 .basePath(BASE_URL.concat("/new"))
-                .contentType("application/json")
+                .contentType(APPLICATION_JSON)
                 .header(AUTHORIZATION, BASIC_TOKEN)
                 .body(dto)
                 .when()
@@ -89,11 +90,11 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     @Order(2)
     @DisplayName("JUnit Integration test Given Context When getMe Then return PersonDTO")
     void testIntegrationGivenContextWhenGetMeThenReturnPersonDTO() throws Exception {
-        TokenDTO token = AuthTest.doSignin(USERNAME_ME, PASSWORD_ME, specification);
+        final TokenDTO token = AuthTest.signin(USERNAME_ME, PASSWORD_ME, specification, mapper);
         setAccessTokenMe(token.getAccessToken());
         final Response response = given().spec(specification)
                 .basePath(BASE_URL)
-                .contentType("application/json")
+                .contentType(APPLICATION_JSON)
                 .header(AUTHORIZATION, ACCESS_TOKEN_ME)
                 .when()
                 .get();

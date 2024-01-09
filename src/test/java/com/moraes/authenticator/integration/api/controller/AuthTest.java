@@ -119,7 +119,8 @@ public class AuthTest extends AbstractIntegrationTest {
         response.then().statusCode(403);
     }
 
-    public static TokenDTO doSignin(final String username, final String password, RequestSpecification specification)
+    public static TokenDTO signin(final String username, final String password, RequestSpecification specification,
+            ObjectMapper mapper)
             throws Exception {
         final Response response = signin(username, password, specification);
         response.then().statusCode(200);
