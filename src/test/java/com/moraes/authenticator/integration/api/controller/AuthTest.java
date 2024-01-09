@@ -1,9 +1,11 @@
-package com.moraes.authenticator.integration.api;
+package com.moraes.authenticator.integration.api.controller;
 
+import static com.moraes.authenticator.integration.api.IntegrationContextHolder.BASIC_TOKEN;
+import static com.moraes.authenticator.integration.api.IntegrationContextHolder.USERNAME;
 import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 
@@ -22,6 +24,7 @@ import com.moraes.authenticator.config.AbstractIntegrationTest;
 import com.moraes.authenticator.config.TestConfig;
 import com.moraes.authenticator.config.security.dto.AccountCredentialsDTO;
 import com.moraes.authenticator.config.security.dto.TokenDTO;
+import com.moraes.authenticator.integration.api.IntegrationContextHolder;
 
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -35,12 +38,8 @@ import io.restassured.specification.RequestSpecification;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AuthTest extends AbstractIntegrationTest {
 
-    public static final String BASIC_TOKEN = "Basic d2ViOjEyMzQ1Ng==";
-
-    private static String ACCESS_TOKEN = "";
     private static String REFRESH_TOKEN = "";
-    private static final String BASE_PATH = "/auth";
-    private static final String USERNAME = "admin";
+    private static final String BASE_URL = "/auth";
 
     private static RequestSpecification specification;
     private static ObjectMapper mapper;
@@ -56,7 +55,7 @@ public class AuthTest extends AbstractIntegrationTest {
 
         // Create a RequestSpecification instance
         specification = new RequestSpecBuilder()
-                .setBasePath(BASE_PATH)
+                .setBasePath(BASE_URL)
                 .setPort(TestConfig.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
@@ -72,13 +71,13 @@ public class AuthTest extends AbstractIntegrationTest {
         response.then().statusCode(200);
         final TokenDTO token = mapper.readValue(response.getBody().asString(), TokenDTO.class);
 
-        assertNotNull("Token is null", token);
-        assertNotNull("Access Token is null", token.getAccessToken());
-        assertNotNull("Refresh Token is null", token.getRefreshToken());
-        assertTrue("Unauthenticated", token.isAuthenticated());
-        assertTrue("Token expired", new Date().before(token.getExpiration()));
-        assertEquals("Username not equal", USERNAME, token.getUsername());
-        ACCESS_TOKEN = token.getAccessToken();
+        assertNotNull(token, "Token is null");
+        assertNotNull(token.getAccessToken(), "Access Token is null");
+        assertNotNull(token.getRefreshToken(), "Refresh Token is null");
+        assertTrue(token.isAuthenticated(), "Unauthenticated");
+        assertTrue(new Date().before(token.getExpiration()), "Token expired");
+        assertEquals(USERNAME, token.getUsername(), "Username not equal");
+        IntegrationContextHolder.setAccessToken(token.getAccessToken());
         REFRESH_TOKEN = token.getRefreshToken();
     }
 
@@ -96,13 +95,13 @@ public class AuthTest extends AbstractIntegrationTest {
         response.then().statusCode(200);
         final TokenDTO token = mapper.readValue(response.getBody().asString(), TokenDTO.class);
 
-        assertNotNull("Token is null", token);
-        assertNotNull("Access Token is null", token.getAccessToken());
-        assertNotNull("Refresh Token is null", token.getRefreshToken());
-        assertTrue("Unauthenticated", token.isAuthenticated());
-        assertTrue("Token expired", new Date().before(token.getExpiration()));
-        assertEquals("Username not equal", USERNAME, token.getUsername());
-        ACCESS_TOKEN = token.getAccessToken();
+        assertNotNull(token, "Token is null");
+        assertNotNull(token.getAccessToken(), "Access Token is null");
+        assertNotNull(token.getRefreshToken(), "Refresh Token is null");
+        assertTrue(token.isAuthenticated(), "Unauthenticated");
+        assertTrue(new Date().before(token.getExpiration()), "Token expired");
+        assertEquals(USERNAME, token.getUsername(), "Username not equal");
+        IntegrationContextHolder.setAccessToken(token.getAccessToken());
         REFRESH_TOKEN = token.getRefreshToken();
     }
 
@@ -118,6 +117,14 @@ public class AuthTest extends AbstractIntegrationTest {
     void testIntegrationGivenInvalidPasswordAccountCredentialsDTOWhenSigninThenThrowException() throws Exception {
         final Response response = signin(USERNAME, "1234567", specification);
         response.then().statusCode(403);
+    }
+
+    public static TokenDTO doSignin(final String username, final String password, RequestSpecification specification)
+            throws Exception {
+        final Response response = signin(username, password, specification);
+        response.then().statusCode(200);
+        final TokenDTO token = mapper.readValue(response.getBody().asString(), TokenDTO.class);
+        return token;
     }
 
     private static Response signin(final String username, RequestSpecification specification) {
@@ -139,10 +146,6 @@ public class AuthTest extends AbstractIntegrationTest {
     }
 
     private static String concatPath(String path) {
-        return BASE_PATH + path;
-    }
-
-    public static String getAccessToken() {
-        return String.format("Bearer %s", ACCESS_TOKEN);
+        return BASE_URL + path;
     }
 }
