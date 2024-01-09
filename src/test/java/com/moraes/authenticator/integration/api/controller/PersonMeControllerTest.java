@@ -37,7 +37,11 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-@Order(2)
+/**
+ * For while this class stayed without Order annotation
+ * 
+ * @author Suleiman Moraes
+ */
 @TestMethodOrder(OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PersonMeControllerTest extends AbstractIntegrationTest {
@@ -48,6 +52,7 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     private static ObjectMapper mapper;
     private static MockPerson input;
     private static PersonMeDTO dto;
+    private static Long key;
 
     @BeforeAll
     public static void setup() {
@@ -81,7 +86,7 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
                 .post();
 
         response.then().statusCode(201);
-        final Long key = mapper.readValue(response.getBody().asString(), Long.class);
+        key = mapper.readValue(response.getBody().asString(), Long.class);
 
         assertNotNull(key, "Key is null");
         assertTrue(key > 0, "Key is not greater than zero");
@@ -91,8 +96,51 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     @Order(2)
     @DisplayName("JUnit Integration test Given Context When getMe Then return PersonDTO")
     void testIntegrationGivenContextWhenGetMeThenReturnPersonDTO() throws Exception {
-        final TokenDTO token = AuthTest.signin(USERNAME_ME, PASSWORD_ME, specification, mapper);
-        setAccessTokenMe(token.getAccessToken());
+        doSignin();
+        final PersonDTO person = getMe();
+
+        assertNotNull(person, "Person is null");
+        assertNotNull(person.getUser(), "User is null");
+        assertNull(person.getUser().getPassword(), "Password is not null");
+        assertEquals(USERNAME_ME, person.getUser().getUsername(), "Username is null");
+        assertEquals(dto.getName(), person.getName(), "Name is different");
+        assertEquals(dto.getAddress(), person.getAddress(), "Address is different");
+    }
+
+    /**
+     * 
+     * Update person, login with new credentials, search for updated person
+     * 
+     * @throws Exception
+     */
+    @Test
+    @Order(3)
+    @DisplayName("JUnit Integration test Given PersonMeDTO And Context When updateMe Then return key")
+    void testIntegrationGivenPersonMeDTOAndContextWhenUpdateMeThenReturnKey() throws Exception {
+        final String name = "John Doe";
+        dto.setName(name);
+        USERNAME_ME = "userMe2";
+        dto.getUser().setUsername(USERNAME_ME);
+        final Response response = given().spec(specification)
+                .contentType(APPLICATION_JSON)
+                .header(AUTHORIZATION, ACCESS_TOKEN_ME)
+                .body(dto)
+                .when()
+                .put();
+        response.then().statusCode(200);
+        final Long newKey = mapper.readValue(response.getBody().asString(), Long.class);
+
+        assertEquals(key, newKey, "Key is not equal");
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("JUnit Integration test Given Context When getMe After update Then return PersonDTO with updated data")
+    void testIntegrationGivenContextWhenGetMeAfterUpdateThenReturnPersonDTO() throws Exception {
+        testIntegrationGivenContextWhenGetMeThenReturnPersonDTO();
+    }
+
+    private PersonDTO getMe() throws Exception {
         final Response response = given().spec(specification)
                 .basePath(BASE_URL)
                 .contentType(APPLICATION_JSON)
@@ -101,13 +149,11 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
                 .get();
 
         response.then().statusCode(200);
-        final PersonDTO person = mapper.readValue(response.getBody().asString(), PersonDTO.class);
+        return mapper.readValue(response.getBody().asString(), PersonDTO.class);
+    }
 
-        assertNotNull(person, "Person is null");
-        assertNotNull(person.getUser(), "User is null");
-        assertNull(person.getUser().getPassword(), "Password is not null");
-        assertEquals(USERNAME_ME, person.getUser().getUsername(), "Username is null");
-        assertEquals(dto.getName(), person.getName(), "Name is different");
-        assertEquals(dto.getAddress(), person.getAddress(), "Address is different");
+    private void doSignin() throws Exception {
+        final TokenDTO token = AuthTest.signin(USERNAME_ME, PASSWORD_ME, specification, mapper);
+        setAccessTokenMe(token.getAccessToken());
     }
 }
