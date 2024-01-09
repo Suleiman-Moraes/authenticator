@@ -74,6 +74,9 @@ public class UserService implements IUserService {
         entity.setPerson(Person.builder().key(personKey).build());
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         entity.setEnabled(true);
+        entity.setAccountNonExpired(true);
+        entity.setAccountNonLocked(true);
+        entity.setCredentialsNonExpired(true);
         save(entity);
         return entity.getKey();
     }
