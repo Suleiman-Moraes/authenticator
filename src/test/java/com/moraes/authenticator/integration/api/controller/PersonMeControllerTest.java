@@ -10,6 +10,7 @@ import static com.moraes.authenticator.integration.api.IntegrationContextHolder.
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -104,8 +105,8 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
 
         assertNotNull(person, "Person is null");
         assertNotNull(person.getUser(), "User is null");
+        assertNull(person.getUser().getPassword(), "Password is not null");
         assertEquals(USERNAME_ME, person.getUser().getUsername(), "Username is null");
-        assertEquals(PASSWORD_ME, person.getUser().getPassword(), "Password is null");
         assertEquals(dto.getName(), person.getName(), "Name is different");
         assertEquals(dto.getAddress(), person.getAddress(), "Address is different");
     }
