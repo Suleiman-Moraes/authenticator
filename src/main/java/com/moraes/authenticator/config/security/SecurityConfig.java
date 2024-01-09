@@ -30,6 +30,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector)
             throws Exception {
         final AntPathRequestMatcher[] patterns = {
+                antMatcher("/index.html"),
                 antMatcher("/swagger-ui/**"),
                 antMatcher("/v3/api-docs/**"),
                 antMatcher("/h2-console/**"),
