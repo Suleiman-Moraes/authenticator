@@ -47,7 +47,7 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     private static RequestSpecification specification;
     private static ObjectMapper mapper;
     private static MockPerson input;
-    PersonMeDTO dto;
+    private static PersonMeDTO dto;
 
     @BeforeAll
     public static void setup() {
