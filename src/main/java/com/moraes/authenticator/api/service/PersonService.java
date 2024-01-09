@@ -47,7 +47,7 @@ public class PersonService implements IPersonService {
     @Transactional
     @Override
     public Long updateMe(PersonMeDTO object) {
-        Person entity = getMe();
+        Person entity = this.getMe();
         final Long userId = entity.getUser().getKey();
         saveForUpdate(Mapper.parseObject(object, Person.class), entity);
         userService.updateMe(object.getUser(), userId);
@@ -75,7 +75,7 @@ public class PersonService implements IPersonService {
     @Override
     public Long insertMe(Person object) {
         userService.preInsertMe(object.getUser());
-        return insert(object);
+        return this.insert(object);
     }
 
     @Transactional(readOnly = true)

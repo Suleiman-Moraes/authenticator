@@ -73,6 +73,7 @@ public class UserService implements IUserService {
     public Long insert(User entity, Long personKey) {
         entity.setPerson(Person.builder().key(personKey).build());
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        entity.setEnabled(true);
         save(entity);
         return entity.getKey();
     }
