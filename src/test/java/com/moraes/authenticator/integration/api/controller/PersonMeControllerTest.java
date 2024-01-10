@@ -110,7 +110,6 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
      * 
      * Update person, login with new credentials, search for updated person
      * 
-     * @throws Exception
      */
     @Test
     @Order(3)
