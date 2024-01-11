@@ -1,11 +1,12 @@
 package com.moraes.authenticator.integration.api.controller;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static com.moraes.authenticator.api.util.ConstantsUtil.*;
 import static com.moraes.authenticator.integration.api.IntegrationContextHolder.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -30,7 +31,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-@Order(1)
+@Order(2)
 @TestMethodOrder(OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PersonControllerTest extends AbstractIntegrationTest {
@@ -66,7 +67,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     @DisplayName("JUnit Integration test Given PersonDTO When insert Then return key")
     void testIntegrationGivenPersonDTOWhenInsertThenReturnKey() throws Exception {
         dto = input.mockPersonDTO(1);
-        dto.getUser().setProfile(KeyDTO.builder().key(3l).build());
+        dto.getUser().setProfile(KeyDTO.builder().key(3L).build());
         dto.getUser().setUsername(username);
         dto.getUser().setPassword(password);
         final Response response = given().spec(specification)
@@ -81,5 +82,32 @@ public class PersonControllerTest extends AbstractIntegrationTest {
 
         assertNotNull(key, "Key is null");
         assertTrue(key > 0, "Key is not greater than zero");
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("JUnit Integration test Given key When findByKey Then return PersonDTO")
+    void testIntegrationGivenKeyWhenFindByKeyThenReturnPersonDTO() throws Exception {
+        final PersonDTO dtoResponse = findByKey();
+
+        assertNotNull(dtoResponse, "Person is null");
+        assertNotNull(dtoResponse.getUser(), "User is null");
+        assertNotNull(dto.getUser().getProfile(), "Profile is null");
+        assertNull(dtoResponse.getUser().getPassword(), "Password is not null");
+        assertEquals(username, dtoResponse.getUser().getUsername(), "Username is null");
+        assertEquals(dto.getName(), dtoResponse.getName(), "Name is different");
+        assertEquals(dto.getAddress(), dtoResponse.getAddress(), "Address is different");
+        assertEquals(dto.getUser().getProfile().getKey(), dtoResponse.getUser().getProfile().getKey(), "Profile is different");
+    }
+
+    private static PersonDTO findByKey() throws JsonProcessingException {
+        final Response response = given().spec(specification)
+                .pathParam("key", key)
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .when()
+                .get("{key}");
+
+        response.then().statusCode(200);
+        return mapper.readValue(response.getBody().asString(), PersonDTO.class);
     }
 }

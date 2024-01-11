@@ -78,12 +78,11 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
         dto.getUser().setUsername(USERNAME_ME);
         dto.getUser().setPassword(PASSWORD_ME);
         final Response response = given().spec(specification)
-                .basePath(BASE_URL.concat("/new"))
                 .contentType(APPLICATION_JSON)
                 .header(AUTHORIZATION, BASIC_TOKEN)
                 .body(dto)
                 .when()
-                .post();
+                .post("/new");
 
         response.then().statusCode(201);
         key = mapper.readValue(response.getBody().asString(), Long.class);
@@ -111,7 +110,6 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
      * 
      * Update person, login with new credentials, search for updated person
      * 
-     * @throws Exception
      */
     @Test
     @Order(3)
