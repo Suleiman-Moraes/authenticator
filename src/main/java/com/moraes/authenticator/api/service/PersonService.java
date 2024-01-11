@@ -1,7 +1,12 @@
 package com.moraes.authenticator.api.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.FormatStyle;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,6 +28,7 @@ import com.moraes.authenticator.api.repository.IPersonRepository;
 import com.moraes.authenticator.api.service.interfaces.IPersonService;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
 
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -34,6 +40,8 @@ public class PersonService implements IPersonService {
     private IPersonRepository repository;
 
     private IUserService userService;
+
+    private EntityManager entityManager;
 
     @Transactional
     @Override
@@ -87,6 +95,15 @@ public class PersonService implements IPersonService {
     @Override
     @Transactional(readOnly = true)
     public Page<PersonListDTO> findPageAll(PersonFilterDTO filter) {
+        List<Object[]> objects = entityManager
+                .createQuery(
+                        "SELECT CAST(p.user.createdDate AS string), FORMAT(p.user.createdDate, 'dd/MM/yyyy'), p.user.createdDate FROM Person p")
+                .getResultList();
+        objects.forEach(l -> {
+            for (Object o : l) {
+                System.out.println(o);
+            }
+        });
         if (filter.isPaginate()) {
             final Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), filter.getDirection(),
                     filter.getProperty());
