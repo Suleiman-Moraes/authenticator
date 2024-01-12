@@ -30,4 +30,7 @@ public class FilterDTO {
 
     @Builder.Default
     private String property = ConstantsUtil.KEY;
+
+    @Builder.Default
+    private String searchText = "s";
 }
