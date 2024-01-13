@@ -1,12 +1,14 @@
 package com.moraes.authenticator.integration.api.controller;
 
+import static com.moraes.authenticator.api.util.ConstantsUtil.APPLICATION_JSON;
+import static com.moraes.authenticator.api.util.ConstantsUtil.AUTHORIZATION;
+import static com.moraes.authenticator.integration.api.IntegrationContextHolder.ACCESS_TOKEN;
 import static io.restassured.RestAssured.given;
-import static com.moraes.authenticator.api.util.ConstantsUtil.*;
-import static com.moraes.authenticator.integration.api.IntegrationContextHolder.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -15,12 +17,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moraes.authenticator.api.mock.MockPerson;
 import com.moraes.authenticator.api.model.dto.KeyDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonDTO;
-import com.moraes.authenticator.api.model.dto.person.PersonMeDTO;
 import com.moraes.authenticator.config.AbstractIntegrationTest;
 import com.moraes.authenticator.config.TestConfig;
 
@@ -97,7 +99,35 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertEquals(username, dtoResponse.getUser().getUsername(), "Username is null");
         assertEquals(dto.getName(), dtoResponse.getName(), "Name is different");
         assertEquals(dto.getAddress(), dtoResponse.getAddress(), "Address is different");
-        assertEquals(dto.getUser().getProfile().getKey(), dtoResponse.getUser().getProfile().getKey(), "Profile is different");
+        assertEquals(dto.getUser().getProfile().getKey(), dtoResponse.getUser().getProfile().getKey(),
+                "Profile is different");
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("JUnit Integration test Given PersonDTO and key When update Then return key")
+    void testIntegrationGivenPersonDTOAndKeyWhenUpdateThenReturnKey() throws Exception {
+        final String name = "John Doe";
+        dto.setName(name);
+        username = "username2";
+        dto.getUser().setUsername(username);
+        final Response response = given().spec(specification)
+                .pathParam("key", key)
+                .contentType(APPLICATION_JSON)
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .body(dto)
+                .when()
+                .put("{key}");
+        response.then().statusCode(200);
+        final Long newKey = mapper.readValue(response.getBody().asString(), Long.class);
+        assertEquals(key, newKey, "Key is not equal");
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("JUnit Integration test Given Key When findByKey After update Then return PersonDTO with updated data")
+    void testIntegrationGivenKeyWhenFindByKeyAfterUpdateThenReturnPersonDTO() throws Exception {
+        testIntegrationGivenKeyWhenFindByKeyThenReturnPersonDTO();
     }
 
     private static PersonDTO findByKey() throws JsonProcessingException {

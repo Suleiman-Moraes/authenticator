@@ -73,7 +73,6 @@ class PersonControllerTest extends AbstractBasicControllerTest {
                 .andExpect(jsonPath("$.address", is(person.getAddress())));
     }
 
-    // ResponseEntity<Page<PersonListDTO>> findAll(PersonFilterDTO personFilter)
     @Test
     @DisplayName("JUnit test Given Context When findAll Then return Page of PersonListDTO")
     void testGivenContextWhenFindAllThenReturnPageOfPersonListDTO() throws Exception {
