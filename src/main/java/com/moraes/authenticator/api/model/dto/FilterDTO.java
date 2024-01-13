@@ -25,12 +25,17 @@ public class FilterDTO {
     @Builder.Default
     private int size = 10;
 
-    @Builder.Default
-    private Direction direction = Direction.DESC;
+    private Direction direction;
 
     @Builder.Default
     private String property = ConstantsUtil.KEY;
 
-    @Builder.Default
-    private String searchText = "s";
+    private String searchText;
+
+    public Direction getDirection() {
+        if (direction == null) {
+            direction = Direction.DESC;
+        }
+        return direction;
+    }
 }

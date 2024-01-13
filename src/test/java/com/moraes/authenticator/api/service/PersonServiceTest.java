@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,10 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
-import com.moraes.authenticator.api.mapper.Mapper;
 import com.moraes.authenticator.api.mock.MockPerson;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.Person;
@@ -112,19 +111,13 @@ class PersonServiceTest {
 
     @Test
     void testFindPageAll() {
-        final List<Person> list = input.mockEntityList();
-        when(repository.findAll(any(Sort.class))).thenReturn(list);
-        assertEquals(Mapper.parseObjects(list, PersonListDTO.class).get(),
-                service.findPageAll(new PersonFilterDTO()).getContent(), RETURN_NOT_EQUAL);
-    }
+        final PersonFilterDTO filter = new PersonFilterDTO();
+        final List<PersonListDTO> list = input.mockPersonListDTOList(10);
+        final Page<PersonListDTO> page = new PageImpl<>(list);
+        when(repository.page(filter, service.getMapOfFields(), PersonListDTO.class, Person.class)).thenReturn(page);
 
-    @Test
-    void testFindPageAllPagination() {
-        assertEquals(new LinkedList<>(),
-                service.findPageAll(PersonFilterDTO.builder()
-                        .paginate(true)
-                        .build()).getContent(),
-                RETURN_NOT_EQUAL);
+        assertEquals(list,
+                service.findPageAll(filter).getContent(), RETURN_NOT_EQUAL);
     }
 
     @Test

@@ -23,6 +23,10 @@ springdoc:
   swagger-ui:
     use-root-path: true
 
+logging:
+  level:
+    root: INFO
+
 cors:
   originPatterns: http://localhost:8080,http://localhost:4200
 

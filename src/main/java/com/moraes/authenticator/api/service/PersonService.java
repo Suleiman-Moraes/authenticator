@@ -1,23 +1,15 @@
 package com.moraes.authenticator.api.service;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.moraes.authenticator.api.controller.PersonController;
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.mapper.Mapper;
 import com.moraes.authenticator.api.model.Person;
-import com.moraes.authenticator.api.model.dto.FilterDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonFilterDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
@@ -26,7 +18,6 @@ import com.moraes.authenticator.api.repository.IPersonRepository;
 import com.moraes.authenticator.api.service.interfaces.IPersonService;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
 
-import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -38,8 +29,6 @@ public class PersonService implements IPersonService {
     private IPersonRepository repository;
 
     private IUserService userService;
-
-    private EntityManager entityManager;
 
     @Transactional
     @Override
@@ -93,62 +82,18 @@ public class PersonService implements IPersonService {
     @Override
     @Transactional(readOnly = true)
     public Page<PersonListDTO> findPageAll(PersonFilterDTO filter) {
-        List<Object[]> objects = entityManager
-                .createQuery(
-                        "SELECT CAST(p.user.createdDate AS string), FORMAT(p.user.createdDate, 'dd/MM/yyyy'), p.user.createdDate FROM Person p")
-                .getResultList();
-        objects.forEach(l -> {
-            for (Object o : l) {
-                System.out.println(o);
-            }
-        });
-        final String join = "";
+        final Map<String, Class<?>> fields = getMapOfFields();
+        return repository.page(filter, fields, PersonListDTO.class, Person.class);
+    }
+
+    public Map<String, Class<?>> getMapOfFields() {
         final Map<String, Class<?>> fields = new LinkedHashMap<>();
         fields.put("x.key", Number.class);
         fields.put("x.name", String.class);
         fields.put("x.address", String.class);
         fields.put("x.user.username", String.class);
         fields.put("x.user.profile.description", String.class);
-        page(filter, join, fields, PersonListDTO.class, Person.class);
-        if (filter.isPaginate()) {
-            final Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), filter.getDirection(),
-                    filter.getProperty());
-            return new PageImpl<>(new LinkedList<>(), pageable, 0);
-        }
-        final Sort sort = Sort.by(filter.getDirection(), filter.getProperty());
-        final List<Person> list = repository.findAll(sort);
-        final Pageable pageable = PageRequest.of(0, list.size(), sort);
-        return new PageImpl<>(parseObjects(list, PersonListDTO.class, PersonController.class), pageable, list.size());
-    }
-
-    public void page(FilterDTO filter, String join, final Map<String, Class<?>> fields, Class<?> classListDto,
-            Class<?> classFrom) {
-        new PersonListDTO(null, null, null, null, null);
-        StringBuilder where = new StringBuilder(" ( 1 != 1");
-        StringBuilder query = new StringBuilder("SELECT new ");
-        query.append(classListDto.getName()).append("(");
-        for (Map.Entry<String, Class<?>> entry : fields.entrySet()) {
-            final String key = entry.getKey();
-            final Class<?> value = entry.getValue();
-            query.append(key).append(", ");
-            if (value.equals(Number.class)) {
-                where.append(" OR CAST(").append(key);
-                where.append(" AS string) LIKE REPLACE(:searchText, ',', '.')");
-            } else {
-                where.append(" OR UPPER(").append(key).append(") LIKE :searchText");
-            }
-        }
-        where.append(")");
-        final int length = query.length();
-        query = query.delete(length - 2, length);
-        query.append(") FROM ").append(classFrom.getSimpleName()).append(" x ").append(join);
-        query.append(" WHERE ").append(where);
-        System.out.println(query);
-        final List<?> list = entityManager.createQuery(query.toString(), classListDto)
-                .setParameter("searchText", "%" + filter.getSearchText().toUpperCase() + "%").getResultList();
-        System.out.println("--------------------------------------------------------------------");
-        list.forEach(System.out::println);
-        System.out.println("--------------------------------------------------------------------");
+        return fields;
     }
 
     /**

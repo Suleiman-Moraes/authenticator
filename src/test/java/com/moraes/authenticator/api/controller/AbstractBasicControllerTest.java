@@ -13,7 +13,7 @@ import com.moraes.authenticator.config.security.JwtTokenProvider;
 import com.moraes.authenticator.config.security.interfaces.IAuthService;
 
 public abstract class AbstractBasicControllerTest {
-    
+
     @Autowired
     protected MockMvc mockMvc;
 
