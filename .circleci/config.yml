@@ -4,6 +4,7 @@ jobs:
   build:
     docker:
       - image: openjdk:17-jdk-alpine
+      - image: postgres
     steps:
       - checkout
       - run:
