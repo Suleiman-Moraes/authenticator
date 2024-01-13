@@ -44,7 +44,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     private static final String BASE_URL = "/api/v1/person";
 
     private static RequestSpecification specification;
-    private static ObjectMapper mapper;
+    private static ObjectMapper mapper; 
     private static MockPerson input;
     private static PersonDTO dto;
     private static String username = "username";
