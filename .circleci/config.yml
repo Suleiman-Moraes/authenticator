@@ -1,18 +1,10 @@
 version: 2.1
-
 jobs:
   build:
+    working_directory: ~/project
     docker:
-      - image: openjdk:17-jdk-alpine
+      - image: circleci/openjdk:17-jdk-alpine
     steps:
       - checkout
-      - run:
-          name: Build and Test
-          command: |
-            mvn clean install
-
-workflows:
-  version: 2
-  build:
-    jobs:
-      - build
+      - run: mvn clean install
+      - run: mvn test
