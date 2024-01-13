@@ -1,17 +1,14 @@
-language: bash
-services: docker
-before_install:
-    - echo "Estamos na pasta do docker!"
+language: java
+jdk:
+  - openjdk17
+
+# Fazendo o build antes de instalar as dependências
+install: true
+
 script:
-    - docker-compose build
-before_deploy:
-    - echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
-deploy:
-    provider: script
-    script:
-        docker push suleimanmoaraes/rest-with-spring-boot-udemy;
-        docker push suleimanmoaraes/mysql-rest-with-spring-boot-udemy;
-    on:
-        branch: master
+  - mvn clean install
+
 notifications:
-    email: false
+  email:
+    on_success: never
+    on_failure: always
