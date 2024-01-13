@@ -7,6 +7,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Grant execute permissions to mvnw
+          command: |
+            chmod +x mvnw
+      - run:
           name: Build and Test
           command: |
             ./mvnw clean install
