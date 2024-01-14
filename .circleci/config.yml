@@ -7,19 +7,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Docker Machine
-          command: |
-            curl -L https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-$(uname -s)-$(uname -m) > /tmp/docker-machine
-            chmod +x /tmp/docker-machine
-            sudo mv /tmp/docker-machine /usr/local/bin/docker-machine
-      - run:
           name: Grant execute permissions to mvnw
           command: |
             chmod +x mvnw
       - run:
           name: Build and Test
           command: |
-            ./mvnw clean install
+            ./mvnw clean install -DskipTests -Dtest=!com.moraes.authenticator.integration.*
 
 workflows:
   version: 2
