@@ -7,6 +7,4 @@ import com.moraes.authenticator.api.repository.ExtendedRepository;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.moraes.authenticator.api.repository", repositoryBaseClass = ExtendedRepository.class)
-public class ApiConfig {
-
-}
+public class ApiConfig {}
