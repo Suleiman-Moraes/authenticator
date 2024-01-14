@@ -2,9 +2,6 @@
 
 [![CircleCI](https://circleci.com/gh/Suleiman-Moraes/authenticator.svg?style=svg)](https://circleci.com/gh/Suleiman-Moraes/authenticator)
 
-
-[![Build Status](https://app.travis-ci.com/Suleiman-Moraes/authenticator.svg?branch=master)](https://app.travis-ci.com/Suleiman-Moraes/authenticator)
-
 ![Java](https://img.shields.io/badge/Java-17-orange) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen) ![ModelMapper](https://img.shields.io/badge/ModelMapper-3.1.1-blue) ![Commons Lang](https://img.shields.io/badge/Commons%20Lang-3.12.0-brightgreen) ![Springdoc OpenAPI](https://img.shields.io/badge/Springdoc%20OpenAPI-2.2.0-blue) ![Java JWT](https://img.shields.io/badge/Java%20JWT-4.4.0-blue) ![Hibernate Envers](https://img.shields.io/badge/Hibernate%20Envers-6.3.0.Final-blue)
 
 This project is a Java Authenticator built with Spring Boot. It provides authentication functionalities using various dependencies and tools.
