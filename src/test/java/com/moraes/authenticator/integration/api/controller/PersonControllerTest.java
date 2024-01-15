@@ -212,6 +212,26 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertEquals(dto.getAddress(), content.get(1).getAddress(), "Address is different");
     }
 
+    @Test
+    @Order(7)
+    @DisplayName("JUnit Integration test Given key When delete Then return no content")
+    void testIntegrationGivenKeyWhenDeleteThenReturnNoContent() throws Exception {
+        given().spec(specification)
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .pathParam("key", key)
+                .when()
+                .delete("{key}")
+                .then()
+                .statusCode(204);
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("JUnit Integration test Given Key When findByKey After delete Then return not found")
+    void testIntegrationGivenKeyWhenFindByKeyAfterDeleteThenReturnNotFound() throws Exception {
+        findByKey().then().statusCode(404);
+    }
+
     private static Response findByKey() throws JsonProcessingException {
         return given().spec(specification)
                 .pathParam("key", key)
