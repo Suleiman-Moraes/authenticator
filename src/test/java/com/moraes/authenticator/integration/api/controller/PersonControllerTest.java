@@ -9,6 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.DisplayName;
@@ -18,13 +21,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Sort.Direction;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moraes.authenticator.api.mock.MockPerson;
 import com.moraes.authenticator.api.model.dto.KeyDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonFilterDTO;
+import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
+import com.moraes.authenticator.api.util.JsonObjectUtil;
 import com.moraes.authenticator.config.AbstractIntegrationTest;
 import com.moraes.authenticator.config.TestConfig;
 
@@ -35,6 +43,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
+@SuppressWarnings("unchecked")
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @Order(2)
 @TestMethodOrder(OrderAnnotation.class)
@@ -44,7 +53,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     private static final String BASE_URL = "/api/v1/person";
 
     private static RequestSpecification specification;
-    private static ObjectMapper mapper; 
+    private static ObjectMapper mapper;
     private static MockPerson input;
     private static PersonDTO dto;
     private static String username = "username";
@@ -93,7 +102,9 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     @Order(2)
     @DisplayName("JUnit Integration test Given key When findByKey Then return PersonDTO")
     void testIntegrationGivenKeyWhenFindByKeyThenReturnPersonDTO() throws Exception {
-        final PersonDTO dtoResponse = findByKey();
+        final Response response = findByKey();
+        response.then().statusCode(200);
+        final PersonDTO dtoResponse = mapper.readValue(response.getBody().asString(), PersonDTO.class);
 
         assertNotNull(dtoResponse, "Person is null");
         assertNotNull(dtoResponse.getUser(), "User is null");
@@ -133,14 +144,79 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         testIntegrationGivenKeyWhenFindByKeyThenReturnPersonDTO();
     }
 
-    private static PersonDTO findByKey() throws JsonProcessingException {
+    @Test
+    @Order(5)
+    @DisplayName("JUnit Integration test Given PersonFilterDTO with paginate false When findAll Then return Page")
+    void testIntegrationGivenPersonFilterDTOWithPaginateFalseWhenFindAllThenReturnPage() throws Exception {
+        final PersonFilterDTO personFilter = new PersonFilterDTO();
+
         final Response response = given().spec(specification)
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .params(JsonObjectUtil.convertObjectToMap(personFilter))
+                .when()
+                .get();
+
+        response.then().statusCode(200);
+
+        final Map<String, Object> page = mapper.readValue(response.getBody().asString(),
+                new TypeReference<>() {
+                });
+        final List<PersonListDTO> content = JsonObjectUtil
+                .convertMapsToListOfSomething((List<Map<String, Object>>) page.get("content"), PersonListDTO.class);
+
+        assertNotNull(page, "Page is null");
+        assertNotNull(content, "Content is null");
+        assertEquals(1, page.get("totalPages"), "Total pages is different");
+        assertEquals(4, page.get("totalElements"), "Total elements is different");
+        assertEquals(4, page.get("size"), "Size is different");
+        assertEquals(0, page.get("number"), "Number is different");
+        assertEquals(username, content.get(0).getUsername(), "Username is null");
+        assertEquals(dto.getName(), content.get(0).getName(), "Name is different");
+        assertEquals(dto.getAddress(), content.get(0).getAddress(), "Address is different");
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("JUnit Integration test Given PersonFilterDTO with paginate true When findAll Then return Page")
+    void testIntegrationGivenPersonFilterDTOWithPaginateTrueWhenFindAllThenReturnPage() throws Exception {
+        final PersonFilterDTO personFilter = PersonFilterDTO.builder()
+                .paginate(true)
+                .page(1)
+                .size(2)
+                .direction(Direction.ASC)
+                .property("id")
+                .build();
+
+        final Response response = given().spec(specification)
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .params(JsonObjectUtil.convertObjectToMap(personFilter))
+                .when()
+                .get();
+
+        response.then().statusCode(200);
+
+        final Map<String, Object> page = mapper.readValue(response.getBody().asString(),
+                new TypeReference<>() {
+                });
+        final List<PersonListDTO> content = JsonObjectUtil
+                .convertMapsToListOfSomething((List<Map<String, Object>>) page.get("content"), PersonListDTO.class);
+
+        assertNotNull(page, "Page is null");
+        assertNotNull(content, "Content is null");
+        assertEquals(2, page.get("totalPages"), "Total pages is different");
+        assertEquals(4, page.get("totalElements"), "Total elements is different");
+        assertEquals(2, page.get("size"), "Size is different");
+        assertEquals(1, page.get("number"), "Number is different");
+        assertEquals(username, content.get(1).getUsername(), "Username is null");
+        assertEquals(dto.getName(), content.get(1).getName(), "Name is different");
+        assertEquals(dto.getAddress(), content.get(1).getAddress(), "Address is different");
+    }
+
+    private static Response findByKey() throws JsonProcessingException {
+        return given().spec(specification)
                 .pathParam("key", key)
                 .header(AUTHORIZATION, ACCESS_TOKEN)
                 .when()
                 .get("{key}");
-
-        response.then().statusCode(200);
-        return mapper.readValue(response.getBody().asString(), PersonDTO.class);
     }
 }
