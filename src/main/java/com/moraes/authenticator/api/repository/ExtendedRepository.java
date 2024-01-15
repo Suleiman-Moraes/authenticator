@@ -60,6 +60,24 @@ public class ExtendedRepository<M, K extends Serializable> extends SimpleJpaRepo
         return page;
     }
 
+    /**
+     * This code snippet defines a method called
+     * treatTypedQueryAccordingToPassedType that takes in three parameters: filter,
+     * count, and typedQueryList.
+     * 
+     * The method checks if the filter object has pagination enabled. If pagination
+     * is enabled, it calculates the offset and sets the maximum number of results
+     * for the typedQueryList based on the filter parameters. If pagination is not
+     * enabled, it sets the page to 0 and the size to the total count.
+     * 
+     * The method is generic, meaning it can work with any type T for the
+     * typedQueryList.
+     *
+     * @param filter         the filter object containing pagination and size
+     *                       parameters
+     * @param count          the total count of items
+     * @param typedQueryList the typed query object to be treated
+     */
     protected <T> void treatTypedQueryAccordingToPassedType(FilterDTO filter, final Long count,
             TypedQuery<T> typedQueryList) {
         if (filter.isPaginate()) {
@@ -77,6 +95,23 @@ public class ExtendedRepository<M, K extends Serializable> extends SimpleJpaRepo
         }
     }
 
+    /**
+     * This code snippet is a method called buildQueries that takes in several
+     * parameters and constructs a query string based on those parameters. The
+     * method builds a WHERE clause for the query based on the filter parameter and
+     * the fields map. It also constructs the SELECT and FROM parts of the query
+     * based on the classListDto and classFrom parameters. Finally, it appends an
+     * ORDER BY clause to the query based on the property and filter parameters.
+     *
+     * @param filter       the filter object containing the filter criteria
+     * @param join         the join criteria for the query
+     * @param fields       the map of fields and their corresponding classes
+     * @param classListDto the class of the DTO to be returned in the query result
+     * @param classFrom    the class from which data is being fetched
+     * @param where        the StringBuilder object for building the WHERE clause
+     * @param query        the StringBuilder object for building the SELECT clause
+     * @param fromHql      the StringBuilder object for building the FROM clause
+     */
     protected <T> void buildQueries(FilterDTO filter, String join, final Map<String, Class<?>> fields,
             Class<T> classListDto, Class<M> classFrom, StringBuilder where, StringBuilder query,
             StringBuilder fromHql) {
@@ -116,6 +151,18 @@ public class ExtendedRepository<M, K extends Serializable> extends SimpleJpaRepo
         query.append(String.format(" ORDER BY %s %s", property, filter.getDirection()));
     }
 
+    /**
+     * This code snippet defines a method that takes a TypedQuery and a searchText
+     * as input. If the searchText is not empty, it sets a parameter in the
+     * typedQuery with the name "searchText" and a value that is the searchText
+     * surrounded by "%" symbols and in uppercase. Finally, it returns the modified
+     * typedQuery.
+     * 
+     * @param <T>
+     * @param typedQuery
+     * @param searchText
+     * @return
+     */
     protected <T> TypedQuery<T> setParameterSearchTextInTypedQuery(TypedQuery<T> typedQuery, String searchText) {
         if (StringUtils.hasText(searchText)) {
             typedQuery.setParameter("searchText", "%" + searchText.toUpperCase() + "%");
