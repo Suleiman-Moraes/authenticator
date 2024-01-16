@@ -111,13 +111,26 @@ class PersonServiceTest {
 
     @Test
     void testFindPageAll() {
+        final int maxSize = 10;
         final PersonFilterDTO filter = new PersonFilterDTO();
-        final List<PersonListDTO> list = input.mockPersonListDTOList(10);
+        final List<PersonListDTO> list = input.mockPersonListDTOListWithKey(maxSize);
         final Page<PersonListDTO> page = new PageImpl<>(list);
         when(repository.page(filter, service.getMapOfFields(), PersonListDTO.class, Person.class)).thenReturn(page);
 
-        assertEquals(list,
-                service.findPageAll(filter).getContent(), RETURN_NOT_EQUAL);
+        final Page<PersonListDTO> pages = service.findPageAll(filter);
+        assertNotNull(pages, "Return null");
+        for (int index = 1; index <= maxSize; index++) {
+            final var dto = pages.getContent().get(index - 1);
+            final var entity = list.get(index - 1);
+            assertEquals(dto.getLinks().toList().get(0).getHref(), "/api/v1/person/" + index,
+                    "Href not equal");
+            assertEquals(dto.getName(), entity.getName(), "Name not equal");
+            assertEquals(dto.getKey(), entity.getKey(), "Key not equal");
+            assertEquals(dto.getAddress(), entity.getAddress(), "Address not equal");
+            assertEquals(dto.getUsername(), entity.getUsername(), "Username not equal");
+            assertEquals(dto.getProfileDescription(), entity.getProfileDescription(),
+                    "ProfileDescription not equal");
+        }
     }
 
     @Test

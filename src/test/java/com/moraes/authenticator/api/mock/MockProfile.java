@@ -1,8 +1,11 @@
 package com.moraes.authenticator.api.mock;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import org.springframework.util.CollectionUtils;
 
 import com.moraes.authenticator.api.mock.interfaces.AbstractMock;
 import com.moraes.authenticator.api.model.Profile;
@@ -15,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MockProfile extends AbstractMock<Profile> {
 
-    private Set<RoleEnum> roles = Set.of(RoleEnum.ADMIN);
+    private Set<RoleEnum> roles;
 
     @Override
     protected Class<Profile> getClazz() {
@@ -24,7 +27,7 @@ public class MockProfile extends AbstractMock<Profile> {
 
     @Override
     protected void setOdersValues(Profile entity, Integer number) {
-        entity.setRoles(roles);
+        entity.setRoles(getRoles());
     }
 
     public ProfileDTO mockProfileDTO(Integer number) {
@@ -32,7 +35,7 @@ public class MockProfile extends AbstractMock<Profile> {
             ProfileDTO entity = new ProfileDTO();
             MockUtil.toFill(entity, number, ignoreFields);
             // setOdersValues
-            entity.setRoles(roles);
+            entity.setRoles(getRoles());
             return entity;
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
@@ -46,5 +49,13 @@ public class MockProfile extends AbstractMock<Profile> {
             entitys.add(mockProfileDTO(i));
         }
         return entitys;
+    }
+
+    public Set<RoleEnum> getRoles() {
+        if (CollectionUtils.isEmpty(roles)) {
+            roles = new HashSet<>();
+            roles.add(RoleEnum.ADMIN);
+        }
+        return roles;
     }
 }

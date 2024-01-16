@@ -50,6 +50,8 @@ import io.restassured.specification.RequestSpecification;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PersonControllerTest extends AbstractIntegrationTest {
 
+    private static final String NAME_KEY = "key";
+    private static final String PATH_KEY = "{key}";
     private static final String BASE_URL = "/api/v1/person";
 
     private static RequestSpecification specification;
@@ -80,6 +82,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     @Order(1)
     @DisplayName("JUnit Integration test Given PersonDTO When insert Then return key")
     void testIntegrationGivenPersonDTOWhenInsertThenReturnKey() throws Exception {
+        AuthTest.checkAuth(specification, mapper);
         dto = input.mockPersonDTO(1);
         dto.getUser().setProfile(KeyDTO.builder().key(3L).build());
         dto.getUser().setUsername(username);
@@ -126,12 +129,12 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         username = "username2";
         dto.getUser().setUsername(username);
         final Response response = given().spec(specification)
-                .pathParam("key", key)
+                .pathParam(NAME_KEY, key)
                 .contentType(APPLICATION_JSON)
                 .header(AUTHORIZATION, ACCESS_TOKEN)
                 .body(dto)
                 .when()
-                .put("{key}");
+                .put(PATH_KEY);
         response.then().statusCode(200);
         final Long newKey = mapper.readValue(response.getBody().asString(), Long.class);
         assertEquals(key, newKey, "Key is not equal");
@@ -218,9 +221,9 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     void testIntegrationGivenKeyWhenDeleteThenReturnNoContent() throws Exception {
         given().spec(specification)
                 .header(AUTHORIZATION, ACCESS_TOKEN)
-                .pathParam("key", key)
+                .pathParam(NAME_KEY, key)
                 .when()
-                .delete("{key}")
+                .delete(PATH_KEY)
                 .then()
                 .statusCode(204);
     }
@@ -234,9 +237,9 @@ public class PersonControllerTest extends AbstractIntegrationTest {
 
     private static Response findByKey() throws JsonProcessingException {
         return given().spec(specification)
-                .pathParam("key", key)
+                .pathParam(NAME_KEY, key)
                 .header(AUTHORIZATION, ACCESS_TOKEN)
                 .when()
-                .get("{key}");
+                .get(PATH_KEY);
     }
 }

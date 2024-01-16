@@ -52,4 +52,15 @@ public class MockKeyDescriptionDTO {
         }
         return entitys;
     }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public List<KeyDescriptionDTO> mockListLongWithKey(int maxSize) {
+        List<KeyDescriptionDTO> entitys = new LinkedList<>();
+        for (int i = 1; i <= maxSize; i++) {
+            KeyDescriptionDTO<Long> entity = mock(Long.valueOf(i));
+            entity.setKey(Long.valueOf(i));
+            entitys.add(entity);
+        }
+        return entitys;
+    }
 }
