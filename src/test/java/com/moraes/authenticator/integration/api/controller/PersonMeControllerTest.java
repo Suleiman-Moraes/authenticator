@@ -14,12 +14,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,11 +40,8 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-/**
- * For while this class stayed without Order annotation
- * 
- * @author Suleiman Moraes
- */
+@TestClassOrder(ClassOrderer.OrderAnnotation.class)
+@Order(4)
 @TestMethodOrder(OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PersonMeControllerTest extends AbstractIntegrationTest {
@@ -74,17 +74,7 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     @Order(1)
     @DisplayName("JUnit Integration test Given PersonMeDTO When insertMe Then return key")
     void testIntegrationGivenPersonMeDTOWhenInsertMeThenReturnKey() throws Exception {
-        dto = input.mockPersonMeDTO(1);
-        dto.getUser().setUsername(USERNAME_ME);
-        dto.getUser().setPassword(PASSWORD_ME);
-        final Response response = given().spec(specification)
-                .contentType(APPLICATION_JSON)
-                .header(AUTHORIZATION, BASIC_TOKEN)
-                .body(dto)
-                .when()
-                .post("/new");
-
-        response.then().statusCode(201);
+        final Response response = insertMe(specification, input);
         key = mapper.readValue(response.getBody().asString(), Long.class);
 
         assertNotNull(key, "Key is null");
@@ -95,7 +85,7 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     @Order(2)
     @DisplayName("JUnit Integration test Given Context When getMe Then return PersonDTO")
     void testIntegrationGivenContextWhenGetMeThenReturnPersonDTO() throws Exception {
-        doSignin();
+        doSignin(specification, mapper);
         final PersonDTO person = getMe();
 
         assertNotNull(person, "Person is null");
@@ -138,6 +128,27 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
         testIntegrationGivenContextWhenGetMeThenReturnPersonDTO();
     }
 
+    public static void createPersonAndDoSigninIfNecessary(RequestSpecification specification, MockPerson mockPerson,
+            ObjectMapper mapper) throws Exception {
+        if (!StringUtils.hasText(ACCESS_TOKEN_ME)) {
+            insertMe(specification, mockPerson);
+            doSignin(specification, mapper);
+        }
+    }
+
+    public static Response insertMe(RequestSpecification specification, PersonMeDTO dto) {
+        final Response response = given().spec(specification)
+                .basePath(BASE_URL)
+                .contentType(APPLICATION_JSON)
+                .header(AUTHORIZATION, BASIC_TOKEN)
+                .body(dto)
+                .when()
+                .post("/new");
+
+        response.then().statusCode(201);
+        return response;
+    }
+
     private PersonDTO getMe() throws Exception {
         final Response response = given().spec(specification)
                 .basePath(BASE_URL)
@@ -150,8 +161,15 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
         return mapper.readValue(response.getBody().asString(), PersonDTO.class);
     }
 
-    private void doSignin() throws Exception {
+    private static void doSignin(RequestSpecification specification, ObjectMapper mapper) throws Exception {
         final TokenDTO token = AuthTest.signin(USERNAME_ME, PASSWORD_ME, specification, mapper);
         setAccessTokenMe(token.getAccessToken());
+    }
+
+    private static Response insertMe(RequestSpecification specification, MockPerson input) {
+        dto = input.mockPersonMeDTO(1);
+        dto.getUser().setUsername(USERNAME_ME);
+        dto.getUser().setPassword(PASSWORD_ME);
+        return insertMe(specification, dto);
     }
 }

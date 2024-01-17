@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.ClassOrderer;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -219,13 +220,22 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     @Order(7)
     @DisplayName("JUnit Integration test Given key When delete Then return no content")
     void testIntegrationGivenKeyWhenDeleteThenReturnNoContent() throws Exception {
-        given().spec(specification)
-                .header(AUTHORIZATION, ACCESS_TOKEN)
-                .pathParam(NAME_KEY, key)
-                .when()
-                .delete(PATH_KEY)
-                .then()
-                .statusCode(204);
+        delete(key).then().statusCode(204);
+    }
+
+    @Disabled("Test disabled because it makes no sense to delete this person in an integration test")
+    @Test
+    @Order(7)
+    @DisplayName("JUnit Integration test Given key for any person When delete Then return no content")
+    void testIntegrationGivenKeyForAnyPersonWhenDeleteThenReturnNoContent() throws Exception {
+        delete(3l).then().statusCode(204);
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("JUnit Integration test Given key for root person When delete Then return bad request")
+    void testIntegrationGivenKeyForRootPersonWhenDeleteThenReturnBadRequest() throws Exception {
+        delete(1l).then().statusCode(400);
     }
 
     @Test
@@ -233,6 +243,14 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     @DisplayName("JUnit Integration test Given Key When findByKey After delete Then return not found")
     void testIntegrationGivenKeyWhenFindByKeyAfterDeleteThenReturnNotFound() throws Exception {
         findByKey().then().statusCode(404);
+    }
+
+    private Response delete(Long key) {
+        return given().spec(specification)
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .pathParam(NAME_KEY, key)
+                .when()
+                .delete(PATH_KEY);
     }
 
     private static Response findByKey() throws JsonProcessingException {

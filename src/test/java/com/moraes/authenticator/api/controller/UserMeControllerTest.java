@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.moraes.authenticator.api.mock.MockSecurity;
 
 @WebMvcTest
-public class UserMeControllerTest extends AbstractBasicControllerTest {
+class UserMeControllerTest extends AbstractBasicControllerTest {
 
     private static final String BASE_URL = "/api/v1/user/me";
 
@@ -28,10 +28,9 @@ public class UserMeControllerTest extends AbstractBasicControllerTest {
         mockSecurity.mockSuperUser();
     }
 
-    // ResponseEntity<Void> updateEnabledMe
     @Test
-    @DisplayName("JUnit test Given context When update enabled me Then return no content")
-    void testGivenContextWhenUpdateEnabledMeThenReturnNoContent() throws Exception {
+    @DisplayName("JUnit test Given context When update disabled me Then return no content")
+    void testGivenContextWhenUpdateDisabledMeThenReturnNoContent() throws Exception {
 
         // Mock Auth
         mockSecurity.mockSuperUser();
@@ -39,7 +38,7 @@ public class UserMeControllerTest extends AbstractBasicControllerTest {
         // Given / Arrange
 
         // When / Act
-        ResultActions response = mockMvc.perform(patch(BASE_URL + "/enabled")
+        ResultActions response = mockMvc.perform(patch(BASE_URL + "/disabled")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(csrf()));
 

@@ -142,7 +142,7 @@ public class AuthTest extends AbstractIntegrationTest {
         }
     }
 
-    private static Response signin(final String username, final String password, RequestSpecification specification) {
+    public static Response signin(final String username, final String password, RequestSpecification specification) {
         return given()
                 .spec(specification)
                 .basePath(concatPath("/signin"))
