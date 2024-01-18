@@ -8,4 +8,6 @@ import com.moraes.authenticator.api.model.interfaces.IDescription;
 public interface IAuxiliaryListService {
 
     List<KeyDescriptionDTO<String>> getEnumList(Class<? extends IDescription> clazz);
+
+    List<KeyDescriptionDTO<String>> getRoleEnumList();
 }
