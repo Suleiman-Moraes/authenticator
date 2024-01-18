@@ -1,13 +1,9 @@
 package com.moraes.authenticator.api.service;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -59,20 +55,19 @@ public class ProfileService implements IProfileService {
         return profile;
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Page<KeyDescriptionDTO> findPageAll(ProfileFilterDTO filter) {
-        if (filter.isPaginate()) {
-            final Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), filter.getDirection(),
-                    filter.getProperty());
-            return new PageImpl<>(new LinkedList<>(), pageable, 0);
-        }
-        final Sort sort = Sort.by(filter.getDirection(), filter.getProperty());
-        final List<Profile> list = repository.findAll(sort);
-        final Pageable pageable = PageRequest.of(0, list.size(), sort);
-        return new PageImpl<>(parseObjects(list,
-                KeyDescriptionDTO.class,
-                ProfileController.class), pageable,
-                list.size());
+        final Map<String, Class<?>> fields = getMapOfFields();
+        Page<KeyDescriptionDTO> page = repository.page(filter, fields, KeyDescriptionDTO.class, Profile.class);
+        page.getContent().forEach(dto -> addLinks(dto, (long) dto.getKey(), ProfileController.class));
+        return page;
+    }
+
+    public Map<String, Class<?>> getMapOfFields() {
+        final Map<String, Class<?>> fields = new LinkedHashMap<>();
+        fields.put("x.key", Number.class);
+        fields.put("x.description", String.class);
+        return fields;
     }
 }

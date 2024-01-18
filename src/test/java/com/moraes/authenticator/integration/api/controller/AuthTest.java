@@ -1,5 +1,6 @@
 package com.moraes.authenticator.integration.api.controller;
 
+import static com.moraes.authenticator.integration.api.IntegrationContextHolder.ACCESS_TOKEN;
 import static com.moraes.authenticator.integration.api.IntegrationContextHolder.BASIC_TOKEN;
 import static com.moraes.authenticator.integration.api.IntegrationContextHolder.USERNAME;
 import static io.restassured.RestAssured.given;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -131,11 +133,16 @@ public class AuthTest extends AbstractIntegrationTest {
         return token;
     }
 
-    private static Response signin(final String username, RequestSpecification specification) {
-        return signin(username, "123456", specification);
+    public static void checkAuth(RequestSpecification specification, ObjectMapper mapper) throws Exception {
+        if (!StringUtils.hasText(ACCESS_TOKEN)) {
+            Response response = signin(USERNAME, specification);
+            response.then().statusCode(200);
+            final TokenDTO token = mapper.readValue(response.getBody().asString(), TokenDTO.class);
+            IntegrationContextHolder.setAccessToken(token.getAccessToken());
+        }
     }
 
-    private static Response signin(final String username, final String password, RequestSpecification specification) {
+    public static Response signin(final String username, final String password, RequestSpecification specification) {
         return given()
                 .spec(specification)
                 .basePath(concatPath("/signin"))
@@ -147,6 +154,10 @@ public class AuthTest extends AbstractIntegrationTest {
                 .header(ConstantsUtil.AUTHORIZATION, BASIC_TOKEN)
                 .when()
                 .post();
+    }
+
+    private static Response signin(final String username, RequestSpecification specification) {
+        return signin(username, "123456", specification);
     }
 
     private static String concatPath(String path) {

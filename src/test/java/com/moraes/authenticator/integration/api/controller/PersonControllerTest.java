@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.ClassOrderer;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -50,6 +51,8 @@ import io.restassured.specification.RequestSpecification;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PersonControllerTest extends AbstractIntegrationTest {
 
+    private static final String NAME_KEY = "key";
+    private static final String PATH_KEY = "{key}";
     private static final String BASE_URL = "/api/v1/person";
 
     private static RequestSpecification specification;
@@ -80,6 +83,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     @Order(1)
     @DisplayName("JUnit Integration test Given PersonDTO When insert Then return key")
     void testIntegrationGivenPersonDTOWhenInsertThenReturnKey() throws Exception {
+        AuthTest.checkAuth(specification, mapper);
         dto = input.mockPersonDTO(1);
         dto.getUser().setProfile(KeyDTO.builder().key(3L).build());
         dto.getUser().setUsername(username);
@@ -126,12 +130,12 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         username = "username2";
         dto.getUser().setUsername(username);
         final Response response = given().spec(specification)
-                .pathParam("key", key)
+                .pathParam(NAME_KEY, key)
                 .contentType(APPLICATION_JSON)
                 .header(AUTHORIZATION, ACCESS_TOKEN)
                 .body(dto)
                 .when()
-                .put("{key}");
+                .put(PATH_KEY);
         response.then().statusCode(200);
         final Long newKey = mapper.readValue(response.getBody().asString(), Long.class);
         assertEquals(key, newKey, "Key is not equal");
@@ -216,13 +220,22 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     @Order(7)
     @DisplayName("JUnit Integration test Given key When delete Then return no content")
     void testIntegrationGivenKeyWhenDeleteThenReturnNoContent() throws Exception {
-        given().spec(specification)
-                .header(AUTHORIZATION, ACCESS_TOKEN)
-                .pathParam("key", key)
-                .when()
-                .delete("{key}")
-                .then()
-                .statusCode(204);
+        delete(key).then().statusCode(204);
+    }
+
+    @Disabled("Test disabled because it makes no sense to delete this person in an integration test")
+    @Test
+    @Order(7)
+    @DisplayName("JUnit Integration test Given key for any person When delete Then return no content")
+    void testIntegrationGivenKeyForAnyPersonWhenDeleteThenReturnNoContent() throws Exception {
+        delete(3l).then().statusCode(204);
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("JUnit Integration test Given key for root person When delete Then return bad request")
+    void testIntegrationGivenKeyForRootPersonWhenDeleteThenReturnBadRequest() throws Exception {
+        delete(1l).then().statusCode(400);
     }
 
     @Test
@@ -232,11 +245,19 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         findByKey().then().statusCode(404);
     }
 
+    private Response delete(Long key) {
+        return given().spec(specification)
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .pathParam(NAME_KEY, key)
+                .when()
+                .delete(PATH_KEY);
+    }
+
     private static Response findByKey() throws JsonProcessingException {
         return given().spec(specification)
-                .pathParam("key", key)
+                .pathParam(NAME_KEY, key)
                 .header(AUTHORIZATION, ACCESS_TOKEN)
                 .when()
-                .get("{key}");
+                .get(PATH_KEY);
     }
 }

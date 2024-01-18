@@ -25,5 +25,5 @@ public interface IUserService extends UserDetailsService, IServiceDelete<User, L
 
     User updateEnabled(UserEnabledDTO entity, long key);
 
-    User updateEnabledMe();
+    User updateDisabledMe();
 }

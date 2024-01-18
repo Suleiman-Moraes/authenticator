@@ -47,7 +47,12 @@ public interface IConverterService<E extends IModel<I>, I> {
     default <T extends RepresentationModel<T>> T parseObjectAfterValid(E e, Class<T> clazz,
             Class<? extends IController<?, I>> controllerClass) {
         T t = Mapper.parseObject(e, clazz);
-        t.add(linkTo(methodOn(controllerClass).findByKey(e.getKey())).withSelfRel());
+        addLinks(t, e.getKey(), controllerClass);
         return t;
+    }
+
+    default <T extends RepresentationModel<T>> void addLinks(T t, I key,
+            Class<? extends IController<?, I>> controllerClass) {
+        t.add(linkTo(methodOn(controllerClass).findByKey(key)).withSelfRel());
     }
 }

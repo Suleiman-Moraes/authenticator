@@ -17,13 +17,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.exception.ValidException;
+import com.moraes.authenticator.api.mock.MockKeyDescriptionDTO;
 import com.moraes.authenticator.api.mock.MockProfile;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.Profile;
+import com.moraes.authenticator.api.model.dto.KeyDescriptionDTO;
 import com.moraes.authenticator.api.model.dto.profile.ProfileDTO;
+import com.moraes.authenticator.api.model.dto.profile.ProfileFilterDTO;
 import com.moraes.authenticator.api.repository.IProfileRepository;
 
 class ProfileServiceTest {
@@ -31,6 +36,7 @@ class ProfileServiceTest {
     private static final Long COMMON_USER_PROFILE_ID = 3L;
 
     private MockProfile input;
+    private MockKeyDescriptionDTO mockKeyDescriptionDTO;
 
     @Spy
     @InjectMocks
@@ -45,6 +51,7 @@ class ProfileServiceTest {
     @BeforeEach
     void setUp() {
         input = new MockProfile();
+        mockKeyDescriptionDTO = new MockKeyDescriptionDTO();
         MockitoAnnotations.openMocks(this);
 
         entity = input.mockEntity(1);
@@ -80,11 +87,25 @@ class ProfileServiceTest {
         assertThrows(ValidException.class, () -> service.delete(key), "Does Throw");
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     void testFindAll() {
-        final List<Profile> list = input.mockEntityList();
-        when(repository.findAll()).thenReturn(list);
-        assertEquals(list, service.findAll(), "Return not equal");
+        final int maxSize = 10;
+        final ProfileFilterDTO filter = new ProfileFilterDTO();
+        final List<KeyDescriptionDTO> list = mockKeyDescriptionDTO.mockListLongWithKey(maxSize);
+        final Page<KeyDescriptionDTO> page = new PageImpl<>(list);
+        when(repository.page(filter, service.getMapOfFields(), KeyDescriptionDTO.class, Profile.class)).thenReturn(page);
+
+        final Page<KeyDescriptionDTO> pages = service.findPageAll(filter);
+        assertNotNull(pages, "Return null");
+        for (int index = 1; index <= maxSize; index++) {
+            final var dto = pages.getContent().get(index - 1);
+            final var entity = list.get(index - 1);
+            assertEquals(dto.getLinks().toList().get(0).getHref(), "/api/v1/profile/" + index,
+                    "Href not equal");
+            assertEquals(dto.getDescription(), entity.getDescription(), "Description not equal");
+            assertEquals(dto.getKey(), entity.getKey(), "Key not equal");
+        }
     }
 
     @Test

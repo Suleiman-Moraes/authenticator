@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.moraes.authenticator.api.model.dto.KeyDescriptionDTO;
-import com.moraes.authenticator.api.model.enums.RoleEnum;
 import com.moraes.authenticator.api.service.interfaces.IAuxiliaryListService;
 
 import lombok.AllArgsConstructor;
@@ -24,6 +23,6 @@ public class AuxiliaryListController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "role-enum")
     public ResponseEntity<List<KeyDescriptionDTO<String>>> getListRoleEnum() {
-        return ResponseEntity.ok(service.getEnumList(RoleEnum.class));
+        return ResponseEntity.ok(service.getRoleEnumList());
     }
 }

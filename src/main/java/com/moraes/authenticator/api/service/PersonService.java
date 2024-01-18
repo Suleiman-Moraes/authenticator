@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.moraes.authenticator.api.controller.PersonController;
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.mapper.Mapper;
 import com.moraes.authenticator.api.model.Person;
@@ -83,7 +84,9 @@ public class PersonService implements IPersonService {
     @Transactional(readOnly = true)
     public Page<PersonListDTO> findPageAll(PersonFilterDTO filter) {
         final Map<String, Class<?>> fields = getMapOfFields();
-        return repository.page(filter, fields, PersonListDTO.class, Person.class);
+        Page<PersonListDTO> page = repository.page(filter, fields, PersonListDTO.class, Person.class);
+        page.getContent().forEach(dto -> addLinks(dto, (long) dto.getKey(), PersonController.class));
+        return page;
     }
 
     public Map<String, Class<?>> getMapOfFields() {

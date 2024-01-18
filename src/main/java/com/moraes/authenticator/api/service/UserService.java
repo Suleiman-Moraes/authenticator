@@ -124,7 +124,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User updateEnabledMe() {
+    public User updateDisabledMe() {
         User user = getMe();
         return updateEnabled(new UserEnabledDTO(false), user);
     }

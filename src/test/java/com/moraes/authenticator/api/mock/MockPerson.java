@@ -73,6 +73,16 @@ public class MockPerson extends AbstractMock<Person> {
         return entitys;
     }
 
+    public List<PersonListDTO> mockPersonListDTOListWithKey(int maxSize) {
+        List<PersonListDTO> entitys = new LinkedList<>();
+        for (int i = 1; i <= maxSize; i++) {
+            PersonListDTO entity = mockPersonListDTO(i);
+            entity.setKey(Integer.valueOf(i).longValue());
+            entitys.add(entity);
+        }
+        return entitys;
+    }
+
     private PersonListDTO mockPersonListDTO(int number) {
         try {
             PersonListDTO entity = new PersonListDTO();

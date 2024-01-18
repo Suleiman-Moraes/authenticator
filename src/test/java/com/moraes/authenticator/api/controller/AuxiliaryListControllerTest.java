@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.moraes.authenticator.api.mock.MockKeyDescriptionDTO;
 import com.moraes.authenticator.api.mock.MockSecurity;
-import com.moraes.authenticator.api.model.enums.RoleEnum;
 
 @WebMvcTest
 class AuxiliaryListControllerTest extends AbstractBasicControllerTest {
@@ -32,14 +31,13 @@ class AuxiliaryListControllerTest extends AbstractBasicControllerTest {
         mockSecurity = new MockSecurity();
     }
 
-    // ResponseEntity<List<KeyDescriptionDTO<String>>> getListRoleEnum()
     @Test
     @DisplayName("JUnit test Given context When get list role enum Then return list")
     void testGivenContextWhenGetListRoleEnumThenReturnList() throws Exception {
         // Given / Arrange
         // Mock Auth
         mockSecurity.mockSuperUser();
-        given(auxiliaryListService.getEnumList(RoleEnum.class)).willReturn(input.mockStringList());
+        given(auxiliaryListService.getRoleEnumList()).willReturn(input.mockStringList());
 
         // When / Act
         ResultActions response = mockMvc.perform(get(BASE_URL + "/role-enum"));

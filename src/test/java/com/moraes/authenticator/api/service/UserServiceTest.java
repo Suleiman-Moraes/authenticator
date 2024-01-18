@@ -208,11 +208,11 @@ class UserServiceTest {
     }
 
     @Test
-    void testUpdateEnabledMe() {
+    void testUpdateDisabledMe() {
         final Authentication authentication = new UsernamePasswordAuthenticationToken(entity, "",
                 entity.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         when(repository.save(any())).thenReturn(entity);
-        assertFalse(service.updateEnabledMe().isEnabled(), "Return not false");
+        assertFalse(service.updateDisabledMe().isEnabled(), "Return not false");
     }
 }

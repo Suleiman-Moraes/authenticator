@@ -16,9 +16,9 @@ public class UserMeController {
 
     private IUserService service;
 
-    @PatchMapping(value = "enabled")
-    public ResponseEntity<Void> updateEnabledMe() {
-        service.updateEnabledMe();
+    @PatchMapping(value = "disabled")
+    public ResponseEntity<Void> updateDisabledMe() {
+        service.updateDisabledMe();
         return ResponseEntity.noContent().build();
     }
 }
