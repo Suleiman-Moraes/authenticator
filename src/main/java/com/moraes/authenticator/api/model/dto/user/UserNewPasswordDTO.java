@@ -1,7 +1,7 @@
 package com.moraes.authenticator.api.model.dto.user;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 
-public record UserNewPasswordDTO(@NotEmpty String oldPassword, @NotEmpty String newPassword) {
+public record UserNewPasswordDTO(@NotBlank String oldPassword, @NotBlank String newPassword) {
 
 }

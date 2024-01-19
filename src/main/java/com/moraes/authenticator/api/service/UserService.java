@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.Profile;
@@ -17,6 +18,7 @@ import com.moraes.authenticator.api.model.dto.ExceptionUtilDTO;
 import com.moraes.authenticator.api.model.dto.user.UserDTO;
 import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
 import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
+import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
 import com.moraes.authenticator.api.repository.IUserRepository;
 import com.moraes.authenticator.api.service.interfaces.IProfileService;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
@@ -129,6 +131,14 @@ public class UserService implements IUserService {
         return updateEnabled(new UserEnabledDTO(false), user);
     }
 
+    @Override
+    public void changePasswordMe(UserNewPasswordDTO dto) {
+        User user = repository.findByUsername(getMe().getUsername()).orElseThrow(ResourceNotFoundException::new);
+        verifyPassword(user, dto.oldPassword());
+        user.setPassword(passwordEncoder.encode(dto.newPassword()));
+        save(user);
+    }
+
     /**
      * Only pass fields not objects
      * as you can use with Entity and DTO
@@ -159,6 +169,24 @@ public class UserService implements IUserService {
         key = key != null ? key : 0;
         ExceptionsUtil.throwValidExceptions(
                 getValidUsernameUnique(key, username));
+    }
+
+    /**
+     * This code snippet is a private method called verifyPassword in a Java class.
+     * It takes in a User object and a String password as parameters. The method
+     * uses a passwordEncoder to compare the input password with the stored password
+     * of the user. If the passwords do not match, it throws a ValidException with a
+     * specific error message.
+     *
+     * @param user     the user whose password needs to be verified
+     * @param password the password to be verified
+     * @return nothing
+     */
+    public void verifyPassword(User user, String password) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new ValidException(
+                    MessagesUtil.getMessage(MessagesUtil.getMessage("user.password-invalid")));
+        }
     }
 
     private ExceptionUtilDTO getValidUsernameUnique(Long key, String username) {

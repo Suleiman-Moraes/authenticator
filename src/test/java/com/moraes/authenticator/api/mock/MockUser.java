@@ -8,6 +8,7 @@ import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.KeyDTO;
 import com.moraes.authenticator.api.model.dto.user.UserDTO;
 import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
+import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
 import com.moraes.authenticator.api.util.MockUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -64,5 +65,9 @@ public class MockUser extends AbstractMock<User> {
             entitys.add(mockUserMeDTO(i));
         }
         return entitys;
+    }
+
+    public UserNewPasswordDTO mockUserNewPasswordDTO() {
+        return new UserNewPasswordDTO("oldPassword", "newPassword");
     }
 }
