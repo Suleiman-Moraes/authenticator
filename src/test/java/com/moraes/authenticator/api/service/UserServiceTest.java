@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -32,13 +33,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.exception.ValidException;
+import com.moraes.authenticator.api.mock.MockParam;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.user.UserDTO;
 import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
 import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
+import com.moraes.authenticator.api.model.dto.user.UserResetPasswordDTO;
+import com.moraes.authenticator.api.model.enums.ParamEnum;
 import com.moraes.authenticator.api.repository.IUserRepository;
+import com.moraes.authenticator.api.service.interfaces.IInformationSenderService;
+import com.moraes.authenticator.api.service.interfaces.IParamService;
 import com.moraes.authenticator.api.service.interfaces.IProfileService;
 import com.moraes.authenticator.api.util.MessagesUtil;
 
@@ -57,14 +63,22 @@ class UserServiceTest {
     private IProfileService profileService;
 
     @Mock
+    private IParamService paramService;
+
+    @Mock
+    private IInformationSenderService informationSenderService;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     private final Long key = 1l;
     private User entity;
+    private MockParam mockParam;
 
     @BeforeEach
     void setUp() {
         input = new MockUser();
+        mockParam = new MockParam();
         MockitoAnnotations.openMocks(this);
 
         entity = input.mockEntity(1);
@@ -269,6 +283,26 @@ class UserServiceTest {
     @DisplayName("JUnit test Given a user and a invalid password, when verifyPassword is called, then it throws an exception")
     void testGivenAUserAndAInvalidPasswordWhenVerifyPasswordIsCalledThenItThrowsAnException() {
         assertThrows(ValidException.class, () -> service.verifyPassword(entity, "invalidPassword"), "Throw Exception");
+    }
+
+    @Test
+    @DisplayName("JUnit test Given a UserResetPasswordDTO, when resetPassword is called, then generate a new token")
+    void testGivenAUserResetPasswordDTOWhenResetPasswordIsCalledThenGenerateANewToken() {
+        // Arrange
+        UserResetPasswordDTO userResetPasswordDTO = new UserResetPasswordDTO("username", "email@email.com");
+        User user = new User();
+        when(repository.findByUsernameAndPersonEmail(anyString(), anyString())).thenReturn(Optional.of(user));
+        when(paramService.findByNameIfNotExistsCreate(ParamEnum.TOKEN_RESET_PASSWORD_EXPIRATION_TIME))
+                .thenReturn(mockParam.mockEntity(ParamEnum.TOKEN_RESET_PASSWORD_EXPIRATION_TIME));
+
+        // Act
+        service.resetPassword(userResetPasswordDTO);
+
+        // Assert
+        assertTrue(user.isTokenResetPasswordEnabled());
+        assertNotNull(user.getTokenResetPassword());
+        assertNotNull(user.getTokenResetPasswordExpirationDate());
+        verify(repository).save(user);
     }
 
     private void mockAuthentication() {

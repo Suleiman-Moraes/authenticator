@@ -1,5 +1,8 @@
 package com.moraes.authenticator.api.service;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +22,11 @@ import com.moraes.authenticator.api.model.dto.user.UserDTO;
 import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
 import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
+import com.moraes.authenticator.api.model.dto.user.UserResetPasswordDTO;
+import com.moraes.authenticator.api.model.enums.ParamEnum;
 import com.moraes.authenticator.api.repository.IUserRepository;
+import com.moraes.authenticator.api.service.interfaces.IInformationSenderService;
+import com.moraes.authenticator.api.service.interfaces.IParamService;
 import com.moraes.authenticator.api.service.interfaces.IProfileService;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
 import com.moraes.authenticator.api.util.ConstantsUtil;
@@ -39,6 +46,10 @@ public class UserService implements IUserService {
     private PasswordEncoder passwordEncoder;
 
     private IProfileService profileService;
+
+    private IParamService paramService;
+
+    private IInformationSenderService informationSenderService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -137,6 +148,21 @@ public class UserService implements IUserService {
         verifyPassword(user, dto.oldPassword());
         user.setPassword(passwordEncoder.encode(dto.newPassword()));
         save(user);
+    }
+
+    @Override
+    public void resetPassword(UserResetPasswordDTO userResetPasswordDTO) {
+        User user = repository.findByUsernameAndPersonEmail(userResetPasswordDTO.username(),
+                userResetPasswordDTO.email()).orElseThrow(ResourceNotFoundException::new);
+        final String timeExpiration = paramService
+                .findByNameIfNotExistsCreate(ParamEnum.TOKEN_RESET_PASSWORD_EXPIRATION_TIME).getValue();
+
+        user.setTokenResetPasswordEnabled(true);
+        user.setTokenResetPassword(UUID.randomUUID());
+        user.setTokenResetPasswordExpirationDate(LocalDateTime.now().plusHours(Long.valueOf(timeExpiration)));
+        save(user);
+        informationSenderService.sendEmailResetPassword(user, timeExpiration,
+                paramService.findByNameIfNotExistsCreate(ParamEnum.URL_FRONT_END));
     }
 
     /**

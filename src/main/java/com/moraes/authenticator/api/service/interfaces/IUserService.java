@@ -7,6 +7,7 @@ import com.moraes.authenticator.api.model.dto.user.UserDTO;
 import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
 import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
+import com.moraes.authenticator.api.model.dto.user.UserResetPasswordDTO;
 
 public interface IUserService extends UserDetailsService, IServiceDelete<User, Long> {
 
@@ -42,4 +43,15 @@ public interface IUserService extends UserDetailsService, IServiceDelete<User, L
      * @param dto the UserNewPasswordDTO object containing the old and new passwords
      */
     void changePasswordMe(UserNewPasswordDTO dto);
+
+    /**
+     * This code snippet defines a method to reset a user's password. It retrieves
+     * the user from the repository based on the provided username and email, sets a
+     * reset password token and expiration date, and then sends an email to the user
+     * with the reset instructions.
+     *
+     * @param userResetPasswordDTO the user's reset password DTO
+     * @return void
+     */
+    void resetPassword(UserResetPasswordDTO userResetPasswordDTO);
 }

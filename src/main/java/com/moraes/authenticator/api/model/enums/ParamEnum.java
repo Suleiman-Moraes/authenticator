@@ -7,7 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ParamEnum {
 
-    TOKEN_RESET_PASSWORD_EXPIRATION_TIME("2", "Expiration time for Token Reset Password in hours.");
+    TOKEN_RESET_PASSWORD_EXPIRATION_TIME("2", "Expiration time for Token Reset Password in hours."),
+    URL_FRONT_END("http://localhost:4200", "URL Front End.");
 
     private final String defaultValue;
 
