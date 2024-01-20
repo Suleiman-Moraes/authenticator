@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Audited
 @Entity
-@Table(name = "person")
+@Table(name = "person", schema = "authenticator")
 public class Person implements Serializable, IModel<Long> {
 
     @Id
@@ -37,6 +37,10 @@ public class Person implements Serializable, IModel<Long> {
     @Column(nullable = false, length = 150)
     private String name;
 
+    @Column(nullable = false, length = 150)
+    private String email;
+
+    @Column(length = 255)
     private String address;
 
     @NotAudited

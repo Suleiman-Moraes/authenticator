@@ -14,10 +14,12 @@ spring:
       ddl-auto: none
     properties: 
       hibernate: 
+        default-schema: AUTHENTICATOR
         formatSql: true
 
   flyway:
     locations: db/h2
+    schemas: AUTHENTICATOR
 
 springdoc:
   pathsToMatch: 
@@ -26,7 +28,7 @@ springdoc:
     use-root-path: true
 
 cors:
-  originPatterns: http://localhost:8080,http://localhost:4200
+  originPatterns: localhost:8080,localhost:4200
 
 security:
   jwt:

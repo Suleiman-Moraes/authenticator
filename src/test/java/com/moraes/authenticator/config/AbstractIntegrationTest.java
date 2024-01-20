@@ -27,7 +27,7 @@ public abstract class AbstractIntegrationTest {
 
         private static Map<String, String> createConnectionConfiguration() {
             return Map.of(
-                    "spring.datasource.url", postgresql.getJdbcUrl(),
+                    "spring.datasource.url", postgresql.getJdbcUrl() + "&currentSchema=authenticator",
                     "spring.datasource.username", postgresql.getUsername(),
                     "spring.datasource.password", postgresql.getPassword());
         }

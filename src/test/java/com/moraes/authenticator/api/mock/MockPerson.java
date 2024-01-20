@@ -28,6 +28,7 @@ public class MockPerson extends AbstractMock<Person> {
 
     @Override
     protected void setOdersValues(Person entity, Integer number) {
+        entity.setEmail("email@email.com");
         entity.setUser(new MockUser().mockEntity(number));
     }
 
@@ -36,8 +37,23 @@ public class MockPerson extends AbstractMock<Person> {
             PersonDTO entity = new PersonDTO();
             MockUtil.toFill(entity, number, ignoreFields);
             // setOdersValues
+            entity.setEmail("email@email.com");
             entity.setUser(new MockUser().mockUserDTO(number));
             return entity;
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public PersonDTO mockPersonWrongValuesDTOWrongValues() {
+        try {
+            return PersonDTO.builder()
+                    .name("a")
+                    .email("a")
+                    .address(MockUtil.getStringBySize(256))
+                    .user(new MockUser().mockUserDTOWrongValues())
+                    .build();
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
         }
@@ -57,6 +73,7 @@ public class MockPerson extends AbstractMock<Person> {
             PersonMeDTO entity = new PersonMeDTO();
             MockUtil.toFill(entity, number, ignoreFields);
             // setOdersValues
+            entity.setEmail("email@email.com");
             entity.setUser(new MockUser().mockUserMeDTO(number));
             return entity;
         } catch (Exception e) {
@@ -88,6 +105,7 @@ public class MockPerson extends AbstractMock<Person> {
             PersonListDTO entity = new PersonListDTO();
             MockUtil.toFill(entity, number, ignoreFields);
             // setOdersValues
+            entity.setEmail("email@email.com");
             return entity;
         } catch (Exception e) {
             log.warn(e.getMessage(), e);

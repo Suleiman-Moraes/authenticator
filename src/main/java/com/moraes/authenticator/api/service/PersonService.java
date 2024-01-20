@@ -94,6 +94,7 @@ public class PersonService implements IPersonService {
         fields.put("x.key", Number.class);
         fields.put("x.name", String.class);
         fields.put("x.address", String.class);
+        fields.put("x.email", String.class);
         fields.put("x.user.username", String.class);
         fields.put("x.user.profile.description", String.class);
         return fields;

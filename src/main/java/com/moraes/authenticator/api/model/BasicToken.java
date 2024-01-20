@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "basic_token")
+@Table(name = "basic_token", schema = "authenticator")
 public class BasicToken implements Serializable, IModel<Long> {
 
     @Id

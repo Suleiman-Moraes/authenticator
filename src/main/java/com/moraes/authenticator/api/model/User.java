@@ -42,7 +42,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Audited
 @Entity
-@Table(name = "users")
+@Table(name = "users", schema = "authenticator")
 public class User extends AbstractAuditingEntity implements IModel<Long>, UserDetails {
 
     @Id
@@ -50,7 +50,7 @@ public class User extends AbstractAuditingEntity implements IModel<Long>, UserDe
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long key;
 
-    @Column(unique = true, nullable = false, length = 50)
+    @Column(unique = true, nullable = false, length = 150)
     private String username;
 
     @Column(nullable = false)

@@ -24,6 +24,7 @@ CREATE TABLE person_aud (
     revtype SMALLINT,
     address VARCHAR(255),
     name VARCHAR(150),
+    email VARCHAR(150),
     PRIMARY KEY (rev, id)
 );
 

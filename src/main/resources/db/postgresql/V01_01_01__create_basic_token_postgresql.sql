@@ -1,3 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS authenticator;
+
 CREATE TABLE basic_token (
     id BIGSERIAL NOT NULL,
     username VARCHAR(50) NOT NULL,

@@ -39,6 +39,19 @@ public class MockUser extends AbstractMock<User> {
         return null;
     }
 
+    public UserDTO mockUserDTOWrongValues() {
+        try {
+            return UserDTO.builder()
+                    .username("a")
+                    .password("a")
+                    .profile(new KeyDTO(1L))
+                    .build();
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+        return null;
+    }
+
     public List<UserDTO> mockUserDTOList() {
         List<UserDTO> entitys = new LinkedList<>();
         for (int i = 1; i <= 14; i++) {
