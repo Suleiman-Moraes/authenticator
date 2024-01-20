@@ -41,8 +41,11 @@ CREATE TABLE users_aud (
     account_non_locked BOOLEAN,
     credentials_non_expired BOOLEAN,
     enabled BOOLEAN,
+    token_reset_password_enabled BOOLEAN,
     password VARCHAR(255),
     username VARCHAR(50),
+    token_reset_password VARCHAR(36),
+    token_reset_password_expiration_date TIMESTAMP,
     id_person BIGINT,
     PRIMARY KEY (rev, id)
 );
