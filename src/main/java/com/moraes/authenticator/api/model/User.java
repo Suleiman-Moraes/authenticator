@@ -1,8 +1,10 @@
 package com.moraes.authenticator.api.model;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -23,6 +25,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
@@ -42,7 +45,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Audited
 @Entity
-@Table(name = "users")
+@Table(name = "users", schema = "authenticator")
 public class User extends AbstractAuditingEntity implements IModel<Long>, UserDetails {
 
     @Id
@@ -50,11 +53,14 @@ public class User extends AbstractAuditingEntity implements IModel<Long>, UserDe
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long key;
 
-    @Column(unique = true, nullable = false, length = 50)
+    @Column(unique = true, nullable = false, length = 150)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String password;
+
+    @Column(name = "token_reset_password", length = 36, unique = true)
+    private UUID tokenResetPassword;
 
     @Column(name = "account_non_expired")
     private boolean accountNonExpired;
@@ -66,6 +72,12 @@ public class User extends AbstractAuditingEntity implements IModel<Long>, UserDe
     private boolean credentialsNonExpired;
 
     private boolean enabled;
+
+    @Column(name = "token_reset_password_enabled", nullable = false)
+    private boolean tokenResetPasswordEnabled;
+
+    @Column(name = "token_reset_password_expiration_date")
+    private LocalDateTime tokenResetPasswordExpirationDate;
 
     @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
@@ -88,5 +100,10 @@ public class User extends AbstractAuditingEntity implements IModel<Long>, UserDe
     @Override
     public Collection<PermissionDTO> getAuthorities() {
         return profile != null ? RoleEnum.generate(profile.getRoles()) : new LinkedList<>();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        tokenResetPasswordEnabled = false;
     }
 }

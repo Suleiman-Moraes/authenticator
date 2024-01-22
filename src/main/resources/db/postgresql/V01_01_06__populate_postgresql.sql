@@ -1,12 +1,12 @@
 INSERT INTO
-    `profile` (`description`)
+    profile (description)
 VALUES
     ('ROOT'),
     ('Admin'),
     ('Common user');
 
 INSERT INTO
-    `profile_role` (`id_profile`, `role`)
+    profile_role (id_profile, role)
 VALUES
     (1, 'ROOT'),
     (1, 'ADMIN'),
@@ -15,7 +15,7 @@ VALUES
     (3, 'COMMON_USER');
 
 INSERT INTO
-    `basic_token` (`username`, `enabled`, `password`)
+    basic_token (username, enabled, password)
 VALUES
     (
         'web',
@@ -24,22 +24,22 @@ VALUES
     );
 
 INSERT INTO
-    `person` (`address`, `name`)
+    person (address, name, email)
 VALUES
-    ('Rua BA, Goiânia - GO', 'Root'),
-    ('Rua AB, Goiânia - GO', 'Admin'),
-    ('Rua ABC, Goiânia - GO', 'Suleiman Moraes');
+    ('Rua BA, Goiânia - GO', 'Root', 'suleimanmoraes@yahoo.com'),
+    ('Rua AB, Goiânia - GO', 'Admin', 'suleimanmoraes@yahoo.com'),
+    ('Rua ABC, Goiânia - GO', 'Suleiman Moraes', 'suleimanmoraes@yahoo.com');
 
 INSERT INTO
-    `users` (
-        `username`,
-        `enabled`,
-        `account_non_expired`,
-        `account_non_locked`,
-        `credentials_non_expired`,
-        `id_person`,
-        `id_profile`,
-        `password`
+    users (
+        username,
+        enabled,
+        account_non_expired,
+        account_non_locked,
+        credentials_non_expired,
+        id_person,
+        id_profile,
+        password
     )
 VALUES
     (

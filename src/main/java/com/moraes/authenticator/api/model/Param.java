@@ -1,15 +1,14 @@
 package com.moraes.authenticator.api.model;
 
-import java.io.Serializable;
-
-import com.moraes.authenticator.api.model.interfaces.IModel;
+import com.moraes.authenticator.api.model.enums.ParamEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,24 +20,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "basic_token", schema = "authenticator")
-public class BasicToken implements Serializable, IModel<Long> {
+@Table(name = "param", schema = "authenticator")
+public class Param {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long key;
 
+    @Enumerated(EnumType.STRING)
     @Column(unique = true, nullable = false, length = 50)
-    private String username;
+    private ParamEnum name;
 
-    @Column(nullable = false)
-    private String password;
+    @Column(length = 255)
+    private String description;
 
-    private boolean enabled;
-
-    @PrePersist
-    public void prePersist() {
-        enabled = true;
-    }
+    @Column(nullable = false, length = 50)
+    private String value;
 }

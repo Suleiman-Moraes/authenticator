@@ -139,8 +139,8 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     public static Response insertMe(RequestSpecification specification, PersonMeDTO dto) {
         final Response response = given().spec(specification)
                 .basePath(BASE_URL)
-                .contentType(APPLICATION_JSON)
                 .header(AUTHORIZATION, BASIC_TOKEN)
+                .contentType(APPLICATION_JSON)
                 .body(dto)
                 .when()
                 .post("/new");

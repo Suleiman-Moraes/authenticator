@@ -245,6 +245,29 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         findByKey().then().statusCode(404);
     }
 
+    @Test
+    @Order(9)
+    @DisplayName("JUnit Integration test Given PersonDTO with min values possible When insert Then return key")
+    void testIntegrationGivenPersonDTOWithMinValuesPossibleWhenInsertThenReturnKey() throws Exception {
+        AuthTest.checkAuth(specification, mapper);
+        PersonDTO dto = input.mockPersonDTO(2);
+        dto.setAddress(null);
+        dto.getUser().setProfile(KeyDTO.builder().key(3L).build());
+        final Response response = given().spec(specification)
+                .contentType(APPLICATION_JSON)
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .body(dto)
+                .when()
+                .post();
+
+        response.then().statusCode(201);
+        Long key = mapper.readValue(response.getBody().asString(), Long.class);
+
+        assertNotNull(key, "Key is null");
+        assertTrue(key > 0, "Key is not greater than zero");
+        delete(key).then().statusCode(204);
+    }
+
     private Response delete(Long key) {
         return given().spec(specification)
                 .header(AUTHORIZATION, ACCESS_TOKEN)

@@ -23,6 +23,14 @@ public final class MockUtil {
         entity.getClass().getMethod(name, type).invoke(entity, value);
     }
 
+    public static String getStringBySize(Integer size) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            sb.append("a");
+        }
+        return sb.toString();
+    }
+
     public static Object generateValue(Field field, Integer number) {
         switch (field.getType().getSimpleName().toUpperCase()) {
             case "BOOLEAN":

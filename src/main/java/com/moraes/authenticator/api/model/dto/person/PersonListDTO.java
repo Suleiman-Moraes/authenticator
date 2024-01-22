@@ -31,6 +31,8 @@ public class PersonListDTO extends RepresentationModel<PersonListDTO> implements
 
     private String address;
 
+    private String email;
+
     // user
     private String username;
 

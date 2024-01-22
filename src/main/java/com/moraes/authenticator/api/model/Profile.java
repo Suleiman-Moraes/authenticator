@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "profile")
+@Table(name = "profile", schema = "authenticator")
 public class Profile implements Serializable, IModel<Long> {
 
     @Id
@@ -42,7 +42,7 @@ public class Profile implements Serializable, IModel<Long> {
     private String description;
 
     @ElementCollection
-    @CollectionTable(name = "profile_role", joinColumns = @JoinColumn(name = "id_profile"))
+    @CollectionTable(name = "profile_role", joinColumns = @JoinColumn(name = "id_profile"), schema = "authenticator")
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Set<RoleEnum> roles;

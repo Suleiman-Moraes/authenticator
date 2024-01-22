@@ -118,8 +118,8 @@ class PersonControllerTest extends AbstractBasicControllerTest {
     }
 
     @Test
-    @DisplayName("JUnit test Given Invalid PersonDTO When insert Then return BadRequest")
-    void testGivenInvalidPersonDTOWhenInsertThenReturnBadRequest() throws Exception {
+    @DisplayName("JUnit test Given Invalid PersonDTO With null values When insert Then return BadRequest")
+    void testGivenInvalidPersonDTOWithNullValuesWhenInsertThenReturnBadRequest() throws Exception {
 
         // Mock Auth
         mockSecurity.mockSuperUser();
@@ -139,7 +139,42 @@ class PersonControllerTest extends AbstractBasicControllerTest {
                 .andExpect(jsonPath(USER_MESSAGES,
                         hasItem("Campo \"personDTO.user\" deve ser informado.")))
                 .andExpect(jsonPath(USER_MESSAGES,
+                        hasItem("Campo \"personDTO.email\" deve ser informado.")))
+                .andExpect(jsonPath(USER_MESSAGES,
                         hasItem("Campo \"personDTO.name\" deve ser informado.")));
+    }
+
+    @Test
+    @DisplayName("JUnit test Given Invalid PersonDTO With wrong values When insert Then return BadRequest")
+    void testGivenInvalidPersonDTOWithWrongValuesWhenInsertThenReturnBadRequest() throws Exception {
+
+        // Mock Auth
+        mockSecurity.mockSuperUser();
+
+        // Given / Arrange
+        final PersonDTO person = input.mockPersonWrongValuesDTOWrongValues();
+
+        // When / Act
+        ResultActions response = mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(person))
+                .with(csrf()));
+
+        // Then / Assert
+        response.andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(USER_MESSAGES,
+                        hasItem("O tamanho do campo \"personDTO.address\" deve estar entre 0 e 255.")))
+                .andExpect(jsonPath(USER_MESSAGES,
+                        hasItem("O tamanho do campo \"personDTO.name\" deve estar entre 2 e 150.")))
+                .andExpect(jsonPath(USER_MESSAGES,
+                        hasItem("Campo \"personDTO.email\" é um e-mail inválido.")))
+                .andExpect(jsonPath(USER_MESSAGES,
+                        hasItem("O tamanho do campo \"personDTO.email\" deve estar entre 5 e 150.")))
+                .andExpect(jsonPath(USER_MESSAGES,
+                        hasItem("O tamanho do campo \"personDTO.user.password\" deve estar entre 6 e 30.")))
+                .andExpect(jsonPath(USER_MESSAGES,
+                        hasItem("O tamanho do campo \"personDTO.user.username\" deve estar entre 2 e 150.")));
     }
 
     @Test
