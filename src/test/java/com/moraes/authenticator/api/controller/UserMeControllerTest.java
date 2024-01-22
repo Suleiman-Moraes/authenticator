@@ -2,6 +2,7 @@ package com.moraes.authenticator.api.controller;
 
 import static com.moraes.authenticator.api.util.ConstantsTestUtil.USER_MESSAGES;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moraes.authenticator.api.mock.MockSecurity;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
+import com.moraes.authenticator.api.model.dto.user.UserResetPasswordDTO;
 
 @WebMvcTest
 class UserMeControllerTest extends AbstractBasicControllerTest {
@@ -88,5 +90,30 @@ class UserMeControllerTest extends AbstractBasicControllerTest {
                         hasItem("Campo \"userNewPasswordDTO.oldPassword\" deve ser informado.")))
                 .andExpect(jsonPath(USER_MESSAGES,
                         hasItem("Campo \"userNewPasswordDTO.newPassword\" deve ser informado.")));
+    }
+
+    @Test
+    @DisplayName("JUnit test Given UserResetPasswordDTO When resetPassword me Then return no content")
+    void testGivenUserResetPasswordDTOWhenResetPasswordMeThenReturnNoContent() throws Exception {
+        // When / Act
+        ResultActions response = mockMvc.perform(patch(BASE_URL + "/password/reset")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(input.mockUserResetPasswordDTO()))
+                .with(csrf()));
+
+        response.andDo(print()).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("JUnit test Given Invalid UserResetPasswordDTO When resetPassword me Then return bad request")
+    void testGivenInvalidUserResetPasswordDTOWhenResetPasswordMeThenReturnBadRequest() throws Exception {
+        // When / Act
+        ResultActions response = mockMvc.perform(patch(BASE_URL + "/password/reset")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new UserResetPasswordDTO("", "")))
+                .with(csrf()));
+
+        response.andDo(print()).andExpect(status().isBadRequest())
+                .andExpect(jsonPath(USER_MESSAGES.concat(".size()"), is(4)));
     }
 }

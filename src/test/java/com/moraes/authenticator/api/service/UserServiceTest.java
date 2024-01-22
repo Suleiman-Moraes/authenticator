@@ -9,13 +9,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +44,7 @@ import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
 import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
 import com.moraes.authenticator.api.model.dto.user.UserResetPasswordDTO;
+import com.moraes.authenticator.api.model.dto.user.UserResetPasswordTokenDTO;
 import com.moraes.authenticator.api.model.enums.ParamEnum;
 import com.moraes.authenticator.api.repository.IUserRepository;
 import com.moraes.authenticator.api.service.interfaces.IInformationSenderService;
@@ -291,7 +295,8 @@ class UserServiceTest {
         // Arrange
         UserResetPasswordDTO userResetPasswordDTO = new UserResetPasswordDTO("username", "email@email.com");
         User user = new User();
-        when(repository.findByUsernameAndPersonEmail(anyString(), anyString())).thenReturn(Optional.of(user));
+        when(repository.findByUsernameAndPersonEmailAndEnabled(anyString(), anyString(), anyBoolean()))
+                .thenReturn(Optional.of(user));
         when(paramService.findByNameIfNotExistsCreate(ParamEnum.TOKEN_RESET_PASSWORD_EXPIRATION_TIME))
                 .thenReturn(mockParam.mockEntity(ParamEnum.TOKEN_RESET_PASSWORD_EXPIRATION_TIME));
 
@@ -303,6 +308,47 @@ class UserServiceTest {
         assertNotNull(user.getTokenResetPassword());
         assertNotNull(user.getTokenResetPasswordExpirationDate());
         verify(repository).save(user);
+    }
+
+    @Test
+    void resetPassword_validTokenAndEnabledAndNotExpired_resetPasswordSuccessfully() {
+        // Arrange
+        final UserResetPasswordTokenDTO userResetPasswordTokenDTO = input.mockUserResetPasswordTokenDTO();
+        final String newEncodedPassword = "newEncodedPassword";
+        User user = input.mockEntity(1);
+        user.setTokenResetPasswordEnabled(true);
+        user.setEnabled(true);
+        user.setTokenResetPasswordExpirationDate(LocalDateTime.now().plusHours(1));
+        when(passwordEncoder.encode(userResetPasswordTokenDTO.password())).thenReturn(newEncodedPassword);
+        when(repository
+                .findByTokenResetPasswordAndTokenResetPasswordEnabledAndEnabledAndTokenResetPasswordExpirationDateAfter(
+                        eq(userResetPasswordTokenDTO.token()), eq(true), eq(true), any(LocalDateTime.class)))
+                .thenReturn(Optional.of(user));
+
+        // Act
+        service.resetPassword(userResetPasswordTokenDTO);
+
+        // Assert
+        assertFalse(user.isTokenResetPasswordEnabled());
+        verify(passwordEncoder, times(1)).encode(userResetPasswordTokenDTO.password());
+        verify(repository, times(1)).save(user);
+    }
+
+    @Test
+    void resetPassword_invalidToken_throwResourceNotFoundException() {
+        final UserResetPasswordTokenDTO userResetPasswordTokenDTO = input.mockUserResetPasswordTokenDTO();
+        // Arrange
+        when(repository
+                .findByTokenResetPasswordAndTokenResetPasswordEnabledAndEnabledAndTokenResetPasswordExpirationDateAfter(
+                        eq(userResetPasswordTokenDTO.token()), eq(true), eq(true), any(LocalDateTime.class)))
+                .thenReturn(Optional.empty());
+
+        // Act
+        assertThrows(ResourceNotFoundException.class, () -> service.resetPassword(userResetPasswordTokenDTO),
+                "Should throw ResourceNotFoundException");
+
+        // Assert
+        // ResourceNotFoundException is expected
     }
 
     private void mockAuthentication() {

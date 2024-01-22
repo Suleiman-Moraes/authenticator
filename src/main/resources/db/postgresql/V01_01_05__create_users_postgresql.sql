@@ -2,7 +2,7 @@ CREATE TABLE users (
     id BIGSERIAL NOT NULL,
     username VARCHAR(150) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    token_reset_password VARCHAR(36),
+    token_reset_password UUID,
     enabled BOOLEAN NOT NULL,
     account_non_expired BOOLEAN,
     account_non_locked BOOLEAN,

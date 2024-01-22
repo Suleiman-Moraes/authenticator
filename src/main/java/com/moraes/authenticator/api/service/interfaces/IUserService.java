@@ -8,6 +8,7 @@ import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
 import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
 import com.moraes.authenticator.api.model.dto.user.UserResetPasswordDTO;
+import com.moraes.authenticator.api.model.dto.user.UserResetPasswordTokenDTO;
 
 public interface IUserService extends UserDetailsService, IServiceDelete<User, Long> {
 
@@ -54,4 +55,14 @@ public interface IUserService extends UserDetailsService, IServiceDelete<User, L
      * @return void
      */
     void resetPassword(UserResetPasswordDTO userResetPasswordDTO);
+
+    /**
+     * This code snippet resets the password for a user using a reset password
+     * token. It finds the user by the reset password token, ensures the token is
+     * enabled and not expired, then disables the token and saves the user.
+     *
+     * @param userResetPasswordTokenDTO the user reset password token DTO
+     * @return description of return value
+     */
+    void resetPassword(UserResetPasswordTokenDTO userResetPasswordTokenDTO);
 }

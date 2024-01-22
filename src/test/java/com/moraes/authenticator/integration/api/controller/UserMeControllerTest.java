@@ -3,10 +3,12 @@ package com.moraes.authenticator.integration.api.controller;
 import static com.moraes.authenticator.api.util.ConstantsUtil.APPLICATION_JSON;
 import static com.moraes.authenticator.api.util.ConstantsUtil.AUTHORIZATION;
 import static com.moraes.authenticator.api.util.ConstantsUtil.BEARER;
+import static com.moraes.authenticator.integration.api.IntegrationContextHolder.BASIC_TOKEN;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.ClassOrderer;
@@ -16,13 +18,18 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moraes.authenticator.api.mock.MockPerson;
+import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.person.PersonMeDTO;
 import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
+import com.moraes.authenticator.api.model.dto.user.UserResetPasswordDTO;
+import com.moraes.authenticator.api.model.dto.user.UserResetPasswordTokenDTO;
+import com.moraes.authenticator.api.repository.IUserRepository;
 import com.moraes.authenticator.config.AbstractIntegrationTest;
 import com.moraes.authenticator.config.TestConfig;
 import com.moraes.authenticator.config.security.dto.TokenDTO;
@@ -47,6 +54,9 @@ public class UserMeControllerTest extends AbstractIntegrationTest {
     private static MockPerson mockPerson;
     private static PersonMeDTO personMeDTO;
     private static String bearerToken = "";
+
+    @Autowired
+    private IUserRepository repository;
 
     @BeforeAll
     public static void setup() {
@@ -102,6 +112,35 @@ public class UserMeControllerTest extends AbstractIntegrationTest {
 
     @Test
     @Order(2)
+    @DisplayName("JUnit Integration test Given UserResetPasswordDTO When resetPassword Then return no content")
+    void testIntegrationGivenUserResetPasswordDTOWhenResetPasswordThenReturnNoContent() throws Exception {
+        given().spec(specification)
+                .header(AUTHORIZATION, BASIC_TOKEN).contentType(APPLICATION_JSON)
+                .body(new UserResetPasswordDTO(personMeDTO.getUser().getUsername(), personMeDTO.getEmail()))
+                .when()
+                .patch("password/reset")
+                .then().statusCode(204);
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("JUnit Integration test Given UserResetPasswordTokenDTO When resetPasswordToken Then return no content")
+    void testIntegrationGivenUserResetPasswordTokenDTOWhenResetPasswordTokenThenReturnNoContent() throws Exception {
+        final String password = "1234567";
+        final UUID token = repository.findByUsername(personMeDTO.getUser().getUsername()).orElse(new User())
+                .getTokenResetPassword();
+        given().spec(specification)
+                .header(AUTHORIZATION, BASIC_TOKEN).contentType(APPLICATION_JSON)
+                .body(new UserResetPasswordTokenDTO(password,
+                        token))
+                .when()
+                .patch("password/reset/token")
+                .then().statusCode(204);
+        personMeDTO.getUser().setPassword(password);
+    }
+
+    @Test
+    @Order(4)
     @DisplayName("JUnit Integration test Given Context When updateDisabledMe for disabled Then return no content")
     void testIntegrationGivenContextWhenUpdateDisabledMeForDisabledThenReturnNoContent() throws Exception {
         // Update disabled that new PersonMeDTO

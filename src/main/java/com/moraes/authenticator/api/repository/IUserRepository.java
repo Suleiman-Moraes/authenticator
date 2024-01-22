@@ -1,6 +1,8 @@
 package com.moraes.authenticator.api.repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,5 +16,11 @@ public interface IUserRepository extends JpaRepository<User, Long> {
 
     boolean existsByUsernameAndKeyNot(String username, long key);
 
-    Optional<User> findByUsernameAndPersonEmail(String username, String email);
+    Optional<User> findByUsernameAndPersonEmailAndEnabled(String username, String email, boolean enabled);
+
+    Optional<User> findByTokenResetPasswordAndTokenResetPasswordEnabledAndEnabledAndTokenResetPasswordExpirationDateAfter(
+            UUID tokenResetPassword, Boolean tokenResetPasswordEnabled, Boolean enabled, LocalDateTime now);
+
+    Optional<User> findByTokenResetPasswordAndTokenResetPasswordEnabledAndEnabled(UUID tokenResetPassword,
+            Boolean tokenResetPasswordEnabled, Boolean enabled);
 }

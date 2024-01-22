@@ -23,6 +23,7 @@ import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
 import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
 import com.moraes.authenticator.api.model.dto.user.UserResetPasswordDTO;
+import com.moraes.authenticator.api.model.dto.user.UserResetPasswordTokenDTO;
 import com.moraes.authenticator.api.model.enums.ParamEnum;
 import com.moraes.authenticator.api.repository.IUserRepository;
 import com.moraes.authenticator.api.service.interfaces.IInformationSenderService;
@@ -152,8 +153,8 @@ public class UserService implements IUserService {
 
     @Override
     public void resetPassword(UserResetPasswordDTO userResetPasswordDTO) {
-        User user = repository.findByUsernameAndPersonEmail(userResetPasswordDTO.username(),
-                userResetPasswordDTO.email()).orElseThrow(ResourceNotFoundException::new);
+        User user = repository.findByUsernameAndPersonEmailAndEnabled(userResetPasswordDTO.username(),
+                userResetPasswordDTO.email(), Boolean.TRUE).orElseThrow(ResourceNotFoundException::new);
         final String timeExpiration = paramService
                 .findByNameIfNotExistsCreate(ParamEnum.TOKEN_RESET_PASSWORD_EXPIRATION_TIME).getValue();
 
@@ -163,6 +164,17 @@ public class UserService implements IUserService {
         save(user);
         informationSenderService.sendEmailResetPassword(user, timeExpiration,
                 paramService.findByNameIfNotExistsCreate(ParamEnum.URL_FRONT_END));
+    }
+
+    @Override
+    public void resetPassword(UserResetPasswordTokenDTO userResetPasswordTokenDTO) {
+        User user = repository
+                .findByTokenResetPasswordAndTokenResetPasswordEnabledAndEnabledAndTokenResetPasswordExpirationDateAfter(
+                        userResetPasswordTokenDTO.token(), true, true, LocalDateTime.now())
+                .orElseThrow(ResourceNotFoundException::new);
+        user.setTokenResetPasswordEnabled(false);
+        user.setPassword(passwordEncoder.encode(userResetPasswordTokenDTO.password()));
+        save(user);
     }
 
     /**

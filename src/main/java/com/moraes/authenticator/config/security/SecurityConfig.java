@@ -36,7 +36,10 @@ public class SecurityConfig {
                 antMatcher("/h2-console/**"),
                 antMatcher("/auth/signin"),
                 antMatcher("/auth/refresh/**"),
-                antMatcher("/api/v1/person/me/new") };
+                antMatcher("/api/v1/person/me/new"),
+                antMatcher("/api/v1/user/me/password/reset"),
+                antMatcher("/api/v1/user/me/password/reset/token")
+        };
         http.httpBasic(basic -> basic.disable())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
