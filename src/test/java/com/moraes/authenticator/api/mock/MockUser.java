@@ -27,6 +27,7 @@ public class MockUser extends AbstractMock<User> {
     @Override
     protected void setOdersValues(User entity, Integer number) {
         entity.setProfile(new MockProfile().mockEntity(number));
+        entity.setCompany(new MockCompany().mockEntity(number));
     }
 
     public UserDTO mockUserDTO(Integer number) {

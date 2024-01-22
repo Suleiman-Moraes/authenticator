@@ -6,12 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -73,7 +76,8 @@ class PersonServiceTest {
 
     @Test
     void testDelete() {
-        when(repository.findById(KEY)).thenReturn(Optional.of(entity));
+        mockGetMe();
+        when(repository.findByKeyAndUserCompanyKey(eq(KEY), any())).thenReturn(Optional.of(entity));
         assertDoesNotThrow(() -> service.delete(KEY), "Does Not Throw");
     }
 
@@ -93,8 +97,9 @@ class PersonServiceTest {
     void testUpdate() {
         Person entity = input.mockEntity(2);
         entity.setKey(KEY);
+        mockGetMe();
         when(repository.save(any())).thenReturn(entity);
-        when(repository.findById(KEY)).thenReturn(Optional.of(entity));
+        when(repository.findByKeyAndUserCompanyKey(eq(KEY), any())).thenReturn(Optional.of(entity));
         PersonDTO dto = input.mockPersonDTO(2);
         assertDoesNotThrow(() -> service.update(dto, KEY), "Does Not Throw");
         assertNotNull(entity, "Return null");
@@ -103,9 +108,7 @@ class PersonServiceTest {
 
     @Test
     void testGetMe() {
-        User user = new MockUser().mockEntity(1);
-        when(userService.getMe()).thenReturn(user);
-        when(repository.findByUserKey(user.getKey())).thenReturn(Optional.of(entity));
+        mockGetMe();
         assertEquals(entity, service.getMe(), RETURN_NOT_EQUAL);
     }
 
@@ -115,7 +118,9 @@ class PersonServiceTest {
         final PersonFilterDTO filter = new PersonFilterDTO();
         final List<PersonListDTO> list = input.mockPersonListDTOListWithKey(maxSize);
         final Page<PersonListDTO> page = new PageImpl<>(list);
-        when(repository.page(filter, service.getMapOfFields(), PersonListDTO.class, Person.class)).thenReturn(page);
+        mockGetMe();
+        when(repository.page(eq(filter), any(), eq(PersonListDTO.class), eq(Person.class), anyString(), any()))
+                .thenReturn(page);
 
         final Page<PersonListDTO> pages = service.findPageAll(filter);
         assertNotNull(pages, "Return null");
@@ -136,5 +141,19 @@ class PersonServiceTest {
     @Test
     void testInsertMe() {
         assertEquals(KEY, service.insertMe(entity), RETURN_NOT_EQUAL);
+    }
+
+    @Test
+    @DisplayName("JUnit test Given key and company key from context When findByKeyAndCompanyKey Then return entity")
+    void testGivenKeyAndCompanyKeyFromContextWhenFindByKeyAndCompanyKeyThenReturnEntity() {
+        mockGetMe();
+        when(repository.findByKeyAndUserCompanyKey(KEY, null)).thenReturn(Optional.of(entity));
+        assertEquals(entity, service.findByKeyAndCompanyKey(KEY), RETURN_NOT_EQUAL);
+    }
+
+    private void mockGetMe() {
+        User user = new MockUser().mockEntity(1);
+        when(userService.getMe()).thenReturn(user);
+        when(repository.findByUserKey(user.getKey())).thenReturn(Optional.of(entity));
     }
 }

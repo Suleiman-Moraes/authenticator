@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.moraes.authenticator.api.model.dto.FilterDTO;
@@ -33,20 +34,21 @@ public class ExtendedRepository<M, K extends Serializable> extends SimpleJpaRepo
     }
 
     @Override
-    public <T> Page<T> page(FilterDTO filter, final String join, final Map<String, Class<?>> fields,
-            final Class<T> classListDto, final Class<M> classFrom) {
+    public <T> Page<T> page(FilterDTO filter, final Map<String, Class<?>> fields,
+            final Class<T> classListDto, final Class<M> classFrom, final String whereCustom,
+            Map<String, Object> parameters, final String join) {
         StringBuilder where = new StringBuilder();
         StringBuilder query = new StringBuilder();
         StringBuilder fromHql = new StringBuilder();
-        buildQueries(filter, join, fields, classListDto, classFrom, where, query, fromHql);
+        buildQueries(filter, join, fields, classListDto, classFrom, where, query, fromHql, whereCustom);
         final String countQuery = "SELECT COUNT(x.id".concat(fromHql.toString());
         log.debug("HQL count query: {}", countQuery);
         log.debug("HQL query: {}", query);
         final Long count = setParameterSearchTextInTypedQuery(entityManager.createQuery(countQuery, Long.class),
-                filter.getSearchText()).getSingleResult();
+                filter.getSearchText(), parameters).getSingleResult();
 
         TypedQuery<T> typedQueryList = setParameterSearchTextInTypedQuery(
-                entityManager.createQuery(query.toString(), classListDto), filter.getSearchText());
+                entityManager.createQuery(query.toString(), classListDto), filter.getSearchText(), parameters);
         treatTypedQueryAccordingToPassedType(filter, count, typedQueryList);
         final List<T> list = typedQueryList.getResultList();
 
@@ -96,25 +98,27 @@ public class ExtendedRepository<M, K extends Serializable> extends SimpleJpaRepo
     }
 
     /**
-     * This code snippet is a method called buildQueries that takes in several
-     * parameters and constructs a query string based on those parameters. The
-     * method builds a WHERE clause for the query based on the filter parameter and
-     * the fields map. It also constructs the SELECT and FROM parts of the query
-     * based on the classListDto and classFrom parameters. Finally, it appends an
-     * ORDER BY clause to the query based on the property and filter parameters.
+     * This Java code defines a method for building queries based on given filter
+     * conditions and fields. It takes in various parameters such as filter, join
+     * condition, fields, and classes, and constructs a SQL query based on these
+     * inputs. The method also handles different data types for the fields and
+     * allows for custom WHERE clauses. Additionally, it constructs the SELECT and
+     * FROM clauses for the query and applies ordering based on the filter
+     * conditions.
      *
-     * @param filter       the filter object containing the filter criteria
-     * @param join         the join criteria for the query
-     * @param fields       the map of fields and their corresponding classes
-     * @param classListDto the class of the DTO to be returned in the query result
-     * @param classFrom    the class from which data is being fetched
-     * @param where        the StringBuilder object for building the WHERE clause
-     * @param query        the StringBuilder object for building the SELECT clause
-     * @param fromHql      the StringBuilder object for building the FROM clause
+     * @param filter       the filter to be applied to the queries
+     * @param join         the join condition for the query
+     * @param fields       the fields to be queried
+     * @param classListDto the class for the list DTO
+     * @param classFrom    the class from which the query is built
+     * @param where        the WHERE clause for the query
+     * @param query        the SELECT clause for the query
+     * @param fromHql      the FROM clause for the query
+     * @param whereCustom  custom WHERE clause for the query
      */
     protected <T> void buildQueries(FilterDTO filter, String join, final Map<String, Class<?>> fields,
             Class<T> classListDto, Class<M> classFrom, StringBuilder where, StringBuilder query,
-            StringBuilder fromHql) {
+            StringBuilder fromHql, final String whereCustom) {
         where.append("( 1 != 1");
         query.append("SELECT new ");
         query.append(classListDto.getName()).append("(");
@@ -146,6 +150,11 @@ public class ExtendedRepository<M, K extends Serializable> extends SimpleJpaRepo
         fromHql.append(classFrom.getSimpleName()).append(" x ").append(join);
         if (StringUtils.hasText(filter.getSearchText())) {
             fromHql.append(" WHERE ").append(where);
+            if (StringUtils.hasText(whereCustom)) {
+                fromHql.append(" AND ").append(whereCustom);
+            }
+        } else if (StringUtils.hasText(whereCustom)) {
+            fromHql.append(" WHERE ").append(whereCustom);
         }
         query.append(fromHql);
         query.append(String.format(" ORDER BY %s %s", property, filter.getDirection()));
@@ -163,9 +172,13 @@ public class ExtendedRepository<M, K extends Serializable> extends SimpleJpaRepo
      * @param searchText
      * @return
      */
-    protected <T> TypedQuery<T> setParameterSearchTextInTypedQuery(TypedQuery<T> typedQuery, String searchText) {
+    protected <T> TypedQuery<T> setParameterSearchTextInTypedQuery(TypedQuery<T> typedQuery, String searchText,
+            Map<String, Object> parameters) {
         if (StringUtils.hasText(searchText)) {
             typedQuery.setParameter("searchText", "%" + searchText.toUpperCase() + "%");
+        }
+        if (!CollectionUtils.isEmpty(parameters)) {
+            parameters.forEach(typedQuery::setParameter);
         }
         return typedQuery;
     }

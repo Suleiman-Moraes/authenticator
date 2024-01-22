@@ -23,4 +23,6 @@ public interface IUserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByTokenResetPasswordAndTokenResetPasswordEnabledAndEnabled(UUID tokenResetPassword,
             Boolean tokenResetPasswordEnabled, Boolean enabled);
+
+    Optional<User> findByKeyAndCompanyKey(Long key, Long companyKey);
 }

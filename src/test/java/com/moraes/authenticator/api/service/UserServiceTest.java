@@ -125,8 +125,17 @@ class UserServiceTest {
 
     @Test
     void testInsert() {
+        mockAuthentication();
         when(repository.existsByUsernameAndKeyNot(anyString(), anyLong())).thenReturn(false);
         assertEquals(key, service.insert(entity, key), "Return not equal");
+    }
+
+    @Test
+    @DisplayName("JUnit test Given a user and a personKey, when insertForAdmin is called, should return the user key")
+    void testGivenUserAndPersonKeyWhenInsertForAdminThenReturnUserKey() {
+        mockAuthentication();
+        when(repository.existsByUsernameAndKeyNot(anyString(), anyLong())).thenReturn(false);
+        assertEquals(key, service.insertForAdmin(entity, key), "Key is not equal");
     }
 
     @Test
@@ -223,7 +232,7 @@ class UserServiceTest {
 
     @Test
     void testUpdateEnabled() {
-        when(repository.findById(key)).thenReturn(Optional.of(entity));
+        when(repository.findByKeyAndCompanyKey(eq(key), any())).thenReturn(Optional.of(entity));
         when(repository.save(any())).thenReturn(entity);
         assertFalse(service.updateEnabled(new UserEnabledDTO(false), key).isEnabled(), "Return not false");
     }

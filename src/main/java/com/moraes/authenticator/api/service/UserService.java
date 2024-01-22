@@ -95,6 +95,13 @@ public class UserService implements IUserService {
         return entity.getKey();
     }
 
+    @Transactional
+    @Override
+    public Long insertForAdmin(User entity, Long personKey) {
+        entity.setCompany(getMe().getCompany());
+        return insert(entity, personKey);
+    }
+
     @Override
     public User getMe() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -133,7 +140,7 @@ public class UserService implements IUserService {
 
     @Override
     public User updateEnabled(UserEnabledDTO entity, long key) {
-        User user = findByKey(key);
+        User user = findByKeyAndCompanyKey(key);
         return updateEnabled(entity, user);
     }
 
@@ -243,5 +250,9 @@ public class UserService implements IUserService {
         user.setEnabled(entity.enabled());
         save(user);
         return user;
+    }
+
+    private User findByKeyAndCompanyKey(Long key) {
+        return repository.findByKeyAndCompanyKey(key, getMe().getCompany().getKey()).orElseThrow(ResourceNotFoundException::new);
     }
 }
