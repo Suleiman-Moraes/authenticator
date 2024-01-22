@@ -59,7 +59,8 @@ class PersonControllerTest extends AbstractBasicControllerTest {
 
         // Given / Arrange
         final Person person = input.mockEntity(1);
-        given(personService.findByKey(1L)).willReturn(person);
+
+        given(personService.findByKeyAndCompanyKey(1L)).willReturn(person);
         given(personService.parseObject(person, PersonDTO.class, PersonController.class))
                 .willReturn(input.mockPersonDTO(1));
 
@@ -83,7 +84,8 @@ class PersonControllerTest extends AbstractBasicControllerTest {
         // Given / Arrange
         final PageRequest pageRequest = PageRequest.of(0, 10);
         given(personService.findPageAll(any()))
-                .willReturn(new PageImpl<>(input.mockPersonListDTOList(10), pageRequest, input.getMaxSize()));
+                .willReturn(new PageImpl<>(input.mockPersonListDTOList(10), pageRequest,
+                        input.getMaxSize()));
 
         // When / Act
         ResultActions response = mockMvc.perform(get(BASE_URL));

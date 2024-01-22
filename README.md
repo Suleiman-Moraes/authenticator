@@ -56,6 +56,11 @@ You can build the project using Maven:
 ```
 mvn clean install
 ```
+
+## Database Model
+
+![Database Model](files/auth-diagram.png)
+
 ## Suggestions for VSCode configs
 
 settings.json

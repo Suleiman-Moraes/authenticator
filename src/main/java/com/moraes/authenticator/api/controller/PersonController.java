@@ -35,7 +35,7 @@ public class PersonController implements IController<PersonDTO, Long> {
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/{key}")
     public ResponseEntity<PersonDTO> findByKey(@PathVariable Long key) {
-        PersonDTO dto = service.parseObject(service.findByKey(key), PersonDTO.class, PersonController.class);
+        PersonDTO dto = service.parseObject(service.findByKeyAndCompanyKey(key), PersonDTO.class, PersonController.class);
         dto.getUser().setPassword(null);
         return ResponseEntity.ok(dto);
     }

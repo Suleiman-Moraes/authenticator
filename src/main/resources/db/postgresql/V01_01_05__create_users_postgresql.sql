@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL NOT NULL,
     username VARCHAR(150) NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -11,6 +11,7 @@ CREATE TABLE users (
     token_reset_password_expiration_date TIMESTAMP,
     id_person BIGINT,
     id_profile BIGINT,
+    id_company BIGINT,
     PRIMARY KEY (id)
 );
 
@@ -33,3 +34,8 @@ ALTER TABLE
     IF EXISTS users
 ADD
     CONSTRAINT fk_users_id_profile FOREIGN KEY (id_profile) REFERENCES profile;
+
+ALTER TABLE
+    IF EXISTS users
+ADD
+    CONSTRAINT fk_users_id_company FOREIGN KEY (id_company) REFERENCES company;

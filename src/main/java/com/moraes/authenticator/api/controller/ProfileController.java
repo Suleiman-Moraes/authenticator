@@ -32,21 +32,21 @@ public class ProfileController implements IController<ProfileDTO, Long> {
     private IProfileService service;
 
     @Override
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROOT')")
     @GetMapping(value = "/{key}")
     public ResponseEntity<ProfileDTO> findByKey(@PathVariable Long key) {
         ProfileDTO dto = service.parseObject(service.findByKey(key), ProfileDTO.class, ProfileController.class);
         return ResponseEntity.ok(dto);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROOT')")
     @PostMapping
     public ResponseEntity<Long> insert(@RequestBody @Valid ProfileDTO object) {
         final Long id = service.insert(Mapper.parseObject(object, Profile.class));
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROOT')")
     @PutMapping(value = "/{key}")
     public ResponseEntity<Long> update(@RequestBody @Valid ProfileDTO object, @PathVariable long key) {
         service.update(object, key);
@@ -54,14 +54,14 @@ public class ProfileController implements IController<ProfileDTO, Long> {
     }
 
     @SuppressWarnings("rawtypes")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROOT')")
     @GetMapping
     public ResponseEntity<Page<KeyDescriptionDTO>> findAll(ProfileFilterDTO filter) {
         final Page<KeyDescriptionDTO> page = service.findPageAll(filter);
         return ResponseEntity.ok(page);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROOT')")
     @DeleteMapping(value = "/{key}")
     public ResponseEntity<Void> delete(@PathVariable Long key) {
         service.delete(key);

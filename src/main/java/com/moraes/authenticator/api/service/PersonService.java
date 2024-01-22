@@ -34,7 +34,7 @@ public class PersonService implements IPersonService {
     @Transactional
     @Override
     public void update(PersonDTO object, Long key) {
-        Person entity = findByKey(key);
+        Person entity = findByKeyAndCompanyKey(key);
         final Long userId = entity.getUser().getKey();
         saveForUpdate(Mapper.parseObject(object, Person.class), entity);
         userService.update(object.getUser(), userId);
@@ -53,7 +53,7 @@ public class PersonService implements IPersonService {
     @Transactional
     @Override
     public void delete(Long key) {
-        Person entity = findByKey(key);
+        Person entity = findByKeyAndCompanyKey(key);
         userService.delete(entity.getUser().getKey());
         repository.delete(entity);
     }
@@ -84,9 +84,19 @@ public class PersonService implements IPersonService {
     @Transactional(readOnly = true)
     public Page<PersonListDTO> findPageAll(PersonFilterDTO filter) {
         final Map<String, Class<?>> fields = getMapOfFields();
-        Page<PersonListDTO> page = repository.page(filter, fields, PersonListDTO.class, Person.class);
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("companyKey", getMe().getUser().getCompany().getKey());
+        Page<PersonListDTO> page = repository.page(filter, fields, PersonListDTO.class, Person.class,
+                "x.user.company.key = :companyKey", parameters);
         page.getContent().forEach(dto -> addLinks(dto, (long) dto.getKey(), PersonController.class));
         return page;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Person findByKeyAndCompanyKey(Long key) {
+        return repository.findByKeyAndUserCompanyKey(key, getMe().getUser().getCompany().getKey())
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     public Map<String, Class<?>> getMapOfFields() {

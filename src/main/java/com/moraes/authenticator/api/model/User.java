@@ -84,6 +84,11 @@ public class User extends AbstractAuditingEntity implements IModel<Long>, UserDe
     @JoinColumn(name = "id_profile")
     private Profile profile;
 
+    @NotAudited
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_company")
+    private Company company;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_person")
     private Person person;
@@ -105,5 +110,6 @@ public class User extends AbstractAuditingEntity implements IModel<Long>, UserDe
     @PrePersist
     public void prePersist() {
         tokenResetPasswordEnabled = false;
+        company = company == null ? new Company(1L) : company;
     }
 }

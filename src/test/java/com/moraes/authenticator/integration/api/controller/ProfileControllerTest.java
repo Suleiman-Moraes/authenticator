@@ -2,6 +2,7 @@ package com.moraes.authenticator.integration.api.controller;
 
 import static com.moraes.authenticator.api.util.ConstantsUtil.APPLICATION_JSON;
 import static com.moraes.authenticator.api.util.ConstantsUtil.AUTHORIZATION;
+import static com.moraes.authenticator.api.util.ConstantsUtil.BEARER;
 import static com.moraes.authenticator.integration.api.IntegrationContextHolder.ACCESS_TOKEN;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,6 +35,7 @@ import com.moraes.authenticator.api.model.enums.RoleEnum;
 import com.moraes.authenticator.api.util.JsonObjectUtil;
 import com.moraes.authenticator.config.AbstractIntegrationTest;
 import com.moraes.authenticator.config.TestConfig;
+import com.moraes.authenticator.config.security.dto.TokenDTO;
 
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -58,6 +60,7 @@ public class ProfileControllerTest extends AbstractIntegrationTest {
     private static MockProfile input;
     private static ProfileDTO dto;
     private static Long key;
+    private static String accessTokenRoot;
 
     @BeforeAll
     public static void setup() {
@@ -80,10 +83,14 @@ public class ProfileControllerTest extends AbstractIntegrationTest {
     @DisplayName("JUnit Integration test Given ProfileDTO When insert Then return key")
     void testIntegrationGivenProfileDTOWhenInsertThenReturnKey() throws Exception {
         AuthTest.checkAuth(specification, mapper);
+        Response responseRoot = AuthTest.signin("root", "123456", specification);
+        responseRoot.then().statusCode(200);
+        accessTokenRoot = String.format("%s %s", BEARER,
+                mapper.readValue(responseRoot.getBody().asString(), TokenDTO.class).getAccessToken());
         dto = input.mockProfileDTO(1);
         final Response response = given().spec(specification)
                 .contentType(APPLICATION_JSON)
-                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .header(AUTHORIZATION, accessTokenRoot)
                 .body(dto)
                 .when()
                 .post();
@@ -118,7 +125,7 @@ public class ProfileControllerTest extends AbstractIntegrationTest {
         final Response response = given().spec(specification)
                 .pathParam(NAME_KEY, key)
                 .contentType(APPLICATION_JSON)
-                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .header(AUTHORIZATION, accessTokenRoot)
                 .body(dto)
                 .when()
                 .put(PATH_KEY);
@@ -205,7 +212,7 @@ public class ProfileControllerTest extends AbstractIntegrationTest {
     private Response delete(Long key) {
         return given().spec(specification)
                 .pathParam(NAME_KEY, key)
-                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .header(AUTHORIZATION, accessTokenRoot)
                 .when()
                 .delete(PATH_KEY);
     }
