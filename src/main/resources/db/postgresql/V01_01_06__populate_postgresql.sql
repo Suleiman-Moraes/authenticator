@@ -1,3 +1,5 @@
+INSERT INTO company (name) VALUES ('Default Company');
+
 INSERT INTO
     profile (description)
 VALUES
@@ -9,8 +11,6 @@ INSERT INTO
     profile_role (id_profile, role)
 VALUES
     (1, 'ROOT'),
-    (1, 'ADMIN'),
-    (1, 'COMMON_USER'),
     (2, 'ADMIN'),
     (3, 'COMMON_USER');
 
@@ -39,6 +39,7 @@ INSERT INTO
         credentials_non_expired,
         id_person,
         id_profile,
+        id_company,
         password
     )
 VALUES
@@ -48,6 +49,7 @@ VALUES
         true,
         true,
         true,
+        1,
         1,
         1,
         '{pbkdf2}f88acbc6eccb60d08e92318843587d22533a955d8e8d6246a360d23b9dfacbb2dfab247eb1d0a9c5'
@@ -60,6 +62,7 @@ VALUES
         true,
         2,
         2,
+        1,
         '{pbkdf2}f88acbc6eccb60d08e92318843587d22533a955d8e8d6246a360d23b9dfacbb2dfab247eb1d0a9c5'
     ),
     (
@@ -70,5 +73,6 @@ VALUES
         true,
         3,
         3,
+        1,
         '{pbkdf2}f88acbc6eccb60d08e92318843587d22533a955d8e8d6246a360d23b9dfacbb2dfab247eb1d0a9c5'
     );
