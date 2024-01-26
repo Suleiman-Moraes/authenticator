@@ -57,6 +57,14 @@ You can build the project using Maven:
 mvn clean install
 ```
 
+## Using Docker
+You can upload this project using docker-compose
+
+```
+mvn clean install
+docker-compose up
+```
+
 ## Database Model
 
 ![Database Model](files/auth-diagram.png)
