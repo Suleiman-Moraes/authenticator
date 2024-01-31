@@ -43,8 +43,9 @@ public class AuthController {
     @PutMapping(value = "/refresh")
     public ResponseEntity<Object> refreshToken(@RequestHeader(ConstantsUtil.AUTHORIZATION) String refreshToken) {
         if (StringUtils.hasText(refreshToken)) {
-            final TokenDTO token = authService.refreshToken(refreshToken);
+            TokenDTO token = authService.refreshToken(refreshToken);
             if (token != null) {
+                token.setRefreshToken(null);
                 return ResponseEntity.ok(token);
             }
         }

@@ -44,6 +44,9 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length:3600000}")
     private long validityInMilliseconds = ONE_HOUR;
 
+    @Value("${security.jwt.token.expire-refresh-length:43200000}")
+    private long expirationRefreshLength = ONE_HOUR * 12;
+
     private UserDetailsService userDetailsService;
 
     private Algorithm algorithm;
@@ -126,7 +129,7 @@ public class JwtTokenProvider {
     private String getRefreshToken(String username, List<String> roles, Date now) {
         return JWT.create().withClaim(ROLES, roles)
                 .withIssuedAt(now)
-                .withExpiresAt(new Date(now.getTime() + (validityInMilliseconds + ConstantsUtil.THREE)))
+                .withExpiresAt(new Date(now.getTime() + expirationRefreshLength))
                 .withSubject(username)
                 .sign(algorithm).strip();
     }

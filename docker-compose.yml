@@ -25,6 +25,7 @@ services:
     environment:
       - DB_HOST=postgres
       - DB_NAME=postgres
+      - JWT_EXPIRE_LENGTH=3600000
       - spring.jpa.hibernate.ddl-auto=none
     networks:
       - auth-net
