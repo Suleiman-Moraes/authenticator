@@ -59,7 +59,10 @@ public class ProfileService implements IProfileService {
     @Override
     public Page<KeyDescriptionDTO> findPageAll(ProfileFilterDTO filter) {
         final Map<String, Class<?>> fields = getMapOfFields();
-        Page<KeyDescriptionDTO> page = repository.page(filter, fields, KeyDescriptionDTO.class, Profile.class);
+        final Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("description", "ROOT");
+        Page<KeyDescriptionDTO> page = repository.page(filter, fields, KeyDescriptionDTO.class, Profile.class,
+                "UPPER(x.description) != :description", parameters);
         page.getContent().forEach(dto -> addLinks(dto, (long) dto.getKey(), ProfileController.class));
         return page;
     }

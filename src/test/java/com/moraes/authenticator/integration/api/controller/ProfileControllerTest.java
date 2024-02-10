@@ -158,8 +158,8 @@ public class ProfileControllerTest extends AbstractIntegrationTest {
         assertNotNull(page, "Page is null");
         assertNotNull(content, "Content is null");
         assertEquals(1, page.get("totalPages"), "Total pages is different");
-        assertEquals(4, page.get("totalElements"), "Total elements is different");
-        assertEquals(4, page.get("size"), "Size is different");
+        assertEquals(3, page.get("totalElements"), "Total elements is different");
+        assertEquals(3, page.get("size"), "Size is different");
         assertEquals(0, page.get("number"), "Number is different");
         assertEquals(dto.getDescription(), content.get(0).getDescription(), "Description is different");
         assertEquals(key.toString(), content.get(0).getKey().toString(), "Key is different");
@@ -188,11 +188,11 @@ public class ProfileControllerTest extends AbstractIntegrationTest {
         assertNotNull(page, "Page is null");
         assertNotNull(content, "Content is null");
         assertEquals(2, page.get("totalPages"), "Total pages is different");
-        assertEquals(4, page.get("totalElements"), "Total elements is different");
+        assertEquals(3, page.get("totalElements"), "Total elements is different");
         assertEquals(2, page.get("size"), "Size is different");
         assertEquals(1, page.get("number"), "Number is different");
-        assertEquals(dto.getDescription(), content.get(1).getDescription(), "Description is different");
-        assertEquals(key.toString(), content.get(1).getKey().toString(), "Key is different");
+        assertEquals(dto.getDescription(), content.get(0).getDescription(), "Description is different");
+        assertEquals(key.toString(), content.get(0).getKey().toString(), "Key is different");
     }
 
     @Test

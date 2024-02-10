@@ -17,7 +17,8 @@ services:
       - auth-net
 
   authenticator:
-    build: './'
+    # build: './'
+    image: authenticator
     container_name: authenticator
     restart: always
     depends_on:
@@ -39,3 +40,5 @@ networks:
 
 volumes:
   postgresdata:
+
+# docker build -t authenticator .
