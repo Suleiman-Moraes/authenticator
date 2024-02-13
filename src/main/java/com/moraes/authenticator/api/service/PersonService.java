@@ -14,7 +14,6 @@ import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.dto.person.PersonDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonFilterDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
-import com.moraes.authenticator.api.model.dto.person.PersonMeDTO;
 import com.moraes.authenticator.api.repository.IPersonRepository;
 import com.moraes.authenticator.api.service.interfaces.IPersonService;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
@@ -42,7 +41,7 @@ public class PersonService implements IPersonService {
 
     @Transactional
     @Override
-    public Long updateMe(PersonMeDTO object) {
+    public Long updateMe(PersonDTO object) {
         Person entity = this.getMe();
         final Long userId = entity.getUser().getKey();
         saveForUpdate(Mapper.parseObject(object, Person.class), entity);

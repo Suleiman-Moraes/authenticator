@@ -20,10 +20,12 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -39,13 +41,14 @@ import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.mock.MockParam;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.User;
+import com.moraes.authenticator.api.model.dto.KeyDTO;
 import com.moraes.authenticator.api.model.dto.user.UserDTO;
 import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
-import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
 import com.moraes.authenticator.api.model.dto.user.UserResetPasswordDTO;
 import com.moraes.authenticator.api.model.dto.user.UserResetPasswordTokenDTO;
 import com.moraes.authenticator.api.model.enums.ParamEnum;
+import com.moraes.authenticator.api.model.enums.RoleEnum;
 import com.moraes.authenticator.api.repository.IUserRepository;
 import com.moraes.authenticator.api.service.interfaces.IInformationSenderService;
 import com.moraes.authenticator.api.service.interfaces.IParamService;
@@ -200,6 +203,8 @@ class UserServiceTest {
 
     @Test
     void testPreInsertMe() {
+        when(paramService.findByNameIfNotExistsCreate(ParamEnum.USER_DEFAULT_PROFILE_KEY))
+                .thenReturn(mockParam.mockEntity(ParamEnum.USER_DEFAULT_PROFILE_KEY));
         User user = new User();
         user.setProfile(null);
         assertNotNull(service.preInsertMe(user).getProfile(), "Return not equal");
@@ -207,15 +212,64 @@ class UserServiceTest {
 
     @Test
     void testUpdateMe() {
+        mockAuthentication();
         User entity = input.mockEntity(2);
         entity.setKey(key);
         when(repository.existsByUsernameAndKeyNot(anyString(), anyLong())).thenReturn(false);
         when(repository.save(any())).thenReturn(entity);
         when(repository.findById(key)).thenReturn(Optional.of(entity));
-        UserMeDTO dto = input.mockUserMeDTO(2);
+        UserDTO dto = input.mockUserDTO(2);
+        dto.setProfile(new KeyDTO(3L));
+
+        ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
+
         assertDoesNotThrow(() -> service.updateMe(dto, key), "Does Not Throw");
+        verify(service, times(1)).save(argumentCaptor.capture());
         assertNotNull(entity, "Return null");
         assertNotEquals(this.entity, entity, "Return equal");
+        assertEquals(dto.getProfile().getKey(), argumentCaptor.getValue().getProfile().getKey(), "Return not equal");
+    }
+
+    @Test
+    @DisplayName("JUnit test Given a user and a personKey, when updateMe is called with not admin user, should return the user key")
+    void testGivenUserAndPersonKeyWhenUpdateMeWithNotAdminUserThenReturnUserKey() {
+        User entity = input.mockEntity(2);
+        entity.getProfile().setRoles(Set.of(RoleEnum.COMMON_USER));
+        entity.getProfile().setKey(3L);
+
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(entity, "",
+                entity.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        entity.setKey(key);
+        when(repository.existsByUsernameAndKeyNot(anyString(), anyLong())).thenReturn(false);
+        when(repository.save(any())).thenReturn(entity);
+        when(repository.findById(key)).thenReturn(Optional.of(entity));
+        UserDTO dto = input.mockUserDTO(2);
+        dto.setProfile(new KeyDTO(2L));
+
+        ArgumentCaptor<User> argumentCaptor = ArgumentCaptor.forClass(User.class);
+
+        assertDoesNotThrow(() -> service.updateMe(dto, key), "Does Not Throw");
+        verify(service, times(1)).save(argumentCaptor.capture());
+        assertNotNull(entity, "Return null");
+        assertNotEquals(this.entity, entity, "Return equal");
+        assertNotEquals(dto.getProfile().getKey(), argumentCaptor.getValue().getProfile().getKey(), "Return equal");
+    }
+
+    @Test
+    @DisplayName("JUnit test Given a user with root profile and a personKey, when updateMe is called, should throw ValidException")
+    void testGivenUserWithRootProfileAndPersonKeyWhenUpdateMeThenThrowValidException() {
+        mockAuthentication();
+        final Long key = 2L;
+        User entity = input.mockEntity(2);
+        entity.setKey(key);
+        when(repository.existsByUsernameAndKeyNot(anyString(), anyLong())).thenReturn(false);
+        when(repository.findById(key)).thenReturn(Optional.of(entity));
+        UserDTO dto = input.mockUserDTO(2);
+        dto.setProfile(new KeyDTO(1L));
+
+        assertThrows(ValidException.class, () -> service.updateMe(dto, key), "Does Not Throw");
     }
 
     @Test

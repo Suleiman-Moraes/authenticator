@@ -43,7 +43,7 @@ public class PersonMeController {
     }
 
     @PutMapping
-    public ResponseEntity<Long> updateMe(@RequestBody @Valid PersonMeDTO object) {
+    public ResponseEntity<Long> updateMe(@RequestBody @Valid PersonDTO object) {
         final Long id = service.updateMe(object);
         return ResponseEntity.ok(id);
     }

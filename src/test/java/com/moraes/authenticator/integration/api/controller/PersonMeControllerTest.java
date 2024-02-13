@@ -94,6 +94,7 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
         assertEquals(USERNAME_ME, person.getUser().getUsername(), "Username is null");
         assertEquals(dto.getName(), person.getName(), "Name is different");
         assertEquals(dto.getAddress(), person.getAddress(), "Address is different");
+        assertEquals(3L, person.getUser().getProfile().getKey(), "Profile is different");
     }
 
     /**

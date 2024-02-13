@@ -6,7 +6,6 @@ import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.dto.person.PersonDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonFilterDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
-import com.moraes.authenticator.api.model.dto.person.PersonMeDTO;
 
 public interface IPersonService extends IService<Person, Long> {
 
@@ -26,7 +25,7 @@ public interface IPersonService extends IService<Person, Long> {
      */
     Person findByKeyAndCompanyKey(Long key);
 
-    Long updateMe(PersonMeDTO object);
+    Long updateMe(PersonDTO object);
 
     Page<PersonListDTO> findPageAll(PersonFilterDTO filter);
 
