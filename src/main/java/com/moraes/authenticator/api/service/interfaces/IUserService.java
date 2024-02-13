@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.user.UserDTO;
 import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
-import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
 import com.moraes.authenticator.api.model.dto.user.UserResetPasswordDTO;
 import com.moraes.authenticator.api.model.dto.user.UserResetPasswordTokenDTO;
@@ -16,7 +15,7 @@ public interface IUserService extends UserDetailsService, IServiceDelete<User, L
 
     void update(UserDTO object, Long key);
 
-    void updateMe(UserMeDTO object, Long key);
+    void updateMe(UserDTO object, Long key);
 
     User preInsertMe(User user);
 

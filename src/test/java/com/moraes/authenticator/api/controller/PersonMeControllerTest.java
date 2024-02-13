@@ -25,13 +25,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moraes.authenticator.api.mock.MockPerson;
 import com.moraes.authenticator.api.mock.MockSecurity;
 import com.moraes.authenticator.api.model.Person;
+import com.moraes.authenticator.api.model.dto.person.PersonDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonMeDTO;
 
 @WebMvcTest
 class PersonMeControllerTest extends AbstractBasicControllerTest {
 
     private static final String BASE_URL = "/api/v1/person/me";
-    
+
     private MockPerson input;
 
     private MockSecurity mockSecurity;
@@ -74,7 +75,7 @@ class PersonMeControllerTest extends AbstractBasicControllerTest {
         mockSecurity.mockSuperUser();
 
         // Given / Arrange
-        final PersonMeDTO person = input.mockPersonMeDTO(1);
+        final PersonDTO person = input.mockPersonDTO(1);
         given(personService.updateMe(person)).willReturn(1L);
 
         // When / Act
@@ -97,7 +98,7 @@ class PersonMeControllerTest extends AbstractBasicControllerTest {
         mockSecurity.mockSuperUser();
 
         // Given / Arrange
-        final PersonMeDTO person = new PersonMeDTO();
+        final PersonDTO person = new PersonDTO();
         given(personService.updateMe(person)).willReturn(1L);
 
         // When / Act
@@ -110,9 +111,9 @@ class PersonMeControllerTest extends AbstractBasicControllerTest {
         response.andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath(USER_MESSAGES,
-                        hasItem("Campo \"personMeDTO.user\" deve ser informado.")))
+                        hasItem("Campo \"personDTO.user\" deve ser informado.")))
                 .andExpect(jsonPath(USER_MESSAGES,
-                        hasItem("Campo \"personMeDTO.name\" deve ser informado.")));
+                        hasItem("Campo \"personDTO.name\" deve ser informado.")));
     }
 
     @Test

@@ -6,6 +6,7 @@ import static com.moraes.authenticator.integration.api.IntegrationContextHolder.
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
@@ -102,7 +103,7 @@ public class AuthTest extends AbstractIntegrationTest {
 
         assertNotNull(token, "Token is null");
         assertNotNull(token.getAccessToken(), "Access Token is null");
-        assertNotNull(token.getRefreshToken(), "Refresh Token is null");
+        assertNull(token.getRefreshToken(), "Refresh Token is not null");
         assertTrue(token.isAuthenticated(), "Unauthenticated");
         assertTrue(new Date().before(token.getExpiration()), "Token expired");
         assertEquals(USERNAME, token.getUsername(), "Username not equal");

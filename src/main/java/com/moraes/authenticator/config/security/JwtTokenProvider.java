@@ -3,6 +3,7 @@ package com.moraes.authenticator.config.security;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +19,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.moraes.authenticator.api.exception.JwtAuthenticationException;
+import com.moraes.authenticator.api.model.Person;
+import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.util.ConstantsUtil;
 import com.moraes.authenticator.config.security.dto.TokenDTO;
 
@@ -41,6 +44,9 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length:3600000}")
     private long validityInMilliseconds = ONE_HOUR;
 
+    @Value("${security.jwt.token.expire-refresh-length:43200000}")
+    private long expirationRefreshLength = ONE_HOUR * 12;
+
     private UserDetailsService userDetailsService;
 
     private Algorithm algorithm;
@@ -51,6 +57,7 @@ public class JwtTokenProvider {
         algorithm = Algorithm.HMAC256(secretKey.getBytes());
     }
 
+    @Transactional(readOnly = true)
     public TokenDTO createAccessToken(String username, List<String> roles) {
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -89,6 +96,7 @@ public class JwtTokenProvider {
         }
     }
 
+    @Transactional(readOnly = true)
     public TokenDTO refreshToken(String refreshToken) {
         final String bearer = ConstantsUtil.BEARER + " ";
         if (StringUtils.hasText(refreshToken) && refreshToken.contains(bearer)) {
@@ -100,23 +108,28 @@ public class JwtTokenProvider {
         return createAccessToken(username, roles);
     }
 
-    private DecodedJWT decodedToken(String token) {
-        return JWT.require(algorithm).build().verify(token);
-    }
-
-    private String getAccessToken(String username, List<String> roles, Date now, Date validity) {
+    @Transactional(readOnly = true)
+    public String getAccessToken(String username, List<String> roles, Date now, Date validity) {
+        final Person person = ((User) userDetailsService.loadUserByUsername(username)).getPerson();
+        final String name = person != null && StringUtils.hasText(person.getName()) ? person.getName() : username;
         return JWT.create().withClaim(ROLES, roles)
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
                 .withSubject(username)
                 .withIssuer(ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString())
+                .withPayload(
+                        Map.of("name", name))
                 .sign(algorithm).strip();
+    }
+
+    private DecodedJWT decodedToken(String token) {
+        return JWT.require(algorithm).build().verify(token);
     }
 
     private String getRefreshToken(String username, List<String> roles, Date now) {
         return JWT.create().withClaim(ROLES, roles)
                 .withIssuedAt(now)
-                .withExpiresAt(new Date(now.getTime() + (validityInMilliseconds + ConstantsUtil.THREE)))
+                .withExpiresAt(new Date(now.getTime() + expirationRefreshLength))
                 .withSubject(username)
                 .sign(algorithm).strip();
     }

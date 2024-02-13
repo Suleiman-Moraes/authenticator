@@ -20,7 +20,6 @@ import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.ExceptionUtilDTO;
 import com.moraes.authenticator.api.model.dto.user.UserDTO;
 import com.moraes.authenticator.api.model.dto.user.UserEnabledDTO;
-import com.moraes.authenticator.api.model.dto.user.UserMeDTO;
 import com.moraes.authenticator.api.model.dto.user.UserNewPasswordDTO;
 import com.moraes.authenticator.api.model.dto.user.UserResetPasswordDTO;
 import com.moraes.authenticator.api.model.dto.user.UserResetPasswordTokenDTO;
@@ -33,6 +32,7 @@ import com.moraes.authenticator.api.service.interfaces.IUserService;
 import com.moraes.authenticator.api.util.ConstantsUtil;
 import com.moraes.authenticator.api.util.ExceptionsUtil;
 import com.moraes.authenticator.api.util.MessagesUtil;
+import com.moraes.authenticator.api.util.SecurityUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -75,10 +75,14 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-    public void updateMe(UserMeDTO object, Long key) {
+    public void updateMe(UserDTO object, Long key) {
         validMe(key, object.getUsername());
         User entity = findByKey(key);
         entity.setUsername(object.getUsername());
+        if (SecurityUtil.hasRoleAdmin()) {
+            ExceptionsUtil.throwValidExceptions(validProfileKey(key, object.getProfile().getKey()));
+            entity.setProfile(Profile.builder().key(object.getProfile().getKey()).build());
+        }
         save(entity);
     }
 
@@ -133,7 +137,10 @@ public class UserService implements IUserService {
 
     @Override
     public User preInsertMe(User user) {
-        user.setProfile(new Profile());
+        user.setProfile(Profile.builder()
+                .key(Long.parseLong(
+                        paramService.findByNameIfNotExistsCreate(ParamEnum.USER_DEFAULT_PROFILE_KEY).getValue()))
+                .build());
         profileService.preInsertMe(user.getProfile());
         return user;
     }
@@ -196,11 +203,15 @@ public class UserService implements IUserService {
         key = key != null ? key : 0;
         ExceptionsUtil.throwValidExceptions(
                 getValidUsernameUnique(key, username),
-                ExceptionUtilDTO.builder()
-                        .condition(ConstantsUtil.ONE.longValue() != profileKey
-                                || ConstantsUtil.ONE.longValue() == key)
-                        .messageKey("user.profile.unavailable")
-                        .build());
+                validProfileKey(key, profileKey));
+    }
+
+    public ExceptionUtilDTO validProfileKey(Long key, Long profileKey) {
+        return ExceptionUtilDTO.builder()
+                .condition(ConstantsUtil.ONE.longValue() != profileKey
+                        || ConstantsUtil.ONE.longValue() == key)
+                .messageKey("user.profile.unavailable")
+                .build();
     }
 
     /**
@@ -234,16 +245,16 @@ public class UserService implements IUserService {
         }
     }
 
+    public void save(User entity) {
+        repository.save(entity);
+    }
+
     private ExceptionUtilDTO getValidUsernameUnique(Long key, String username) {
         return ExceptionUtilDTO.builder()
                 .condition(!repository.existsByUsernameAndKeyNot(username,
                         key))
                 .messageKey("user.username.unique")
                 .build();
-    }
-
-    private void save(User entity) {
-        repository.save(entity);
     }
 
     private User updateEnabled(UserEnabledDTO entity, User user) {
@@ -253,6 +264,7 @@ public class UserService implements IUserService {
     }
 
     private User findByKeyAndCompanyKey(Long key) {
-        return repository.findByKeyAndCompanyKey(key, getMe().getCompany().getKey()).orElseThrow(ResourceNotFoundException::new);
+        return repository.findByKeyAndCompanyKey(key, getMe().getCompany().getKey())
+                .orElseThrow(ResourceNotFoundException::new);
     }
 }

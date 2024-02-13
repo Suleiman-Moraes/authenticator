@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -26,6 +28,7 @@ import com.moraes.authenticator.api.mock.MockKeyDescriptionDTO;
 import com.moraes.authenticator.api.mock.MockProfile;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.model.Profile;
+import com.moraes.authenticator.api.model.dto.FilterDTO;
 import com.moraes.authenticator.api.model.dto.KeyDescriptionDTO;
 import com.moraes.authenticator.api.model.dto.profile.ProfileDTO;
 import com.moraes.authenticator.api.model.dto.profile.ProfileFilterDTO;
@@ -94,7 +97,7 @@ class ProfileServiceTest {
         final ProfileFilterDTO filter = new ProfileFilterDTO();
         final List<KeyDescriptionDTO> list = mockKeyDescriptionDTO.mockListLongWithKey(maxSize);
         final Page<KeyDescriptionDTO> page = new PageImpl<>(list);
-        when(repository.page(filter, service.getMapOfFields(), KeyDescriptionDTO.class, Profile.class)).thenReturn(page);
+        when(repository.page(any(FilterDTO.class), any(), eq(KeyDescriptionDTO.class), eq(Profile.class), anyString(), any())).thenReturn(page);
 
         final Page<KeyDescriptionDTO> pages = service.findPageAll(filter);
         assertNotNull(pages, "Return null");

@@ -35,5 +35,6 @@ cors:
 security:
   jwt:
     token:
-      secret-key: Secrettest3
-      expire-length: 3600000
+      secret-key: ${JWT_SECRET_KEY:Secrettest3}
+      expire-length: ${JWT_EXPIRE_LENGTH:3600000}
+      expire-refresh-length: ${JWT_EXPIRE_REFRESH_LENGTH:43200000}
