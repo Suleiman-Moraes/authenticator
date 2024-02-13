@@ -106,14 +106,17 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     @Order(3)
     @DisplayName("JUnit Integration test Given PersonMeDTO And Context When updateMe Then return key")
     void testIntegrationGivenPersonMeDTOAndContextWhenUpdateMeThenReturnKey() throws Exception {
+        PersonDTO personDTO = input.mockPersonDTO(1);
         final String name = "John Doe";
+        personDTO.setName(name);
         dto.setName(name);
         USERNAME_ME = "userMe2";
+        personDTO.getUser().setUsername(USERNAME_ME);
         dto.getUser().setUsername(USERNAME_ME);
         final Response response = given().spec(specification)
                 .contentType(APPLICATION_JSON)
                 .header(AUTHORIZATION, ACCESS_TOKEN_ME)
-                .body(dto)
+                .body(personDTO)
                 .when()
                 .put();
         response.then().statusCode(200);
