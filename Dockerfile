@@ -1,15 +1,16 @@
+FROM ubuntu:latest AS build
+
+RUN apt-get update
+RUN apt-get install openjdk-17-jdk -y
+COPY . .
+
+RUN apt-get install maven -y
+RUN mvn clean install -DskipTests -Dtest=!com.moraes.authenticator.integration.*
+
 FROM openjdk:17-alpine
 
-# Copy the current directory contents into the container at /app
-COPY target/*.jar app.jar
-
-# Make port 8080 available to the world outside this container
 EXPOSE 8080
 
-# # Define environment variables
-# ENV JAVA_OPTS=""
-# ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-"beterrabaprofile"}
+COPY --from=build /target/*.jar app.jar
 
-# Run app.jar when the container launches
-# -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE
 ENTRYPOINT [ "java", "-jar", "app.jar" ]
