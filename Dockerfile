@@ -9,7 +9,7 @@ RUN mvn clean install -DskipTests -Dtest=!com.moraes.authenticator.integration.*
 
 FROM openjdk:17-alpine
 
-EXPOSE 8080
+EXPOSE 80
 
 COPY --from=build /target/*.jar app.jar
 
