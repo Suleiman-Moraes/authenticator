@@ -1,11 +1,15 @@
-FROM ubuntu:latest AS build
+FROM ubuntu:24.04 AS build
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
+RUN apt-get update \
+    && apt-get install -y openjdk-17-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY . .
 
-RUN apt-get install maven -y
-RUN mvn clean install -DskipTests -Dtest=!com.moraes.authenticator.integration.*
+RUN apt-get update \
+    && apt-get install -y maven \
+    && mvn clean install -DskipTests -Dtest=!com.moraes.authenticator.integration.* \
+    && rm -rf /var/lib/apt/lists/*
 
 FROM openjdk:17-alpine
 
