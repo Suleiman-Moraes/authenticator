@@ -1,4 +1,4 @@
-FROM ubuntu:24.04 AS build
+FROM ubuntu:latest AS build
 
 RUN apt-get update
 RUN apt-get install openjdk-17-jdk -y
@@ -9,7 +9,7 @@ RUN mvn clean install -DskipTests -Dtest=!com.moraes.authenticator.integration.*
 
 FROM openjdk:17-alpine
 
-EXPOSE 8080
+EXPOSE 80
 
 COPY --from=build /target/*.jar app.jar
 
