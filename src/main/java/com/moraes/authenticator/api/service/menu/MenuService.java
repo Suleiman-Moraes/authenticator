@@ -27,18 +27,12 @@ public class MenuService implements IMenuService {
 
     @Transactional(readOnly = true)
     public List<MenuDTO> findAll() {
-        List<MenuDTO> dtos = new LinkedList<>();
         final List<RoleEnum> roles = SecurityUtil.getRoles();
         final List<Menu> menus = repository.findByEnabledTrueAndRolesIn(roles);
-        if (!CollectionUtils.isEmpty(menus)) {
-            menus.forEach(menu -> {
-                final MenuDTO dto = MenuDTO.builder()
+        return CollectionUtils.isEmpty(menus) ? new LinkedList<>()
+                : menus.stream().map(menu -> MenuDTO.builder()
                         .label(menu.getLabel())
                         .items(menuItemService.findAll(menu.getItems(), roles))
-                        .build();
-                dtos.add(dto);
-            });
-        }
-        return dtos;
+                        .build()).toList();
     }
 }
