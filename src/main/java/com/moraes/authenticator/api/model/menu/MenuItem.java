@@ -57,12 +57,12 @@ public class MenuItem {
     @CollectionTable(name = "menu_item_role", joinColumns = @JoinColumn(name = "id_menu_item"), schema = "menu")
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    List<RoleEnum> roles;
+    private List<RoleEnum> roles;
 
     @ElementCollection
     @CollectionTable(name = "menu_item_router_link", joinColumns = @JoinColumn(name = "id_menu_item"), schema = "menu")
     @Column(name = "comand")
-    List<String> routerLink;
+    private List<String> routerLink;
 
     @OneToMany(mappedBy = "itemParent", fetch = FetchType.LAZY)
     private List<MenuItem> items;

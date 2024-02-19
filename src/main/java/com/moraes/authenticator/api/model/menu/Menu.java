@@ -45,7 +45,7 @@ public class Menu {
     @CollectionTable(name = "menu_role", joinColumns = @JoinColumn(name = "id_menu"), schema = "menu")
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    List<RoleEnum> roles;
+    private List<RoleEnum> roles;
 
     @OneToMany(mappedBy = "menu", fetch = FetchType.LAZY)
     private List<MenuItem> items;
