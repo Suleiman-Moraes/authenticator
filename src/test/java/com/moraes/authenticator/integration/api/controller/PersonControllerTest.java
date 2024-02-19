@@ -275,10 +275,20 @@ public class PersonControllerTest extends AbstractIntegrationTest {
 
     @Test
     @Order(10)
-    @DisplayName("JUnit Integration test Given fake key When delete with COMMON_USER Role Then return bad request")
+    @DisplayName("JUnit Integration test Given fake key When delete with COMMON_USER Role Then return Unauthorized")
     void testIntegrationGivenFakeKeyWhenDeleteWithCommonUserThenReturnBadRequest() throws Exception {
         AuthTest.checkAuthCommonUser(specification, mapper);
         delete(1L, ACCESS_TOKEN_ME).then().statusCode(403);
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("JUnit Integration test Given fake key When delete without Auth Then return Unauthorized")
+    void testIntegrationGivenFakeKeyWhenDeleteWithoutAuthThenReturnBadRequest() throws Exception {
+        given().spec(specification)
+                .pathParam(NAME_KEY, 1L)
+                .when()
+                .delete(PATH_KEY).then().statusCode(403);
     }
 
     private Response delete(Long key) {
