@@ -17,8 +17,8 @@ services:
       - auth-net
 
   authenticator:
-    # build: './'
-    image: authenticator
+    build: './'
+    # image: authenticator
     container_name: authenticator
     restart: always
     depends_on:
