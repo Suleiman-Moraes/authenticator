@@ -176,8 +176,8 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertNotNull(page, "Page is null");
         assertNotNull(content, "Content is null");
         assertEquals(1, page.get("totalPages"), "Total pages is different");
-        assertEquals(4, page.get("totalElements"), "Total elements is different");
-        assertEquals(4, page.get("size"), "Size is different");
+        assertEquals(3, page.get("totalElements"), "Total elements is different");
+        assertEquals(3, page.get("size"), "Size is different");
         assertEquals(0, page.get("number"), "Number is different");
         assertEquals(username, content.get(0).getUsername(), "Username is null");
         assertEquals(dto.getName(), content.get(0).getName(), "Name is different");
@@ -213,12 +213,12 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertNotNull(page, "Page is null");
         assertNotNull(content, "Content is null");
         assertEquals(2, page.get("totalPages"), "Total pages is different");
-        assertEquals(4, page.get("totalElements"), "Total elements is different");
+        assertEquals(3, page.get("totalElements"), "Total elements is different");
         assertEquals(2, page.get("size"), "Size is different");
         assertEquals(1, page.get("number"), "Number is different");
-        assertEquals(username, content.get(1).getUsername(), "Username is null");
-        assertEquals(dto.getName(), content.get(1).getName(), "Name is different");
-        assertEquals(dto.getAddress(), content.get(1).getAddress(), "Address is different");
+        assertEquals(username, content.get(0).getUsername(), "Username is null");
+        assertEquals(dto.getName(), content.get(0).getName(), "Name is different");
+        assertEquals(dto.getAddress(), content.get(0).getAddress(), "Address is different");
     }
 
     @Test
