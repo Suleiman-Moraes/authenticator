@@ -1,8 +1,11 @@
 package com.moraes.authenticator.integration.api.controller;
 
 import static com.moraes.authenticator.integration.api.IntegrationContextHolder.ACCESS_TOKEN;
+import static com.moraes.authenticator.integration.api.IntegrationContextHolder.ACCESS_TOKEN_ME;
 import static com.moraes.authenticator.integration.api.IntegrationContextHolder.BASIC_TOKEN;
+import static com.moraes.authenticator.integration.api.IntegrationContextHolder.PASSWORD_ME;
 import static com.moraes.authenticator.integration.api.IntegrationContextHolder.USERNAME;
+import static com.moraes.authenticator.integration.api.IntegrationContextHolder.USERNAME_ME;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -140,6 +143,15 @@ public class AuthTest extends AbstractIntegrationTest {
             response.then().statusCode(200);
             final TokenDTO token = mapper.readValue(response.getBody().asString(), TokenDTO.class);
             IntegrationContextHolder.setAccessToken(token.getAccessToken());
+        }
+    }
+
+    public static void checkAuthCommonUser(RequestSpecification specification, ObjectMapper mapper) throws Exception {
+        if (!StringUtils.hasText(ACCESS_TOKEN_ME)) {
+            Response response = signin(USERNAME_ME, PASSWORD_ME, specification);
+            response.then().statusCode(200);
+            final TokenDTO token = mapper.readValue(response.getBody().asString(), TokenDTO.class);
+            IntegrationContextHolder.setAccessTokenMe(token.getAccessToken());
         }
     }
 

@@ -172,6 +172,8 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
 
     private static Response insertMe(RequestSpecification specification, MockPerson input) {
         dto = input.mockPersonMeDTO(1);
+        USERNAME_ME = "userMe1";
+        PASSWORD_ME = "1234567";
         dto.getUser().setUsername(USERNAME_ME);
         dto.getUser().setPassword(PASSWORD_ME);
         return insertMe(specification, dto);

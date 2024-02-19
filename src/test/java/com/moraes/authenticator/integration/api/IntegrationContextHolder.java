@@ -4,8 +4,8 @@ public class IntegrationContextHolder {
 
     public static final String BASIC_TOKEN = "Basic d2ViOjEyMzQ1Ng==";
     public static final String USERNAME = "admin";
-    public static String USERNAME_ME = "userMe1";
-    public static String PASSWORD_ME = "1234567";
+    public static String USERNAME_ME = "susu";
+    public static String PASSWORD_ME = "123456";
 
     public static String ACCESS_TOKEN = "";
     public static String ACCESS_TOKEN_ME = "";

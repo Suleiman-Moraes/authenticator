@@ -3,6 +3,7 @@ package com.moraes.authenticator.integration.api.controller;
 import static com.moraes.authenticator.api.util.ConstantsUtil.APPLICATION_JSON;
 import static com.moraes.authenticator.api.util.ConstantsUtil.AUTHORIZATION;
 import static com.moraes.authenticator.integration.api.IntegrationContextHolder.ACCESS_TOKEN;
+import static com.moraes.authenticator.integration.api.IntegrationContextHolder.ACCESS_TOKEN_ME;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moraes.authenticator.api.controller.PersonController;
 import com.moraes.authenticator.api.mock.MockPerson;
 import com.moraes.authenticator.api.model.dto.KeyDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonDTO;
@@ -44,6 +46,9 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
+/**
+ * This class definition defines a test integration class for the {@link PersonController}
+ */
 @SuppressWarnings("unchecked")
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @Order(2)
@@ -268,9 +273,21 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         delete(key).then().statusCode(204);
     }
 
+    @Test
+    @Order(10)
+    @DisplayName("JUnit Integration test Given fake key When delete with COMMON_USER Role Then return bad request")
+    void testIntegrationGivenFakeKeyWhenDeleteWithCommonUserThenReturnBadRequest() throws Exception {
+        AuthTest.checkAuthCommonUser(specification, mapper);
+        delete(1L, ACCESS_TOKEN_ME).then().statusCode(403);
+    }
+
     private Response delete(Long key) {
+        return delete(key, ACCESS_TOKEN);
+    }
+
+    private Response delete(Long key, String token) {
         return given().spec(specification)
-                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .header(AUTHORIZATION, token)
                 .pathParam(NAME_KEY, key)
                 .when()
                 .delete(PATH_KEY);
