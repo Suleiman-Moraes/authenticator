@@ -7,30 +7,21 @@ import org.springframework.util.CollectionUtils;
 
 import com.moraes.authenticator.api.mock.interfaces.AbstractMock;
 import com.moraes.authenticator.api.model.enums.RoleEnum;
-import com.moraes.authenticator.api.model.menu.MenuItem;
+import com.moraes.authenticator.api.model.menu.Menu;
 
-public class MockMenuItem extends AbstractMock<MenuItem> {
+public class MockMenu extends AbstractMock<Menu> {
 
     private List<RoleEnum> roles;
     private List<String> routerLink;
 
     @Override
-    protected Class<MenuItem> getClazz() {
-        return MenuItem.class;
+    protected Class<Menu> getClazz() {
+        return Menu.class;
     }
 
     @Override
-    protected void setOdersValues(MenuItem entity, Integer number) {
+    protected void setOdersValues(Menu entity, Integer number) {
         entity.setRoles(getRoles());
-        entity.setRouterLink(getRouterLink());
-    }
-
-    public List<MenuItem> mockEntityList(int size) {
-        List<MenuItem> entitys = new LinkedList<>();
-        for (int i = 1; i <= size; i++) {
-            entitys.add(mockEntity(i));
-        }
-        return entitys;
     }
 
     public List<RoleEnum> getRoles() {

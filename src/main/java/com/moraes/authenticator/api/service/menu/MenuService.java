@@ -2,6 +2,7 @@ package com.moraes.authenticator.api.service.menu;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,7 @@ public class MenuService implements IMenuService {
 
     @Transactional(readOnly = true)
     public List<MenuDTO> findAll() {
-        final List<RoleEnum> roles = SecurityUtil.getRoles();
+        final List<RoleEnum> roles = Optional.ofNullable(SecurityUtil.getRoles()).orElse(new LinkedList<>());
         final List<Menu> menus = repository.findByEnabledTrueAndRolesIn(roles);
         return CollectionUtils.isEmpty(menus) ? new LinkedList<>()
                 : menus.stream().map(menu -> MenuDTO.builder()
