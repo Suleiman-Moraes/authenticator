@@ -14,6 +14,7 @@ import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.dto.person.PersonDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonFilterDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonListDTO;
+import com.moraes.authenticator.api.model.enums.RoleEnum;
 import com.moraes.authenticator.api.repository.IPersonRepository;
 import com.moraes.authenticator.api.service.interfaces.IPersonService;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
@@ -85,8 +86,9 @@ public class PersonService implements IPersonService {
         final Map<String, Class<?>> fields = getMapOfFields();
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("companyKey", getMe().getUser().getCompany().getKey());
+        parameters.put("root", RoleEnum.ROOT);
         Page<PersonListDTO> page = repository.page(filter, fields, PersonListDTO.class, Person.class,
-                "x.user.company.key = :companyKey", parameters);
+                "x.user.company.key = :companyKey AND :root NOT IN ELEMENTS(x.user.profile.roles)", parameters);
         page.getContent().forEach(dto -> addLinks(dto, (long) dto.getKey(), PersonController.class));
         return page;
     }

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:authenticator_db}?createDatabaseIfNotExist=true&currentSchema=authenticator
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:postgres}?createDatabaseIfNotExist=true&currentSchema=authenticator
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:123456} 
     driverClassName: org.postgresql.Driver
@@ -30,7 +30,7 @@ springdoc:
 
 logging:
   level:
-    root: ${LOG_LEVEL:ERROR}
+    root: ${LOG_LEVEL:INFO}
 
 cors:
   originPatterns: http://localhost:8080,http://localhost:4200
@@ -39,5 +39,5 @@ security:
   jwt:
     token:
       secret-key: ${JWT_SECRET_KEY:Secrettest3}
-      expire-length: ${JWT_EXPIRE_LENGTH:300000}
+      expire-length: ${JWT_EXPIRE_LENGTH:3600000}
       expire-refresh-length: ${JWT_EXPIRE_REFRESH_LENGTH:43200000}

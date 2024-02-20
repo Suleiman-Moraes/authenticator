@@ -51,7 +51,7 @@ public class SecurityConfig {
                                 .requestMatchers(antMatcher("/api/v1/**")).authenticated()
                                 .requestMatchers(antMatcher("/users")).denyAll())
                 .cors(withDefaults())
-                .apply(new JwtConfigurer(jwtTokenProvider));
+                .with(new JwtConfigurer(jwtTokenProvider), dsl -> dsl.configure(http));
         return http.build();
     }
 
