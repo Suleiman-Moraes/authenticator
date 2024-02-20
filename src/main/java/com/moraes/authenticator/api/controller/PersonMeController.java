@@ -24,9 +24,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class PersonMeController {
 
-    private IPersonService service;
+    private final IPersonService service;
 
-    private IBasicTokenService basicTokenService;
+    private final IBasicTokenService basicTokenService;
 
     @GetMapping
     public ResponseEntity<PersonDTO> getMe() {
