@@ -30,7 +30,7 @@ springdoc:
 
 logging:
   level:
-    root: ${LOG_LEVEL:ERROR}
+    root: ${LOG_LEVEL:INFO}
 
 cors:
   originPatterns: http://localhost:8080,http://localhost:4200

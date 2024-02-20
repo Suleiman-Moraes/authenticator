@@ -18,8 +18,8 @@ public class MenuItemService implements IMenuItemService {
     @Override
     @Transactional(readOnly = true)
     public List<MenuItemDTO> findAll(List<MenuItem> items, List<RoleEnum> roles) {
-        List<MenuItemDTO> dtos = new LinkedList<>();
         if (!CollectionUtils.isEmpty(items)) {
+            List<MenuItemDTO> dtos = new LinkedList<>();
             items.forEach(item -> {
                 if (Boolean.TRUE.equals(item.getEnabled())
                         && (CollectionUtils.isEmpty(item.getRoles()) || roles.stream()
@@ -32,7 +32,8 @@ public class MenuItemService implements IMenuItemService {
                             .build());
                 }
             });
+            return dtos;
         }
-        return dtos;
+        return null;
     }
 }

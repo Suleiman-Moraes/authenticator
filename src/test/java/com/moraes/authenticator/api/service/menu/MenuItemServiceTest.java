@@ -2,6 +2,7 @@ package com.moraes.authenticator.api.service.menu;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +36,7 @@ class MenuItemServiceTest {
     @Test
     @DisplayName("Junit Test Given Null List When FindAll Then Return Empty List")
     void givenNullListWhenFindAllThenReturnEmptyList() {
-        assertEquals(0, service.findAll(null, null).size(), "List is not empty");
+        assertNull(service.findAll(null, null), "List is not null");
     }
 
     @Test
@@ -52,7 +53,7 @@ class MenuItemServiceTest {
         assertNotNull(result, "List is null");
         assertEquals(3, result.size(), "List size is not equal");
         assertEquals(2, result.get(1).getItems().size(), "List size of second item is not equal");
-        assertEquals(0, result.get(0).getItems().size(), "List size of first item is not equal");
+        assertNull(result.get(0).getItems(), "List is not null");
 
         MenuItemDTO firstItem = result.get(0);
         assertEquals("Teste String1", firstItem.getLabel(), "First item label is not equal");
@@ -72,7 +73,7 @@ class MenuItemServiceTest {
 
         assertNotNull(result, "List is null");
         assertEquals(1, result.size(), "List size is not equal");
-        assertEquals(0, result.get(0).getItems().size(), "List size of first item is not equal");
+        assertNull(result.get(0).getItems(), "List is not null");
 
         MenuItemDTO firstItem = result.get(0);
         assertEquals("Teste String1", firstItem.getLabel(), "First item label is not equal");
