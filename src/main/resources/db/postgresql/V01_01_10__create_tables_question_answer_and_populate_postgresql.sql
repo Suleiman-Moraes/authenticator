@@ -7,8 +7,14 @@ CREATE TABLE IF NOT EXISTS menu.question (
     order_question INTEGER NOT NULL,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     required BOOLEAN NOT NULL DEFAULT FALSE,
+    id_company BIGINT,
     PRIMARY KEY (id)
 );
+
+ALTER TABLE
+    IF EXISTS menu.question
+ADD
+    CONSTRAINT fk_question_company_id FOREIGN KEY (id_company) REFERENCES authenticator.company;
 
 ALTER TABLE
     IF EXISTS menu.question

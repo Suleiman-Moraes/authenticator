@@ -2,6 +2,7 @@ package com.moraes.authenticator.api.model.menu;
 
 import java.util.List;
 
+import com.moraes.authenticator.api.model.Company;
 import com.moraes.authenticator.api.model.enums.TypeEnum;
 import com.moraes.authenticator.api.model.enums.TypeFromEnum;
 
@@ -13,6 +14,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -61,6 +64,10 @@ public class Question {
     @Builder.Default
     @Column(nullable = false)
     private boolean required = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_company")
+    private Company company;
 
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY)
     private List<Answer> answers;
