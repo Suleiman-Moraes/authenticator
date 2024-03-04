@@ -1,10 +1,12 @@
 package com.moraes.authenticator.api.model.menu;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.moraes.authenticator.api.model.Company;
 import com.moraes.authenticator.api.model.enums.TypeEnum;
 import com.moraes.authenticator.api.model.enums.TypeFromEnum;
+import com.moraes.authenticator.api.model.interfaces.IModel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,7 +35,7 @@ import lombok.NoArgsConstructor;
         @UniqueConstraint(name = "unique_question_type_from_value", columnNames = { "type_from", "value" }),
         @UniqueConstraint(name = "unique_question_type_from_order", columnNames = { "type_from", "order" })
 })
-public class Question {
+public class Question implements Serializable, IModel<Long> {
 
     @Id
     @Column(name = "id")
