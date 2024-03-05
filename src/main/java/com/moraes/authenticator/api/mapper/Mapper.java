@@ -21,6 +21,11 @@ public final class Mapper {
         return getModelMapper().map(origin, destination);
     }
 
+    public static <O, D> D parseObjectForUpdate(O origin, D destination) {
+        getModelMapper().map(origin, destination);
+        return destination;
+    }
+
     public static <O, D> Optional<List<D>> parseObjects(List<O> origins, Class<D> destination) {
         if (CollectionUtils.isEmpty(origins)) {
             return Optional.empty();

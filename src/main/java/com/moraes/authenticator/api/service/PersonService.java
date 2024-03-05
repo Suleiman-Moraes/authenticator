@@ -36,7 +36,7 @@ public class PersonService implements IPersonService {
     public void update(PersonDTO object, Long key) {
         Person entity = findByKeyAndCompanyKey(key);
         final Long userId = entity.getUser().getKey();
-        saveForUpdate(Mapper.parseObject(object, Person.class), entity);
+        saveForUpdate(Mapper.parseObjectForUpdate(object, entity), entity);
         userService.update(object.getUser(), userId);
     }
 
@@ -63,7 +63,7 @@ public class PersonService implements IPersonService {
     public Long insert(Person object) {
         userService.validInsert(object.getUser());
         repository.save(object);
-        userService.insert(object.getUser(), object.getKey());
+        userService.insertForAdmin(object.getUser(), object.getKey());
         return object.getKey();
     }
 
@@ -118,7 +118,6 @@ public class PersonService implements IPersonService {
      */
     private void saveForUpdate(Person entityNew, Person entity) {
         // validate here
-        entityNew.setKey(entity.getKey());
         repository.save(entityNew);
         // Set user = null for avoid unsaved transient instance
         entity.setUser(null);

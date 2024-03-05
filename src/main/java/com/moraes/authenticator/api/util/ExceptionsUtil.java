@@ -26,6 +26,15 @@ public final class ExceptionsUtil {
         }
     }
 
+    /**
+     * A method to throw valid exceptions based on the provided ExceptionUtilDTO
+     * This Java method takes in a variable number of ExceptionUtilDTO objects and
+     * checks if any of them meet a certain condition. If any of the exceptions meet
+     * the condition, it collects error messages and throws a {@link ValidException} with
+     * the error messages.
+     *
+     * @param exceptions variable number of {@link ExceptionUtilDTO} objects
+     */
     public static void throwValidExceptions(ExceptionUtilDTO... exceptions) {
         if (exceptions != null) {
             List<String> errors = new LinkedList<>();
