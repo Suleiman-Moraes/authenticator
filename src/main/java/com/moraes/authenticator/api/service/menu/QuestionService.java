@@ -33,8 +33,8 @@ public class QuestionService implements IQuestionService {
     @Transactional
     @Override
     public Long insert(Question entity) {
-        valid(entity);
         entity.setCompany(userService.getMe().getCompany());
+        valid(entity);
         entity.setOrder(Optional.ofNullable(entity.getOrder())
                 .orElseGet(() -> getNextOrder(entity.getCompany().getKey(), entity.getTypeFrom())));
         repository.save(entity);

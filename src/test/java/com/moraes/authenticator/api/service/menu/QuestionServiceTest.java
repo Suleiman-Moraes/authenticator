@@ -1,26 +1,38 @@
 package com.moraes.authenticator.api.service.menu;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
+import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.mock.menu.MockQuestion;
 import com.moraes.authenticator.api.model.User;
+import com.moraes.authenticator.api.model.dto.menu.question.QuestionAllDTO;
+import com.moraes.authenticator.api.model.enums.TypeFromEnum;
 import com.moraes.authenticator.api.model.menu.Question;
 import com.moraes.authenticator.api.repository.IQuestionRepository;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
@@ -40,6 +52,9 @@ class QuestionServiceTest {
 
     @Mock
     private IUserService userService;
+
+    @Captor
+    private ArgumentCaptor<Question> questionCaptor;
 
     private Question entity;
 
@@ -81,6 +96,88 @@ class QuestionServiceTest {
 
         assertEquals(KEY, key, "Key not equal");
         verify(service, times(1)).getNextOrder(anyLong(), any());
+    }
+
+    @Test
+    @DisplayName("Junit Test Given List of Question And TypeFromEnum When insertAll Then Return List of Question Key")
+    void testGivenListOfQuestionAndTypeFromEnumWhenInsertAllThenReturnListOfQuestionKey() {
+        mockUserServiceGetMe();
+
+        final TypeFromEnum typeFromEnum = TypeFromEnum.PERSON;
+        final int sizeList = 5;
+        final int sizeValidList = sizeList - 1;
+        List<QuestionAllDTO> dtos = input.mockQuestionAllDTOList(sizeList);
+        dtos.set(1, null);
+
+        final List<Long> keys = service.insertAll(dtos, typeFromEnum);
+
+        assertNotNull(keys, "Return null");
+        assertEquals(sizeList, keys.size(), "Size not equal");
+        verify(service, times(sizeValidList)).insert(any(Question.class));
+
+        ArgumentCaptor<Question> questionCaptor = ArgumentCaptor.forClass(Question.class);
+        verify(service, times(sizeValidList)).insert(questionCaptor.capture());
+        Question capturedQuestion = questionCaptor.getValue();
+        assertEquals(typeFromEnum, capturedQuestion.getTypeFrom(), "TypeFromEnum not equal");
+        assertEquals(sizeValidList, capturedQuestion.getOrder(), "Order not equal");
+    }
+
+    @Test
+    @DisplayName("Junit Test Given Question And Key When Update Then Return Question Key")
+    void testGivenQuestionAndKeyWhenUpdateThenReturnQuestionKey() {
+        when(repository.findById(KEY)).thenReturn(Optional.of(entity));
+        mockUserServiceGetMe();
+
+        final Long key = service.update(input.mockQuestionDTO(1), KEY);
+
+        assertEquals(KEY, key, "Key not equal");
+    }
+
+    @Test
+    @DisplayName("Junit Test Given Question When Valid Then Does not Throw Exception")
+    void testGivenQuestionWhenValidThenDoesNotThrowException() {
+        assertDoesNotThrow(() -> service.valid(entity), "Does Not Throw");
+    }
+
+    @Test
+    @DisplayName("Junit Test Given Question When Valid Then Throw Exception")
+    void testGivenQuestionWhenValidThenThrowException() {
+        when(repository.existsByKeyNotAndCompanyKeyAndTypeFromAndValueIgnoreCase(eq(KEY), eq(null),
+                any(TypeFromEnum.class), anyString())).thenReturn(true);
+        when(repository.existsByKeyNotAndCompanyKeyAndTypeFromAndOrder(eq(KEY), eq(null),
+                any(TypeFromEnum.class), anyInt())).thenReturn(true);
+
+        final ValidException exception = assertThrows(ValidException.class, () -> service.valid(entity),
+                "Should Throw ValidException");
+
+        assertNotNull(exception, "Exception is null");
+        assertEquals(exception.getErrs().size(), 2, "Return size of errors is different");
+        assertTrue(exception.getErrs().containsAll(
+                List.of("question.company_typeFrom_value.duplicate", "question.company_typeFrom_order.duplicate")),
+                "Return errors is different");
+    }
+
+    @Test
+    @DisplayName("Junit Test Given CompanyKey and TypeFromEnum When GetNextOrder Then Return Next Order")
+    void testGivenCompanyKeyAndTypeFromEnumWhenGetNextOrderThenReturnNextOrder() {
+        final Long companyKey = 1L;
+        final TypeFromEnum typeFrom = TypeFromEnum.PERSON;
+
+        final int nextOrder = service.getNextOrder(companyKey, typeFrom);
+
+        assertEquals(1, nextOrder, "NextOrder not equal");
+    }
+
+    @Test
+    @DisplayName("Junit Test Given CompanyKey and TypeFromEnum When GetNextOrder Then Return Next Order Greater Than 1")
+    void testGivenCompanyKeyAndTypeFromEnumWhenGetNextOrderThenReturnNextOrderGreaterThan1() {
+        final Long companyKey = 1L;
+        final TypeFromEnum typeFrom = TypeFromEnum.PERSON;
+        when(repository.findMaxOrderByCompanyKeyAndTypeFrom(companyKey, typeFrom)).thenReturn(Optional.of(1));
+
+        final int nextOrder = service.getNextOrder(companyKey, typeFrom);
+
+        assertEquals(2, nextOrder, "NextOrder not equal");
     }
 
     private void mockUserServiceGetMe() {
