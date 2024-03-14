@@ -15,7 +15,7 @@ public interface IUserService extends UserDetailsService, IServiceDelete<User, L
 
     void update(UserDTO object, Long key);
 
-    void updateMe(UserDTO object, Long key);
+    void updateMe(UserDTO object, User entity);
 
     User preInsertMe(User user);
 
@@ -66,4 +66,12 @@ public interface IUserService extends UserDetailsService, IServiceDelete<User, L
      * @return description of return value
      */
     void resetPassword(UserResetPasswordTokenDTO userResetPasswordTokenDTO);
+
+    /**
+     * Only pass fields not objects as you can use with Entity and DTO
+     *
+     * @param key
+     * @param username
+     */
+    void validMe(Long key, String username);
 }
