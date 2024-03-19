@@ -9,6 +9,7 @@ import org.mapstruct.Mapper;
 public interface UserMapper {
 
 	@Named("updateFromUserDTOForMe")
+	@BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 	@Mapping(target = "profile", ignore = true)
 	@Mapping(target = "password", ignore = true)
 	void updateFromUserDTOForMe(@MappingTarget User user, UserDTO userDTO);
