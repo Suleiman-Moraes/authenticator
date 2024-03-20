@@ -13,4 +13,6 @@ public interface IQuestionService extends IService<Question, Long> {
     List<Long> insertAll(List<QuestionAllDTO> dtos, TypeFromEnum typeFrom);
 
     Long update(QuestionDTO dto, Long key);
+
+    Question findByKeyAndCompanyKey(Long key);
 }

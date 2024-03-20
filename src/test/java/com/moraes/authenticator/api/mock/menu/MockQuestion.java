@@ -27,6 +27,12 @@ public class MockQuestion extends AbstractMock<Question> {
         entity.setTypeFrom(TypeFromEnum.PERSON);
     }
 
+    public Question mockEntityWithAnswers(Integer number){
+        Question entity = mockEntity(number);
+        entity.setAnswers(new MockAnswer().mockEntityList(number, 5));
+        return entity;
+    }
+
     public QuestionAllDTO mockQuestionAllDTO(Integer number) {
         try {
             QuestionAllDTO entity = new QuestionAllDTO();

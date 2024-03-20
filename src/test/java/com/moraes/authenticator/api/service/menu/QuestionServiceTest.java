@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
+import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.exception.ValidException;
 import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.mock.menu.MockQuestion;
@@ -151,7 +152,7 @@ class QuestionServiceTest {
                 "Should Throw ValidException");
 
         assertNotNull(exception, "Exception is null");
-        assertEquals(exception.getErrs().size(), 2, "Return size of errors is different");
+        assertEquals(2, exception.getErrs().size(), "Return size of errors is different");
         assertTrue(exception.getErrs().containsAll(
                 List.of("question.company_typeFrom_value.duplicate", "question.company_typeFrom_order.duplicate")),
                 "Return errors is different");
@@ -180,9 +181,54 @@ class QuestionServiceTest {
         assertEquals(2, nextOrder, "NextOrder not equal");
     }
 
+    @Test
+    @DisplayName("Junit Test Given Key and Context When FindByKeyAndCompanyKey Then Return Question")
+    void testGivenKeyAndCompanyKeyWhenFindByKeyAndCompanyKeyThenReturnQuestion() {
+        mockFindByKeyAndUserCompanyKey();
+
+        assertEquals(entity, service.findByKeyAndCompanyKey(KEY), "Entity not equal");
+    }
+
+    @Test
+    @DisplayName("Junit Test Given wrong Key and Context When FindByKeyAndCompanyKey Then throw ResourceNotFoundException")
+    void testGivenKeyWrongAndContextWhenFindByKeyAndCompanyKeyThenThrowResourceNotFoundException() {
+        final Long wrongKey = 2L;
+        mockUserServiceGetMe();
+
+        assertThrows(ResourceNotFoundException.class, () -> service.findByKeyAndCompanyKey(wrongKey), "Does Not Throw");
+    }
+
+    @Test
+    @DisplayName("Junit Test Given Key When Delete Then Does not Throw Exception")
+    void testGivenKeyWhenDeleteThenDoesNotThrowException() {
+        mockFindByKeyAndUserCompanyKey();
+
+        assertDoesNotThrow(() -> service.delete(KEY), "Does Not Throw");
+    }
+
+    @Test
+    @DisplayName("Junit Test Given Key When Delete Then Throw ValidException")
+    void testGivenKeyWhenDeleteThenThrowValidException() {
+        mockUserServiceGetMe();
+        when(repository.findByKeyAndUserCompanyKey(KEY, KEY)).thenReturn(Optional.of(input.mockEntityWithAnswers(1)));
+
+        final ValidException exception = assertThrows(ValidException.class, () -> service.delete(KEY),
+                "Does Not Throw");
+        assertNotNull(exception, "Exception is null");
+        assertEquals(1, exception.getErrs().size(), "Return size of errors is different");
+        assertTrue(exception.getErrs().containsAll(
+                List.of("question.answers.delete_error")),
+                "Return errors is different");
+    }
+
     private void mockUserServiceGetMe() {
         User user = new MockUser().mockEntity(1);
         user.getCompany().setKey(KEY);
         when(userService.getMe()).thenReturn(user);
+    }
+
+    private void mockFindByKeyAndUserCompanyKey() {
+        mockUserServiceGetMe();
+        when(repository.findByKeyAndUserCompanyKey(KEY, KEY)).thenReturn(Optional.of(entity));
     }
 }

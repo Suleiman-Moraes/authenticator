@@ -14,4 +14,6 @@ public interface IQuestionRepository extends IExtendedRepository<Question, Long>
             Integer order);
 
     Optional<Integer> findMaxOrderByCompanyKeyAndTypeFrom(Long companyKey, TypeFromEnum typeFrom);
+
+    Optional<Question> findByKeyAndUserCompanyKey(Long key, Long companyKey);
 }

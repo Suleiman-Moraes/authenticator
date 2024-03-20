@@ -6,7 +6,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.mapper.Mapper;
 import com.moraes.authenticator.api.model.dto.ExceptionUtilDTO;
 import com.moraes.authenticator.api.model.dto.menu.question.QuestionAllDTO;
@@ -60,10 +62,29 @@ public class QuestionService implements IQuestionService {
     @Transactional
     @Override
     public Long update(QuestionDTO dto, Long key) {
-        final Question entity = Mapper.parseObjectForUpdate(dto, findByKey(key));
+        final Question entity = Mapper.parseObjectForUpdate(dto, findByKeyAndCompanyKey(key));
         valid(entity);
         repository.save(entity);
         return key;
+    }
+
+    @Transactional
+    @Override
+    public void delete(Long key) {
+        Question entity = findByKeyAndCompanyKey(key);
+        ExceptionsUtil.throwValidExceptions(
+                ExceptionUtilDTO.builder()
+                        .condition(CollectionUtils.isEmpty(entity.getAnswers()))
+                        .messageKey("question.answers.delete_error")
+                        .build());
+        repository.delete(entity);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Question findByKeyAndCompanyKey(Long key) {
+        return repository.findByKeyAndUserCompanyKey(key, userService.getMe().getCompany().getKey())
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     public void valid(Question entity) {
