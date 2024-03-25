@@ -9,10 +9,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.moraes.authenticator.api.model.enums.TypeEnum;
 import com.moraes.authenticator.api.model.enums.TypeFromEnum;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -29,27 +25,21 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class QuestionDTO extends RepresentationModel<QuestionDTO> implements Serializable {
+public class QuestionListDTO extends RepresentationModel<QuestionListDTO> implements Serializable {
 
-    @NotBlank
-    @Size(min = 3, max = 255)
+    private Long key;
+
     private String value;
 
-    @Size(min = 1, max = 50)
     private String mask;
 
-    @Min(1)
     private Integer order;
 
-    @NotNull
     private TypeFromEnum typeFrom;
 
-    @NotNull
     private TypeEnum type;
 
-    @Builder.Default
-    private boolean enabled = true;
+    private boolean enabled;
 
-    @Builder.Default
-    private boolean required = false;
+    private boolean required;
 }

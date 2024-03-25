@@ -1,18 +1,25 @@
 package com.moraes.authenticator.api.service.menu;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import com.moraes.authenticator.api.controller.QuestionController;
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.mapper.Mapper;
 import com.moraes.authenticator.api.model.dto.ExceptionUtilDTO;
 import com.moraes.authenticator.api.model.dto.menu.question.QuestionAllDTO;
 import com.moraes.authenticator.api.model.dto.menu.question.QuestionDTO;
+import com.moraes.authenticator.api.model.dto.menu.question.QuestionFilterDTO;
+import com.moraes.authenticator.api.model.dto.menu.question.QuestionListDTO;
+import com.moraes.authenticator.api.model.enums.TypeEnum;
 import com.moraes.authenticator.api.model.enums.TypeFromEnum;
 import com.moraes.authenticator.api.model.menu.Question;
 import com.moraes.authenticator.api.repository.IQuestionRepository;
@@ -87,6 +94,18 @@ public class QuestionService implements IQuestionService {
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<QuestionListDTO> findPageAll(QuestionFilterDTO filter) {
+        final Map<String, Class<?>> fields = getMapOfFields();
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("companyKey", userService.getMe().getCompany().getKey());
+        Page<QuestionListDTO> page = repository.page(filter, fields, QuestionListDTO.class, Question.class,
+                "x.company.key = :companyKey", parameters);
+        page.getContent().forEach(dto -> addLinks(dto, (long) dto.getKey(), QuestionController.class));
+        return page;
+    }
+
     public void valid(Question entity) {
         final Long key = Optional.ofNullable(entity.getKey()).orElse(0L);
         final Long companyKey = entity.getCompany().getKey();
@@ -108,5 +127,18 @@ public class QuestionService implements IQuestionService {
 
     public int getNextOrder(Long companyKey, TypeFromEnum typeFrom) {
         return repository.findMaxOrderByCompanyKeyAndTypeFrom(companyKey, typeFrom).orElse(0) + 1;
+    }
+
+    private Map<String, Class<?>> getMapOfFields() {
+        final Map<String, Class<?>> fields = new LinkedHashMap<>();
+        fields.put("x.key", Number.class);
+        fields.put("x.value", String.class);
+        fields.put("x.mask", String.class);
+        fields.put("x.order", Integer.class);
+        fields.put("x.typeFrom", TypeFromEnum.class);
+        fields.put("x.type", TypeEnum.class);
+        fields.put("x.enabled", Boolean.class);
+        fields.put("x.required", Boolean.class);
+        return fields;
     }
 }

@@ -26,6 +26,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.exception.ValidException;
@@ -33,6 +35,8 @@ import com.moraes.authenticator.api.mock.MockUser;
 import com.moraes.authenticator.api.mock.menu.MockQuestion;
 import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.menu.question.QuestionAllDTO;
+import com.moraes.authenticator.api.model.dto.menu.question.QuestionFilterDTO;
+import com.moraes.authenticator.api.model.dto.menu.question.QuestionListDTO;
 import com.moraes.authenticator.api.model.enums.TypeFromEnum;
 import com.moraes.authenticator.api.model.menu.Question;
 import com.moraes.authenticator.api.repository.IQuestionRepository;
@@ -126,8 +130,7 @@ class QuestionServiceTest {
     @Test
     @DisplayName("Junit Test Given Question And Key When Update Then Return Question Key")
     void testGivenQuestionAndKeyWhenUpdateThenReturnQuestionKey() {
-        when(repository.findById(KEY)).thenReturn(Optional.of(entity));
-        mockUserServiceGetMe();
+        mockFindByKeyAndUserCompanyKey();
 
         final Long key = service.update(input.mockQuestionDTO(1), KEY);
 
@@ -219,6 +222,36 @@ class QuestionServiceTest {
         assertTrue(exception.getErrs().containsAll(
                 List.of("question.answers.delete_error")),
                 "Return errors is different");
+    }
+
+    @Test
+    @DisplayName("Junit Test Given Filter When FindPageAll Then Return Page")
+    void testGivenFilterWhenFindPageAllThenReturnPage() {
+        final int maxSize = 10;
+        final QuestionFilterDTO filter = new QuestionFilterDTO();
+        final List<QuestionListDTO> list = input.mockQuestionListDTOListWithKey(maxSize);
+        final Page<QuestionListDTO> page = new PageImpl<>(list);
+
+        mockUserServiceGetMe();
+        when(repository.page(eq(filter), any(), eq(QuestionListDTO.class), eq(Question.class), anyString(), any()))
+                .thenReturn(page);
+
+        final Page<QuestionListDTO> pages = service.findPageAll(filter);
+        assertNotNull(pages, "Return null");
+        for (int index = 1; index <= maxSize; index++) {
+            final var dto = pages.getContent().get(index - 1);
+            final var entity = list.get(index - 1);
+            assertEquals(dto.getLinks().toList().get(0).getHref(), "/api/v1/question/" + index,
+                    "Href not equal");
+            assertEquals(dto.getKey(), entity.getKey(), "Key not equal");
+            assertEquals(dto.getValue(), entity.getValue(), "Value not equal");
+            assertEquals(dto.getMask(), entity.getMask(), "Mask not equal");
+            assertEquals(dto.getOrder(), entity.getOrder(), "Order not equal");
+            assertEquals(dto.getTypeFrom(), entity.getTypeFrom(), "TypeFrom not equal");
+            assertEquals(dto.getType(), entity.getType(), "Type not equal");
+            assertEquals(dto.isEnabled(), entity.isEnabled(), "Enabled not equal");
+            assertEquals(dto.isRequired(), entity.isRequired(), "Required not equal");
+        }
     }
 
     private void mockUserServiceGetMe() {
