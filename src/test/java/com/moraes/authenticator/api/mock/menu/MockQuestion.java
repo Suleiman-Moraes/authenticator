@@ -94,4 +94,14 @@ public class MockQuestion extends AbstractMock<Question> {
         }
         return null;
     }
+
+    public QuestionDTO mockQuestionDTOWrongValues() {
+        return QuestionDTO.builder()
+                .value(MockUtil.getStringBySize(256))
+                .mask(MockUtil.getStringBySize(51))
+                .order(0)
+                .type(TypeEnum.TEXT)
+                .typeFrom(TypeFromEnum.PERSON)
+                .build();
+    }
 }

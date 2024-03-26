@@ -90,7 +90,7 @@ public class QuestionService implements IQuestionService {
     @Transactional(readOnly = true)
     @Override
     public Question findByKeyAndCompanyKey(Long key) {
-        return repository.findByKeyAndUserCompanyKey(key, userService.getMe().getCompany().getKey())
+        return repository.findByKeyAndCompanyKey(key, userService.getMe().getCompany().getKey())
                 .orElseThrow(ResourceNotFoundException::new);
     }
 

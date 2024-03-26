@@ -1,5 +1,7 @@
 package com.moraes.authenticator.api.controller;
 
+import java.net.URI;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +37,8 @@ public class PersonController implements IController<PersonDTO, Long> {
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/{key}")
     public ResponseEntity<PersonDTO> findByKey(@PathVariable Long key) {
-        PersonDTO dto = service.parseObject(service.findByKeyAndCompanyKey(key), PersonDTO.class, PersonController.class);
+        PersonDTO dto = service.parseObject(service.findByKeyAndCompanyKey(key), PersonDTO.class,
+                PersonController.class);
         dto.getUser().setPassword(null);
         return ResponseEntity.ok(dto);
     }
@@ -44,7 +47,7 @@ public class PersonController implements IController<PersonDTO, Long> {
     @PostMapping
     public ResponseEntity<Long> insert(@RequestBody @Valid PersonDTO object) {
         final Long id = service.insert(Mapper.parseObject(object, Person.class));
-        return ResponseEntity.status(HttpStatus.CREATED).body(id);
+        return ResponseEntity.created(URI.create(String.format("/api/v1/person/%s", id))).body(id);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

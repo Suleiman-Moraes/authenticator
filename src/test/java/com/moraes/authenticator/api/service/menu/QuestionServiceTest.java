@@ -213,7 +213,7 @@ class QuestionServiceTest {
     @DisplayName("Junit Test Given Key When Delete Then Throw ValidException")
     void testGivenKeyWhenDeleteThenThrowValidException() {
         mockUserServiceGetMe();
-        when(repository.findByKeyAndUserCompanyKey(KEY, KEY)).thenReturn(Optional.of(input.mockEntityWithAnswers(1)));
+        when(repository.findByKeyAndCompanyKey(KEY, KEY)).thenReturn(Optional.of(input.mockEntityWithAnswers(1)));
 
         final ValidException exception = assertThrows(ValidException.class, () -> service.delete(KEY),
                 "Does Not Throw");
@@ -262,6 +262,6 @@ class QuestionServiceTest {
 
     private void mockFindByKeyAndUserCompanyKey() {
         mockUserServiceGetMe();
-        when(repository.findByKeyAndUserCompanyKey(KEY, KEY)).thenReturn(Optional.of(entity));
+        when(repository.findByKeyAndCompanyKey(KEY, KEY)).thenReturn(Optional.of(entity));
     }
 }
