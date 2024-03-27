@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -209,5 +210,19 @@ public class QuestionControllerTest extends AbstractBasicControllerTest {
                 .andExpect(jsonPath("$.totalElements", is(input.getMaxSize())))
                 .andExpect(jsonPath("$.size", is(10)))
                 .andExpect(jsonPath("$.content.size()", is(10)));
+    }
+
+    @Test
+    @DisplayName("JUnit test Given key When delete Then return NoContent")
+    void testGivenKeyWhenDeleteThenReturnNoContent() throws Exception {
+        // Mock Auth
+        mockSecurity.mockSuperUser();
+
+        // When / Act
+        ResultActions response = mockMvc.perform(delete(BASE_URL_KEY, 1L)
+                .with(csrf()));
+
+        // Then / Assert
+        response.andDo(print()).andExpect(status().isNoContent());
     }
 }
