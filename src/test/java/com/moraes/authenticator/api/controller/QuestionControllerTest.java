@@ -19,6 +19,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -184,5 +186,28 @@ public class QuestionControllerTest extends AbstractBasicControllerTest {
         response.andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath(USER_MESSAGES.concat(".length()")).value(3));
+    }
+
+    @Test
+    @DisplayName("JUnit test Given QuestionFilterDTO When findAll Then return Page of QuestionListDTO")
+    void testGivenQuestionFilterDTOWhenFindAllThenReturnPageOfQuestionListDTO() throws Exception {
+        // Mock Auth
+        mockSecurity.mockSuperUser();
+
+        // Given / Arrange
+        final PageRequest pageRequest = PageRequest.of(0, 10);
+        given(questionService.findPageAll(any()))
+                .willReturn(new PageImpl<>(input.mockQuestionListDTOList(10), pageRequest,
+                        input.getMaxSize()));
+
+        // When / Act
+        ResultActions response = mockMvc.perform(get(BASE_URL));
+
+        // Then / Assert
+        response.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements", is(input.getMaxSize())))
+                .andExpect(jsonPath("$.size", is(10)))
+                .andExpect(jsonPath("$.content.size()", is(10)));
     }
 }

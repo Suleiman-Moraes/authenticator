@@ -13,10 +13,16 @@ import com.moraes.authenticator.api.model.enums.TypeFromEnum;
 import com.moraes.authenticator.api.model.menu.Question;
 import com.moraes.authenticator.api.util.MockUtil;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MockQuestion extends AbstractMock<Question> {
+
+    @Setter
+    @Getter
+    private int maxSize = 14;
 
     @Override
     protected Class<Question> getClazz() {
@@ -103,5 +109,13 @@ public class MockQuestion extends AbstractMock<Question> {
                 .type(TypeEnum.TEXT)
                 .typeFrom(TypeFromEnum.PERSON)
                 .build();
+    }
+
+    public List<QuestionListDTO> mockQuestionListDTOList(int maxSize) {
+        List<QuestionListDTO> entitys = new LinkedList<>();
+        for (int i = 1; i <= maxSize; i++) {
+            entitys.add(mockQuestionListDTO(i));
+        }
+        return entitys;
     }
 }
