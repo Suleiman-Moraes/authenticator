@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moraes.authenticator.api.mock.MockSecurity;
 import com.moraes.authenticator.api.mock.menu.MockQuestion;
 import com.moraes.authenticator.api.model.dto.menu.question.QuestionDTO;
+import com.moraes.authenticator.api.model.enums.TypeFromEnum;
 import com.moraes.authenticator.api.model.menu.Question;
 
 @WebMvcTest
@@ -224,5 +225,64 @@ public class QuestionControllerTest extends AbstractBasicControllerTest {
 
         // Then / Assert
         response.andDo(print()).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("JUnit test Given List of QuestionAllDTO and TypeFrom When insertAll Then return List of Long")
+    void testGivenListOfQuestionAllDTOAndTypeFromWhenInsertAllThenReturnListOfLong() throws Exception {
+        // Mock Auth
+        mockSecurity.mockSuperUser();
+
+        // Given / Arrange
+        final TypeFromEnum typeFrom = TypeFromEnum.PERSON;
+
+        // When / Act
+        ResultActions response = mockMvc.perform(post(BASE_URL.concat("/all"))
+                .param("typeFrom", typeFrom.name())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(input.mockQuestionAllDTOList(1)))
+                .with(csrf()));
+
+        // Then / Assert
+        response.andDo(print())
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("JUnit test Given Empty List of QuestionAllDTO and TypeFrom When insertAll Then return BadRequest")
+    void testGivenEmptyListOfQuestionAllDTOAndTypeFromWhenInsertAllThenReturnBadRequest() throws Exception {
+        // Mock Auth
+        mockSecurity.mockSuperUser();
+
+        // Given / Arrange
+        final TypeFromEnum typeFrom = TypeFromEnum.PERSON;
+
+        // When / Act
+        ResultActions response = mockMvc.perform(post(BASE_URL.concat("/all"))
+                .param("typeFrom", typeFrom.name())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("[]")
+                .with(csrf()));
+
+        // Then / Assert
+        response.andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("JUnit test Given Null List of QuestionAllDTO and Null TypeFrom When insertAll Then return BadRequest")
+    void testGivenNullListOfQuestionAllDTOAndNullTypeFromWhenInsertAllThenReturnBadRequest() throws Exception {
+        // Mock Auth
+        mockSecurity.mockSuperUser();
+
+        // When / Act
+        ResultActions response = mockMvc.perform(post(BASE_URL.concat("/all"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("")
+                .with(csrf()));
+
+        // Then / Assert
+        response.andDo(print())
+                .andExpect(status().isBadRequest());
     }
 }
