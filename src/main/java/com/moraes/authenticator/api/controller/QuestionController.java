@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,5 +41,12 @@ public class QuestionController implements IController<QuestionDTO, Long> {
     public ResponseEntity<Long> insert(@RequestBody @Valid QuestionDTO object) {
         final Long id = service.insert(Mapper.parseObject(object, Question.class));
         return ResponseEntity.created(URI.create(String.format("/api/v1/question/%s", id))).body(id);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping(value = "/{key}")
+    public ResponseEntity<Long> update(@RequestBody @Valid QuestionDTO object, @PathVariable long key) {
+        service.update(object, key);
+        return ResponseEntity.ok(key);
     }
 }

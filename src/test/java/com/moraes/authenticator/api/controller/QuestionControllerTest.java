@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -144,5 +145,44 @@ public class QuestionControllerTest extends AbstractBasicControllerTest {
                         hasItem("O tamanho do campo \"questionDTO.mask\" deve estar entre 1 e 50.")))
                 .andExpect(jsonPath(USER_MESSAGES,
                         hasItem("Valor mínimo do campo \"questionDTO.order\", deve ser 1.")));
+    }
+
+    @Test
+    @DisplayName("JUnit test Given QuestionDTO and key When update Then return Long")
+    void testGivenQuestionDTOWhenUpdateThenReturnLong() throws Exception {
+        // Mock Auth
+        mockSecurity.mockSuperUser();
+
+        // Given / Arrange
+
+        // When / Act
+        ResultActions response = mockMvc.perform(put(BASE_URL_KEY, 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(input.mockQuestionDTO(1)))
+                .with(csrf()));
+
+        // Then / Assert
+        response.andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("JUnit test Given QuestionDTO and key When update Then return BadRequest")
+    void testGivenQuestionDTOWhenUpdateThenReturnBadRequest() throws Exception {
+        // Mock Auth
+        mockSecurity.mockSuperUser();
+
+        // Given / Arrange
+
+        // When / Act
+        ResultActions response = mockMvc.perform(put(BASE_URL_KEY, 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}")
+                .with(csrf()));
+
+        // Then / Assert
+        response.andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(USER_MESSAGES.concat(".length()")).value(3));
     }
 }
