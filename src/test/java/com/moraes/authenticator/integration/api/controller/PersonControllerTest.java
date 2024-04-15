@@ -56,6 +56,7 @@ import io.restassured.specification.RequestSpecification;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PersonControllerTest extends AbstractIntegrationTest {
 
+    private static final String USERNAME_IS_NULL = "Username is null";
     private static final String NAME_KEY = "key";
     private static final String PATH_KEY = "{key}";
     private static final String BASE_URL = "/api/v1/person";
@@ -119,7 +120,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertNotNull(dtoResponse.getUser(), "User is null");
         assertNotNull(dto.getUser().getProfile(), "Profile is null");
         assertNull(dtoResponse.getUser().getPassword(), "Password is not null");
-        assertEquals(username, dtoResponse.getUser().getUsername(), "Username is null");
+        assertEquals(username, dtoResponse.getUser().getUsername(), USERNAME_IS_NULL);
         assertEquals(dto.getName(), dtoResponse.getName(), "Name is different");
         assertEquals(dto.getAddress(), dtoResponse.getAddress(), "Address is different");
         assertEquals(dto.getUser().getProfile().getKey(), dtoResponse.getUser().getProfile().getKey(),
@@ -179,7 +180,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertEquals(3, page.get("totalElements"), "Total elements is different");
         assertEquals(3, page.get("size"), "Size is different");
         assertEquals(0, page.get("number"), "Number is different");
-        assertEquals(username, content.get(0).getUsername(), "Username is null");
+        assertEquals(username, content.get(0).getUsername(), USERNAME_IS_NULL);
         assertEquals(dto.getName(), content.get(0).getName(), "Name is different");
         assertEquals(dto.getAddress(), content.get(0).getAddress(), "Address is different");
     }
@@ -216,7 +217,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertEquals(3, page.get("totalElements"), "Total elements is different");
         assertEquals(2, page.get("size"), "Size is different");
         assertEquals(1, page.get("number"), "Number is different");
-        assertEquals(username, content.get(0).getUsername(), "Username is null");
+        assertEquals(username, content.get(0).getUsername(), USERNAME_IS_NULL);
         assertEquals(dto.getName(), content.get(0).getName(), "Name is different");
         assertEquals(dto.getAddress(), content.get(0).getAddress(), "Address is different");
     }

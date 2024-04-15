@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moraes.authenticator.api.controller.QuestionController;
 import com.moraes.authenticator.api.mock.menu.MockQuestion;
 import com.moraes.authenticator.api.model.dto.menu.question.QuestionDTO;
+import com.moraes.authenticator.api.model.enums.TypeEnum;
 import com.moraes.authenticator.config.AbstractIntegrationTest;
 import com.moraes.authenticator.config.TestConfig;
 
@@ -110,6 +111,37 @@ public class QuestionControllerTest extends AbstractIntegrationTest {
         assertEquals(dto.getType(), dtoResponse.getType(), "Type not equal");
         assertTrue(dtoResponse.isEnabled(), "Enabled not equal");
         assertTrue(dtoResponse.isRequired(), "Required not equal");
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("JUnit Integration test Given QuestionDTO and key When update Then return key")
+    void testIntegrationGivenQuestionDTOAndKeyWhenUpdateThenReturnKey() throws Exception {
+
+        final String newValue = "newValue";
+        final String newMask = "newMask";
+        final Integer newOrder = 3;
+        final TypeEnum newType = TypeEnum.TIME;
+        final boolean newEnabled = false;
+        final boolean newRequired = true;
+
+        dto.setValue(newValue);
+        dto.setMask(newMask);
+        dto.setOrder(newOrder);
+        dto.setType(newType);
+        dto.setEnabled(newEnabled);
+        dto.setRequired(newRequired);
+
+        final Response response = given().spec(specification)
+                .pathParam(NAME_KEY, key)
+                .contentType(APPLICATION_JSON)
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .body(dto)
+                .when()
+                .put(PATH_KEY);
+        response.then().statusCode(200);
+        final Long newKey = mapper.readValue(response.getBody().asString(), Long.class);
+        assertEquals(key, newKey, "Key is not equal");
     }
 
     private static Response findByKey() throws JsonProcessingException {
