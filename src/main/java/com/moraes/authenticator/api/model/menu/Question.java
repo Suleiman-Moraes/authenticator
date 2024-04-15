@@ -32,8 +32,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "question", schema = "menu", uniqueConstraints = {
-        @UniqueConstraint(name = "unique_question_type_from_value", columnNames = { "type_from", "value" }),
-        @UniqueConstraint(name = "unique_question_type_from_order", columnNames = { "type_from", "order" })
+        @UniqueConstraint(name = "unique_question_type_from_value", columnNames = { "type_from", "value", "id_company" }),
+        @UniqueConstraint(name = "unique_question_type_from_order", columnNames = { "type_from", "order", "id_company" })
 })
 public class Question implements Serializable, IModel<Long> {
 
@@ -68,7 +68,7 @@ public class Question implements Serializable, IModel<Long> {
     private boolean required = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_company")
+    @JoinColumn(name = "id_company", nullable = false)
     private Company company;
 
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY)

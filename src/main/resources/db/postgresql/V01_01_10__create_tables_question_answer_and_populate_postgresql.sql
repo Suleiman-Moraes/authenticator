@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS menu.question (
     order_question INTEGER NOT NULL,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     required BOOLEAN NOT NULL DEFAULT FALSE,
-    id_company BIGINT,
+    id_company BIGINT NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -19,12 +19,12 @@ ADD
 ALTER TABLE
     IF EXISTS menu.question
 ADD
-    CONSTRAINT unique_question_type_from_value UNIQUE (type_from, value);
+    CONSTRAINT unique_question_type_from_value_id_company UNIQUE (type_from, value, id_company);
 
 ALTER TABLE
     IF EXISTS menu.question
 ADD
-    CONSTRAINT unique_question_type_from_order UNIQUE (type_from, order_question);
+    CONSTRAINT unique_question_type_from_order_id_company UNIQUE (type_from, order_question, id_company);
 
 CREATE TABLE IF NOT EXISTS menu.answer (
     id BIGSERIAL NOT NULL,
@@ -50,7 +50,8 @@ INSERT INTO
         mask,
         type_from,
         type,
-        order_question
+        order_question,
+        id_company
     )
 VALUES
-    ('Telefone', '999 999 999', 'PERSON', 'MASK', 1);
+    ('Telefone', '999 999 999', 'PERSON', 'MASK', 1, 1);
