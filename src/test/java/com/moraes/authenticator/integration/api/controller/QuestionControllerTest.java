@@ -8,6 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.DisplayName;
@@ -19,12 +22,17 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moraes.authenticator.api.controller.QuestionController;
 import com.moraes.authenticator.api.mock.menu.MockQuestion;
 import com.moraes.authenticator.api.model.dto.menu.question.QuestionDTO;
+import com.moraes.authenticator.api.model.dto.menu.question.QuestionFilterDTO;
+import com.moraes.authenticator.api.model.dto.menu.question.QuestionListDTO;
 import com.moraes.authenticator.api.model.enums.TypeEnum;
+import com.moraes.authenticator.api.model.enums.TypeFromEnum;
+import com.moraes.authenticator.api.util.JsonObjectUtil;
 import com.moraes.authenticator.config.AbstractIntegrationTest;
 import com.moraes.authenticator.config.TestConfig;
 
@@ -109,8 +117,8 @@ public class QuestionControllerTest extends AbstractIntegrationTest {
         assertEquals(dto.getOrder(), dtoResponse.getOrder(), "Order not equal");
         assertEquals(dto.getTypeFrom(), dtoResponse.getTypeFrom(), "TypeFrom not equal");
         assertEquals(dto.getType(), dtoResponse.getType(), "Type not equal");
-        assertTrue(dtoResponse.isEnabled(), "Enabled not equal");
-        assertTrue(dtoResponse.isRequired(), "Required not equal");
+        assertTrue(dto.isEnabled() == dtoResponse.isEnabled(), "Enabled not equal");
+        assertTrue(dto.isRequired() == dtoResponse.isRequired(), "Required not equal");
     }
 
     @Test
@@ -142,6 +150,71 @@ public class QuestionControllerTest extends AbstractIntegrationTest {
         response.then().statusCode(200);
         final Long newKey = mapper.readValue(response.getBody().asString(), Long.class);
         assertEquals(key, newKey, "Key is not equal");
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("JUnit Integration test Given Key When findByKey After update Then return QuestionDTO with updated data")
+    void testIntegrationGivenKeyWhenFindByKeyAfterUpdateThenReturnQuestionDTO() throws Exception {
+        testIntegrationGivenKeyWhenFindByKeyThenReturnQuestionDTO();
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("JUnit Integration test Given List of QuestionAllDTO and typeFrom When insertAll Then return List of keys")
+    void testIntegrationGivenListOfQuestionAllDTOAndTypeFromWhenInsertAllThenReturnListOfKeys() throws Exception {
+        final Response response = given().spec(specification)
+                .queryParams("typeFrom", TypeFromEnum.PERSON)
+                .contentType(APPLICATION_JSON)
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .body(input.mockQuestionAllDTOList(2))
+                .when()
+                .post("all");
+
+        response.then().statusCode(201);
+        final List<Long> keys = mapper.readValue(response.getBody().asString(),
+                new TypeReference<>() {
+                });
+
+        assertNotNull(keys, "Keys is null");
+        assertEquals(2, keys.size(), "Size is different");
+        assertTrue(keys.get(0) > key, "Key[0] is not greater than original key");
+        assertTrue(keys.get(1) > keys.get(0), "Key[1] is not greater than key[0]");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    @Order(6)
+    @DisplayName("JUnit Integration test Given QuestionFilterDTO with paginate false When findAll Then return Page")
+    void testIntegrationGivenQuestionFilterDTOWithPaginateFalseWhenFindAllThenReturnPage() throws Exception {
+        final QuestionFilterDTO personFilter = new QuestionFilterDTO();
+
+        final Response response = given().spec(specification)
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .params(JsonObjectUtil.convertObjectToMap(personFilter))
+                .when()
+                .get();
+
+        response.then().statusCode(200);
+
+        final Map<String, Object> page = mapper.readValue(response.getBody().asString(),
+                new TypeReference<>() {
+                });
+        final List<QuestionListDTO> content = JsonObjectUtil
+                .convertMapsToListOfSomething((List<Map<String, Object>>) page.get("content"), QuestionListDTO.class);
+
+        assertNotNull(page, "Page is null");
+        assertNotNull(content, "Content is null");
+        assertEquals(1, page.get("totalPages"), "Total pages is different");
+        assertEquals(4, page.get("totalElements"), "Total elements is different");
+        assertEquals(4, page.get("size"), "Size is different");
+        assertEquals(0, page.get("number"), "Number is different");
+
+        assertEquals(dto.getValue(), content.get(2).getValue(), "Value is different");
+        assertEquals(dto.getMask(), content.get(2).getMask(), "Mask is different");
+        assertEquals(dto.getOrder(), content.get(2).getOrder(), "Order is different");
+        assertEquals(dto.getTypeFrom(), content.get(2).getTypeFrom(), "TypeFrom is different");
+        assertEquals(dto.getType(), content.get(2).getType(), "Type is different");
     }
 
     private static Response findByKey() throws JsonProcessingException {
