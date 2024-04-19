@@ -22,6 +22,7 @@ public class AuxiliaryListService implements IAuxiliaryListService {
                 .collect(Collectors.toList());
     }
 
+    // TODO test - Exception
     public List<KeyDescriptionDTO<String>> getEnumList(Class<? extends IDescription> clazz) {
         try {
             IDescription[] vet = clazz.getEnumConstants();

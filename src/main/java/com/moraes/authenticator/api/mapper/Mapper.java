@@ -26,6 +26,7 @@ public final class Mapper {
         return destination;
     }
 
+    // TODO test
     public static <O, D> Optional<List<D>> parseObjects(List<O> origins, Class<D> destination) {
         if (CollectionUtils.isEmpty(origins)) {
             return Optional.empty();

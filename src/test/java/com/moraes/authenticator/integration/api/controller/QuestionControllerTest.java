@@ -63,6 +63,8 @@ public class QuestionControllerTest extends AbstractIntegrationTest {
     private static QuestionDTO dto;
     private static Long key;
 
+    private static List<Long> keys;
+
     @BeforeAll
     public static void setup() {
         // Create an ObjectMapper instance
@@ -117,8 +119,8 @@ public class QuestionControllerTest extends AbstractIntegrationTest {
         assertEquals(dto.getOrder(), dtoResponse.getOrder(), "Order not equal");
         assertEquals(dto.getTypeFrom(), dtoResponse.getTypeFrom(), "TypeFrom not equal");
         assertEquals(dto.getType(), dtoResponse.getType(), "Type not equal");
-        assertTrue(dto.isEnabled() == dtoResponse.isEnabled(), "Enabled not equal");
-        assertTrue(dto.isRequired() == dtoResponse.isRequired(), "Required not equal");
+        assertEquals(dto.isEnabled(), dtoResponse.isEnabled(), "Enabled not equal");
+        assertEquals(dto.isRequired(), dtoResponse.isRequired(), "Required not equal");
     }
 
     @Test
@@ -172,7 +174,7 @@ public class QuestionControllerTest extends AbstractIntegrationTest {
                 .post("all");
 
         response.then().statusCode(201);
-        final List<Long> keys = mapper.readValue(response.getBody().asString(),
+        keys = mapper.readValue(response.getBody().asString(),
                 new TypeReference<>() {
                 });
 
@@ -217,11 +219,57 @@ public class QuestionControllerTest extends AbstractIntegrationTest {
         assertEquals(dto.getType(), content.get(2).getType(), "Type is different");
     }
 
+    @Test
+    @Order(7)
+    @DisplayName("JUnit Integration test Given key When delete Then return no content")
+    void testIntegrationGivenKeyWhenDeleteThenReturnNoContent() throws Exception {
+        delete(key).then().statusCode(204);
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("JUnit Integration test Given Key When findByKey After delete Then return not found")
+    void testIntegrationGivenKeyWhenFindByKeyAfterDeleteThenReturnNotFound() throws Exception {
+        findByKey().then().statusCode(404);
+    }
+
+    @Test
+    @Order(100)
+    @DisplayName("JUnit Integration test Given Nothing When After all Then clear database")
+    void testIntegrationGivenNothingWhenAfterAllThenClearDatabase() throws Exception {
+        keys.forEach(this::clearByKey);
+    }
+
+    private void clearByKey(Long key) {
+        try {
+            delete(key).then().statusCode(204);
+            findByKey(key).then().statusCode(404);
+        } catch (Exception e) {
+            assertTrue(Boolean.FALSE, e.getMessage());
+        }
+    }
+
+    private Response delete(Long key) {
+        return delete(key, ACCESS_TOKEN);
+    }
+
     private static Response findByKey() throws JsonProcessingException {
+        return findByKey(key);
+    }
+
+    private static Response findByKey(Long key) throws JsonProcessingException {
         return given().spec(specification)
                 .pathParam(NAME_KEY, key)
                 .header(AUTHORIZATION, ACCESS_TOKEN)
                 .when()
                 .get(PATH_KEY);
+    }
+
+    private Response delete(Long key, String token) {
+        return given().spec(specification)
+                .header(AUTHORIZATION, token)
+                .pathParam(NAME_KEY, key)
+                .when()
+                .delete(PATH_KEY);
     }
 }

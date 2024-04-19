@@ -61,7 +61,7 @@ public class UserControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(1)
+    @Order(10)
     @DisplayName("JUnit Integration test Given Key and boolean false When updateEnabled Then return no content")
     void testIntegrationGivenKeyAndBooleanFalseWhenUpdateEnabledThenReturnNoContent() throws Exception {
         // Created PersonMeDTO
@@ -84,7 +84,7 @@ public class UserControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(2)
+    @Order(11)
     @DisplayName("JUnit Integration test Given Key and boolean true When updateEnabled Then return no content")
     void testIntegrationGivenKeyAndBooleanTrueWhenUpdateEnabledThenReturnNoContent() throws Exception {
         // Update enabled that new PersonMeDTO

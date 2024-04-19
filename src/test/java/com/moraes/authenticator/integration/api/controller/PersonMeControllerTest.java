@@ -2,11 +2,8 @@ package com.moraes.authenticator.integration.api.controller;
 
 import static com.moraes.authenticator.api.util.ConstantsUtil.APPLICATION_JSON;
 import static com.moraes.authenticator.api.util.ConstantsUtil.AUTHORIZATION;
-import static com.moraes.authenticator.integration.api.IntegrationContextHolder.ACCESS_TOKEN_ME;
+import static com.moraes.authenticator.integration.api.IntegrationContextHolder.ACCESS_TOKEN;
 import static com.moraes.authenticator.integration.api.IntegrationContextHolder.BASIC_TOKEN;
-import static com.moraes.authenticator.integration.api.IntegrationContextHolder.PASSWORD_ME;
-import static com.moraes.authenticator.integration.api.IntegrationContextHolder.USERNAME_ME;
-import static com.moraes.authenticator.integration.api.IntegrationContextHolder.setAccessTokenMe;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,6 +50,10 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     private static PersonMeDTO dto;
     private static Long key;
 
+    private static String USERNAME_ME = "susu";
+    private static String PASSWORD_ME = "123456";
+    private static String ACCESS_TOKEN_ME = "";
+
     @BeforeAll
     public static void setup() {
         // Create an ObjectMapper instance
@@ -71,7 +71,7 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(1)
+    @Order(10)
     @DisplayName("JUnit Integration test Given PersonMeDTO When insertMe Then return key")
     void testIntegrationGivenPersonMeDTOWhenInsertMeThenReturnKey() throws Exception {
         final Response response = insertMe(specification, input);
@@ -82,7 +82,7 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(2)
+    @Order(11)
     @DisplayName("JUnit Integration test Given Context When getMe Then return PersonDTO")
     void testIntegrationGivenContextWhenGetMeThenReturnPersonDTO() throws Exception {
         doSignin(specification, mapper);
@@ -103,7 +103,7 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
      * 
      */
     @Test
-    @Order(3)
+    @Order(12)
     @DisplayName("JUnit Integration test Given PersonMeDTO And Context When updateMe Then return key")
     void testIntegrationGivenPersonMeDTOAndContextWhenUpdateMeThenReturnKey() throws Exception {
         PersonDTO personDTO = input.mockPersonDTO(1);
@@ -126,18 +126,18 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(4)
+    @Order(13)
     @DisplayName("JUnit Integration test Given Context When getMe After update Then return PersonDTO with updated data")
     void testIntegrationGivenContextWhenGetMeAfterUpdateThenReturnPersonDTO() throws Exception {
         testIntegrationGivenContextWhenGetMeThenReturnPersonDTO();
     }
 
-    public static void createPersonAndDoSigninIfNecessary(RequestSpecification specification, MockPerson mockPerson,
-            ObjectMapper mapper) throws Exception {
-        if (!StringUtils.hasText(ACCESS_TOKEN_ME)) {
-            insertMe(specification, mockPerson);
-            doSignin(specification, mapper);
-        }
+    @Test
+    @Order(100)
+    @DisplayName("JUnit Integration test Given Nothing When After all Then clear database")
+    void testIntegrationGivenNothingWhenAfterAllThenClearDatabase() throws Exception {
+        AuthTest.checkAuth(specification, mapper);
+        PersonControllerTest.delete(specification, key, ACCESS_TOKEN);
     }
 
     public static Response insertMe(RequestSpecification specification, PersonMeDTO dto) {
@@ -177,5 +177,9 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
         dto.getUser().setUsername(USERNAME_ME);
         dto.getUser().setPassword(PASSWORD_ME);
         return insertMe(specification, dto);
+    }
+
+    private static void setAccessTokenMe(String accessTokenMe) {
+        ACCESS_TOKEN_ME = String.format("Bearer %s", accessTokenMe);
     }
 }
