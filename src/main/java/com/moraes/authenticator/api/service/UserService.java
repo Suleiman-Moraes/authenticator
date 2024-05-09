@@ -4,9 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.moraes.authenticator.api.model.Company;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.exception.ValidException;
+import com.moraes.authenticator.api.model.Company;
 import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.Profile;
 import com.moraes.authenticator.api.model.User;
@@ -110,11 +108,7 @@ public class UserService implements IUserService {
 
 	@Override
 	public User getMe() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.getPrincipal() != null && authentication.getPrincipal() instanceof User user) {
-			return user;
-		}
-		return null;
+		return SecurityUtil.getPrincipal();
 	}
 
 	@Override
@@ -179,7 +173,8 @@ public class UserService implements IUserService {
 
 	@Override
 	public void resetPassword(UserResetPasswordTokenDTO userResetPasswordTokenDTO) {
-		User user = repository.findByTokenResetPasswordAndTokenResetPasswordEnabledAndEnabledAndTokenResetPasswordExpirationDateAfter(
+		User user = repository
+				.findByTokenResetPasswordAndTokenResetPasswordEnabledAndEnabledAndTokenResetPasswordExpirationDateAfter(
 						userResetPasswordTokenDTO.token(), true, true, LocalDateTime.now())
 				.orElseThrow(ResourceNotFoundException::new);
 		user.setTokenResetPasswordEnabled(false);
@@ -212,14 +207,17 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * This code snippet is a private method called verifyPassword in a Java class. It takes in a User object and a
-	 * String password as parameters. The method uses a passwordEncoder to compare the input password with the stored
-	 * password of the user. If the passwords do not match, it throws a ValidException with a specific error message.
+	 * This code snippet is a private method called verifyPassword in a Java class.
+	 * It takes in a User object and a
+	 * String password as parameters. The method uses a passwordEncoder to compare
+	 * the input password with the stored
+	 * password of the user. If the passwords do not match, it throws a
+	 * ValidException with a specific error message.
 	 *
 	 * @param user
-	 * 		the user whose password needs to be verified
+	 *                 the user whose password needs to be verified
 	 * @param password
-	 * 		the password to be verified
+	 *                 the password to be verified
 	 * @return nothing
 	 */
 	public void verifyPassword(User user, String password) {
