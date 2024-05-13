@@ -2,7 +2,7 @@ CREATE SCHEMA IF NOT EXISTS real_state;
 
 CREATE TABLE IF NOT EXISTS real_state.construction (
     id BIGSERIAL NOT NULL,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     id_company BIGINT NOT NULL,
     created_by BIGINT NULL,
@@ -36,6 +36,7 @@ ADD
 
 CREATE TABLE IF NOT EXISTS real_state.enterprise (
     id BIGSERIAL NOT NULL,
+    name VARCHAR(100) NOT NULL,
     value NUMERIC(10, 2) NOT NULL,
     vpl NUMERIC(10, 2) NULL,
     valuem2 NUMERIC(10, 2) NOT NULL,

@@ -71,6 +71,6 @@ public class MenuControllerTest extends AbstractIntegrationTest {
         });
 
         assertNotNull(dtos, "Key is null");
-        assertEquals(2, dtos.size(), "Size is different");
+        assertEquals(3, dtos.size(), "Size is different");
     }
 }
