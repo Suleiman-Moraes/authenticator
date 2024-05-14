@@ -99,7 +99,7 @@ class ConstructionServiceTest {
     void testGivenConstructionWithDuplicateNameWhenSaveThenReturnThrownValidException() {
         mockUserServiceGetMe();
 
-        when(repository.existsByIdNotAndCompanyKeyAndName(anyLong(), anyLong(), anyString())).thenReturn(false);
+        when(repository.existsByKeyNotAndCompanyKeyAndName(anyLong(), anyLong(), anyString())).thenReturn(false);
 
         final ValidException exception = assertThrows(ValidException.class, () -> service.save(entity),
                 "ValidException not thrown");
@@ -143,7 +143,7 @@ class ConstructionServiceTest {
         mockUserServiceGetMe();
 
         when(repository.save(any())).thenReturn(entity);
-        when(repository.existsByIdNotAndCompanyKeyAndName(any(), any(), anyString())).thenReturn(true);
+        when(repository.existsByKeyNotAndCompanyKeyAndName(any(), any(), anyString())).thenReturn(true);
     }
 
     private void mockUserServiceGetMe() {

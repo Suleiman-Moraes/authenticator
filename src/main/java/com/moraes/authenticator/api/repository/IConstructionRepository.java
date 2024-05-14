@@ -15,5 +15,5 @@ public interface IConstructionRepository extends JpaRepository<Construction, Lon
 
     Optional<Construction> findByNameAndCompanyKey(String name, Long companyKey);
 
-    boolean existsByIdNotAndCompanyKeyAndName(@Nullable Long key, Long companyKey, String name);
+    boolean existsByKeyNotAndCompanyKeyAndName(@Nullable Long key, Long companyKey, String name);
 }

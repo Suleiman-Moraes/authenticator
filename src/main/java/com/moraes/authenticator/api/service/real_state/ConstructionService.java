@@ -46,7 +46,7 @@ public class ConstructionService implements IConstructionService {
         entity.setCompany(Company.builder().key(getPrincipalOrThrow().getKey()).build());
 
         ExceptionsUtil.throwValidExceptions(ExceptionUtilDTO.builder()
-                .condition(repository.existsByIdNotAndCompanyKeyAndName(entity.getKey(), entity.getCompany().getKey(),
+                .condition(repository.existsByKeyNotAndCompanyKeyAndName(entity.getKey(), entity.getCompany().getKey(),
                         entity.getName()))
                 .messageKey("construction.name.duplicate")
                 .build());
