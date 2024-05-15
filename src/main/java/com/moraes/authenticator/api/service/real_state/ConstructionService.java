@@ -31,15 +31,20 @@ public class ConstructionService implements IConstructionService {
 
     @Override
     public Construction getOrInsertByName(String name) {
-        return getByNameAndCompanyKey(name).orElseGet(() -> insert(Construction.builder().name(name).build()));
+        return getByNameAndCompanyKey(name).orElseGet(() -> {
+            Construction construction = Construction.builder().name(name).build();
+            insert(construction);
+            return construction;
+        });
     }
 
     public Optional<Construction> getByNameAndCompanyKey(String name) {
         return repository.findByNameAndCompanyKey(name, getPrincipalOrThrow().getKey());
     }
 
-    public Construction insert(Construction entity) {
-        return save(entity);
+    @Override
+    public Long insert(Construction entity) {
+        return save(entity).getKey();
     }
 
     public Construction save(Construction entity) {

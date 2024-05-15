@@ -58,7 +58,7 @@ class ConstructionServiceTest {
 
     @Test
     void testGetByNameAndCompanyKey() {
-        mockUserServiceGetMe();
+        mockSuperUser();
         when(repository.findByNameAndCompanyKey(anyString(), anyLong())).thenReturn(Optional.of(entity));
 
         final Optional<Construction> optional = service.getByNameAndCompanyKey("test");
@@ -69,7 +69,7 @@ class ConstructionServiceTest {
 
     @Test
     void testGetNameAll() {
-        mockUserServiceGetMe();
+        mockSuperUser();
         when(repository.findNameByCompanyKeyAndEnabledTrueOrderByName(anyLong()))
                 .thenReturn(input.mockNameList(input.getMaxSize()));
         final List<String> list = service.getNameAll();
@@ -97,7 +97,7 @@ class ConstructionServiceTest {
     @Test
     @DisplayName("Junit Test Given Construction with duplicate name When save Then Return thrown ValidException")
     void testGivenConstructionWithDuplicateNameWhenSaveThenReturnThrownValidException() {
-        mockUserServiceGetMe();
+        mockSuperUser();
 
         when(repository.existsByKeyNotAndCompanyKeyAndName(anyLong(), anyLong(), anyString())).thenReturn(false);
 
@@ -113,15 +113,15 @@ class ConstructionServiceTest {
     void testInsert() {
         mockSaveSuccess();
 
-        final Construction construction = service.insert(entity);
+        final Long constructionKey = service.insert(entity);
 
-        assertNotNull(construction, "Construction not found");
+        assertNotNull(constructionKey, "Construction not found");
     }
 
     @Test
     @DisplayName("Junit Test Given real name When getOrInsertByName Then Return Construction")
     void testGivenRealNameWhenGetOrInsertByNameThenReturnConstruction() {
-        mockUserServiceGetMe();
+        mockSuperUser();
         when(repository.findByNameAndCompanyKey(anyString(), anyLong())).thenReturn(Optional.of(entity));
 
         final Construction construction = service.getOrInsertByName("test");
@@ -140,13 +140,13 @@ class ConstructionServiceTest {
     }
 
     private void mockSaveSuccess() {
-        mockUserServiceGetMe();
+        mockSuperUser();
 
         when(repository.save(any())).thenReturn(entity);
         when(repository.existsByKeyNotAndCompanyKeyAndName(any(), any(), anyString())).thenReturn(true);
     }
 
-    private void mockUserServiceGetMe() {
+    private void mockSuperUser() {
         mockSecurity.mockSuperUser();
     }
 }
