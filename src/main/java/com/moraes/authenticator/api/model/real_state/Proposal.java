@@ -29,14 +29,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name = "enterprise", schema = "real_state")
-public class Enterprise extends AbstractSimpleAuditingEntity {
-
-    @Column(nullable = false, length = 100)
-    private String name;
-
-    @Column(length = 100)
-    private String unit;
+@Table(name = "proposal", schema = "real_state")
+public class Proposal extends AbstractSimpleAuditingEntity {
 
     @Column(nullable = false)
     private BigDecimal value;
@@ -55,11 +49,11 @@ public class Enterprise extends AbstractSimpleAuditingEntity {
     private boolean enabled;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_construction")
-    private Construction construction;
+    @JoinColumn(name = "id_enterprise")
+    private Enterprise enterprise;
 
-    @OneToMany(mappedBy = "enterprise", fetch = FetchType.LAZY)
-    private List<Proposal> proposals;
+    @OneToMany(mappedBy = "proposal", fetch = FetchType.LAZY)
+    private List<Condition> conditions;
 
     @Override
     protected void prePersistOthers() {

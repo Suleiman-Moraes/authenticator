@@ -42,4 +42,9 @@ public class Construction extends AbstractSimpleAuditingEntity {
 
     @OneToMany(mappedBy = "construction", fetch = FetchType.LAZY)
     private List<Enterprise> enterprises;
+
+    @Override
+    protected void prePersistOthers() {
+        enabled = true;
+    }
 }
