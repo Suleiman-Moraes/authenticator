@@ -1,6 +1,9 @@
 package com.moraes.authenticator.api.util;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -42,8 +45,14 @@ public final class MockUtil {
             case "INTEGER":
             case "INT":
                 return number;
+            case "BIGDECIMAL":
+                return BigDecimal.ONE;
             case "DATE":
                 return new Date();
+            case "LOCALDATETIME":
+                return LocalDateTime.now();
+            case "LOCALDATE":
+                return LocalDate.now();
             case "STRING":
                 return "Teste String" + number;
             default:

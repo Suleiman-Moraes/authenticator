@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.moraes.authenticator.api.model.enums.FrequencyEnum;
+import com.moraes.authenticator.api.model.interfaces.IModel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "condition", schema = "real_state")
-public class Condition {
+public class Condition implements IModel<Long> {
 
     @Id
     @Column(name = "id")
