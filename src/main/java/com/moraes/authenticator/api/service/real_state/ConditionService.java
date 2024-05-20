@@ -24,6 +24,7 @@ public class ConditionService implements IConditionService {
     @Getter
     private IConditionRepository repository;
 
+    // TODO - Alterar para receber o model direto, ao invés de DTO
     @Override
     public void insertAll(List<ConditionDTO> dtos, Long proposalKey) {
         if (!CollectionUtils.isEmpty(dtos)) {

@@ -1,6 +1,6 @@
 package com.moraes.authenticator.api.service.real_state;
 
-import static com.moraes.authenticator.api.util.SecurityUtil.getPrincipalOrThrow;
+import static com.moraes.authenticator.api.util.SecurityUtil.getCompanyPrincipalOrThrow;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +26,7 @@ public class ConstructionService implements IConstructionService {
 
     @Override
     public List<String> getNameAll() {
-        return repository.findNameByCompanyKeyAndEnabledTrueOrderByName(getPrincipalOrThrow().getKey());
+        return repository.findNameByCompanyKeyAndEnabledTrueOrderByName(getCompanyPrincipalOrThrow().getKey());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ConstructionService implements IConstructionService {
     }
 
     public Optional<Construction> getByNameAndCompanyKey(String name) {
-        return repository.findByNameAndCompanyKey(name, getPrincipalOrThrow().getKey());
+        return repository.findByNameAndCompanyKey(name, getCompanyPrincipalOrThrow().getKey());
     }
 
     @Override
@@ -48,10 +48,10 @@ public class ConstructionService implements IConstructionService {
     }
 
     public Construction save(Construction entity) {
-        entity.setCompany(Company.builder().key(getPrincipalOrThrow().getKey()).build());
+        entity.setCompany(Company.builder().key(getCompanyPrincipalOrThrow().getKey()).build());
 
         ExceptionsUtil.throwValidExceptions(ExceptionUtilDTO.builder()
-                .condition(repository.existsByKeyNotAndCompanyKeyAndName(entity.getKey(), entity.getCompany().getKey(),
+                .condition(!repository.existsByKeyNotAndCompanyKeyAndName(entity.getKey(), entity.getCompany().getKey(),
                         entity.getName()))
                 .messageKey("construction.name.duplicate")
                 .build());

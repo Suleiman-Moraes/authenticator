@@ -30,7 +30,7 @@ ADD
 ALTER TABLE
     IF EXISTS real_state.construction
 ADD
-    CONSTRAINT unique_construction_name UNIQUE (name, id_company);
+    CONSTRAINT unique_construction_name_id_company UNIQUE (name, id_company);
 
 -- enterprise
 

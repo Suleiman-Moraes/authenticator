@@ -1,6 +1,6 @@
 package com.moraes.authenticator.api.service.real_state;
 
-import static com.moraes.authenticator.api.util.SecurityUtil.getPrincipalOrThrow;
+import static com.moraes.authenticator.api.util.SecurityUtil.getCompanyPrincipalOrThrow;
 
 import java.util.List;
 
@@ -27,13 +27,13 @@ public class EnterpriseService implements IEnterpriseService {
     @Override
     public List<String> getNameByConstructionName(String constructionName) {
         return repository.findDistinctNameByConstructionNameAndConstructionCompanyKeyAndEnabledTrueOrderByName(
-                constructionName, getPrincipalOrThrow().getKey());
+                constructionName, getCompanyPrincipalOrThrow().getKey());
     }
 
     @Override
     public Enterprise getByNameAndConstructionName(String name, String constructionName) {
         return repository.findTopByNameAndConstructionNameAndConstructionCompanyKeyAndEnabledTrue(name,
-                constructionName, getPrincipalOrThrow().getKey()).orElseThrow(ResourceNotFoundException::new);
+                constructionName, getCompanyPrincipalOrThrow().getKey()).orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override

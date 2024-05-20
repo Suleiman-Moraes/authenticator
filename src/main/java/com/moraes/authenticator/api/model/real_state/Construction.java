@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,10 +29,12 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name = "construction", schema = "real_state")
+@Table(name = "construction", schema = "real_state", uniqueConstraints = {
+        @UniqueConstraint(name = "unique_construction_name_id_company", columnNames = { "name", "id_company" })
+})
 public class Construction extends AbstractSimpleAuditingEntity {
 
-    @Column(nullable = false, length = 100, unique = true)
+    @Column(nullable = false, length = 100)
     private String name;
 
     private boolean enabled;

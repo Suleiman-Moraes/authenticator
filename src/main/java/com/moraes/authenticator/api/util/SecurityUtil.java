@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.moraes.authenticator.api.exception.UnauthorizedBasic;
+import com.moraes.authenticator.api.model.Company;
 import com.moraes.authenticator.api.model.User;
 import com.moraes.authenticator.api.model.dto.PermissionDTO;
 import com.moraes.authenticator.api.model.enums.RoleEnum;
@@ -47,6 +48,11 @@ public class SecurityUtil {
 
     public static User getPrincipalOrThrow() {
         return Optional.ofNullable(getPrincipal()).orElseThrow(UnauthorizedBasic::new);
+    }
+
+    // TODO test
+    public static Company getCompanyPrincipalOrThrow() {
+        return Optional.ofNullable(getPrincipalOrThrow().getCompany()).orElseThrow(UnauthorizedBasic::new);
     }
 
     private static Collection<? extends GrantedAuthority> getAuthorities() {
