@@ -22,6 +22,15 @@ public class MockSecurity {
                 .setAuthentication(new UsernamePasswordAuthenticationToken(user, "test", user.getAuthorities()));
     }
 
+    public void mockSuperUserWithNullCompany() {
+        User user = new MockUser().mockEntity(1);
+        user.setKey(KEY);
+        user.getProfile().setKey(2L);
+        user.setCompany(null);
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken(user, "test", user.getAuthorities()));
+    }
+
     public void mockUserWithoutAuthorities() {
         User user = new MockUser().mockEntity(1);
         user.setKey(KEY);

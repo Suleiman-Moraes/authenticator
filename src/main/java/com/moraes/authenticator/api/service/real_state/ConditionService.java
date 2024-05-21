@@ -7,8 +7,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.moraes.authenticator.api.mapper.Mapper;
-import com.moraes.authenticator.api.model.dto.real_state.condition.ConditionDTO;
 import com.moraes.authenticator.api.model.real_state.Condition;
 import com.moraes.authenticator.api.model.real_state.Proposal;
 import com.moraes.authenticator.api.repository.IConditionRepository;
@@ -24,16 +22,14 @@ public class ConditionService implements IConditionService {
     @Getter
     private IConditionRepository repository;
 
-    // TODO - Alterar para receber o model direto, ao invés de DTO
     @Override
-    public void insertAll(List<ConditionDTO> dtos, Long proposalKey) {
-        if (!CollectionUtils.isEmpty(dtos)) {
-            dtos.forEach(dto -> Optional.ofNullable(dto).ifPresent(d -> insert(d, proposalKey)));
+    public void insertAll(List<Condition> conditions, Long proposalKey) {
+        if (!CollectionUtils.isEmpty(conditions)) {
+            conditions.forEach(condition -> Optional.ofNullable(condition).ifPresent(d -> insert(d, proposalKey)));
         }
     }
 
-    public void insert(ConditionDTO dto, Long proposalKey) {
-        Condition condition = Mapper.parseObject(dto, Condition.class);
+    public void insert(Condition condition, Long proposalKey) {
         condition.setProposal(Proposal.builder().key(proposalKey).build());
         save(condition);
     }

@@ -30,7 +30,7 @@ public class ProposalService implements IProposalService {
         proposal.getEnterprise().setKey(
                 enterpriseService.insert(proposal.getEnterprise(), proposalDTO.getEnterprise().getConstructionName()));
         repository.save(proposal);
-        conditionService.insertAll(proposalDTO.getConditions(), proposal.getKey());
+        conditionService.insertAll(proposal.getConditions(), proposal.getKey());
         return proposal.getKey();
     }
 }

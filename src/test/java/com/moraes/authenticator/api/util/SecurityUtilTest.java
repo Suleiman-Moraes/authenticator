@@ -91,4 +91,18 @@ class SecurityUtilTest {
         mockSecurity.mockSuperUser();
         assertNotNull(SecurityUtil.getPrincipalOrThrow(), "Return not null");
     }
+
+    @Test
+    @DisplayName("Junit test given null company when getCompanyPrincipalOrThrow then throw UnauthorizedBasic")
+    void givenNullCompanyWhenGetCompanyPrincipalOrThrowThenThrowUnauthorizedBasic() {
+        mockSecurity.mockSuperUserWithNullCompany();
+        assertThrows(UnauthorizedBasic.class, SecurityUtil::getCompanyPrincipalOrThrow, "Throw UnauthorizedBasic");
+    }
+
+    @Test
+    @DisplayName("Junit test given context when getCompanyPrincipalOrThrow then return User")
+    void givenContextWhenGetCompanyPrincipalOrThrowThenReturnUser() {
+        mockSecurity.mockSuperUser();
+        assertNotNull(SecurityUtil.getCompanyPrincipalOrThrow(), "Return not null");
+    }
 }

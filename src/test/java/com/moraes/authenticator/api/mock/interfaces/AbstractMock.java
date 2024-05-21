@@ -30,8 +30,12 @@ public abstract class AbstractMock<E> {
     }
 
     public List<E> mockEntityList() {
+        return mockEntityList(14);
+    }
+
+    public List<E> mockEntityList(int size) {
         List<E> entitys = new LinkedList<>();
-        for (int i = 1; i <= 14; i++) {
+        for (int i = 1; i <= size; i++) {
             entitys.add(mockEntity(i));
         }
         return entitys;

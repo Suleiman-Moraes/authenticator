@@ -50,7 +50,6 @@ public class SecurityUtil {
         return Optional.ofNullable(getPrincipal()).orElseThrow(UnauthorizedBasic::new);
     }
 
-    // TODO test
     public static Company getCompanyPrincipalOrThrow() {
         return Optional.ofNullable(getPrincipalOrThrow().getCompany()).orElseThrow(UnauthorizedBasic::new);
     }

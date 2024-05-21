@@ -22,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import com.moraes.authenticator.api.mock.real_state.MockCondition;
-import com.moraes.authenticator.api.model.dto.real_state.condition.ConditionDTO;
 import com.moraes.authenticator.api.model.real_state.Condition;
 import com.moraes.authenticator.api.repository.IConditionRepository;
 
@@ -73,11 +72,11 @@ class ConditionServiceTest {
     @DisplayName("Junit Test Given Condition And ProposalKey When Insert Then Save Condition")
     void testGivenConditionAndProposalKeyWhenInsertThenSaveCondition() {
         final Long proposalKey = 1L;
-        final ConditionDTO dto = input.mockConditionDTO(1);
+        final Condition condition = input.mockEntity(1);
 
         when(repository.save(any())).thenReturn(entity);
 
-        assertDoesNotThrow(() -> service.insert(dto, proposalKey), "Does Not Throw");
+        assertDoesNotThrow(() -> service.insert(condition, proposalKey), "Does Not Throw");
 
         ArgumentCaptor<Condition> conditionCaptor = ArgumentCaptor.forClass(Condition.class);
         verify(service, times(1)).save(conditionCaptor.capture());
@@ -85,36 +84,35 @@ class ConditionServiceTest {
 
         assertNotNull(capturedCondition.getProposal(), "Proposal is null");
         assertEquals(proposalKey, capturedCondition.getProposal().getKey(), "ProposalKey not equal");
-        assertEquals(dto.getBeginningInstallment(), capturedCondition.getBeginningInstallment(),
+        assertEquals(condition.getBeginningInstallment(), capturedCondition.getBeginningInstallment(),
                 "BeginningInstallment not equal");
-        assertEquals(dto.getFrequency(), capturedCondition.getFrequency(), "Frequency not equal");
-        assertEquals(dto.getNumberInstallments(), capturedCondition.getNumberInstallments(),
+        assertEquals(condition.getFrequency(), capturedCondition.getFrequency(), "Frequency not equal");
+        assertEquals(condition.getNumberInstallments(), capturedCondition.getNumberInstallments(),
                 "NumberInstallments not equal");
-        assertEquals(dto.getValueInstallments(), capturedCondition.getValueInstallments(),
+        assertEquals(condition.getValueInstallments(), capturedCondition.getValueInstallments(),
                 "ValueInstallments not equal");
     }
 
     @Test
-    @DisplayName("Junit Test Given List of ConditionDTO And ProposalKey When Insert All Then Save Condition")
-    void testGivenListOfConditionDTOAndProposalKeyWhenInsertAllThenSaveCondition() {
+    @DisplayName("Junit Test Given List of Condition And ProposalKey When Insert All Then Save Condition")
+    void testGivenListOfConditionAndProposalKeyWhenInsertAllThenSaveCondition() {
         final Long proposalKey = 1L;
-        List<ConditionDTO> dtos = input.mockConditionDTOList(10);
-        dtos.set(4, null);
-        dtos.set(6, null);
+        List<Condition> conditions = input.mockEntityList(10);
+        conditions.set(4, null);
+        conditions.set(6, null);
 
         when(repository.save(any())).thenReturn(entity);
 
-        assertDoesNotThrow(() -> service.insertAll(dtos, proposalKey), "Does Not Throw");
+        assertDoesNotThrow(() -> service.insertAll(conditions, proposalKey), "Does Not Throw");
         verify(service, times(8)).insert(any(), eq(proposalKey));
     }
 
     @Test
-    @DisplayName("Junit Test Given null List of ConditionDTO And ProposalKey When Insert All Then Do Not Save Condition")
-    void testGivenNullListOfConditionDTOAndProposalKeyWhenInsertAllThenDoNotSaveCondition() {
+    @DisplayName("Junit Test Given null List of Condition And ProposalKey When Insert All Then Do Not Save Condition")
+    void testGivenNullListOfConditionAndProposalKeyWhenInsertAllThenDoNotSaveCondition() {
         final Long proposalKey = 1L;
-        final List<ConditionDTO> dtos = null;
 
-        assertDoesNotThrow(() -> service.insertAll(dtos, proposalKey), "Does Not Throw");
+        assertDoesNotThrow(() -> service.insertAll(null, proposalKey), "Does Not Throw");
         verify(service, times(0)).insert(any(), eq(proposalKey));
     }
 }
