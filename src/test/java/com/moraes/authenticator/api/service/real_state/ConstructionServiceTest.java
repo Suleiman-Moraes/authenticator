@@ -25,7 +25,6 @@ import com.moraes.authenticator.api.mock.MockSecurity;
 import com.moraes.authenticator.api.mock.real_state.MockConstruction;
 import com.moraes.authenticator.api.model.real_state.Construction;
 import com.moraes.authenticator.api.repository.IConstructionRepository;
-import com.moraes.authenticator.api.service.interfaces.IUserService;
 
 class ConstructionServiceTest {
 
@@ -40,9 +39,6 @@ class ConstructionServiceTest {
 
     @Mock
     private IConstructionRepository repository;
-
-    @Mock
-    private IUserService userService;
 
     private Construction entity;
 

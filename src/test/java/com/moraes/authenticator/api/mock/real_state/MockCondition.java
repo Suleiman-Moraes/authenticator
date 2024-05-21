@@ -44,6 +44,10 @@ public class MockCondition extends AbstractMock<Condition> {
         return null;
     }
 
+    public List<ConditionDTO> mockConditionDTOList() {
+        return mockConditionDTOList(maxSize);
+    }
+
     public List<ConditionDTO> mockConditionDTOList(int size) {
         List<ConditionDTO> entitys = new LinkedList<>();
         for (int i = 1; i <= size; i++) {
