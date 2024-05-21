@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ProposalController {
 
-    private IProposalService service;
+    private final IProposalService service;
 
     @PostMapping
     public ResponseEntity<Long> insert(@RequestBody @Valid ProposalDTO object) {
