@@ -1,5 +1,6 @@
 package com.moraes.authenticator.api.mock.real_state;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,5 +48,17 @@ public class MockEnterprise extends AbstractMock<Enterprise> {
             log.warn(e.getMessage(), e);
         }
         return null;
+    }
+
+    public EnterpriseDTO mockEnterpriseDTOWrongValues() {
+        return EnterpriseDTO.builder()
+                .value(BigDecimal.valueOf(-1))
+                .vpl(BigDecimal.ZERO)
+                .valueM2(BigDecimal.ZERO)
+                .sizeM2(BigDecimal.ZERO)
+                .name(" ")
+                .unit(MockUtil.getStringBySize(101))
+                .constructionName(MockUtil.getStringBySize(101))
+                .build();
     }
 }

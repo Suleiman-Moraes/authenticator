@@ -26,7 +26,7 @@ public class EnterpriseController {
         return ResponseEntity.ok(service.getNameByConstructionName(constructionName));
     }
 
-    @GetMapping
+    @GetMapping("/name")
     public ResponseEntity<EnterpriseDTO> getByNameAndConstructionName(@RequestParam String name,
             @RequestParam String constructionName) {
         return ResponseEntity.ok(

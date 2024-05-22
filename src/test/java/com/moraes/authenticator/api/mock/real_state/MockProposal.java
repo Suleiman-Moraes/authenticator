@@ -1,5 +1,8 @@
 package com.moraes.authenticator.api.mock.real_state;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import com.moraes.authenticator.api.mock.interfaces.AbstractMock;
 import com.moraes.authenticator.api.model.dto.real_state.proposal.ProposalDTO;
 import com.moraes.authenticator.api.model.real_state.Proposal;
@@ -38,5 +41,16 @@ public class MockProposal extends AbstractMock<Proposal> {
             log.warn(e.getMessage(), e);
         }
         return null;
+    }
+
+    public ProposalDTO mockProposalDTOWrongValues() {
+        return ProposalDTO.builder()
+                .value(BigDecimal.ZERO)
+                .vpl(BigDecimal.valueOf(-1))
+                .valueM2(BigDecimal.ZERO)
+                .sizeM2(BigDecimal.ZERO)
+                .enterprise(new MockEnterprise().mockEnterpriseDTOWrongValues())
+                .conditions(List.of(new MockCondition().mockConditionDTOWrongValues()))
+                .build();
     }
 }

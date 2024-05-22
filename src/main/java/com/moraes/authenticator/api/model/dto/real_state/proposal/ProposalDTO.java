@@ -12,6 +12,7 @@ import com.moraes.authenticator.api.model.dto.menu.question.QuestionDTO;
 import com.moraes.authenticator.api.model.dto.real_state.condition.ConditionDTO;
 import com.moraes.authenticator.api.model.dto.real_state.enterprise.EnterpriseDTO;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -50,10 +51,11 @@ public class ProposalDTO extends RepresentationModel<QuestionDTO> implements Ser
     @Positive
     private BigDecimal sizeM2;
 
+    @Valid
     @NotNull
     private EnterpriseDTO enterprise;
 
     @NotNull
     @Size(min = 1)
-    private List<@NotNull ConditionDTO> conditions;
+    private List<@NotNull @Valid ConditionDTO> conditions;
 }

@@ -39,14 +39,14 @@ public final class MockUtil {
             case "BOOLEAN":
                 return true;
             case "DOUBLE":
-                return number.doubleValue();
+                return number.doubleValue() + 0.5;
             case "LONG":
                 return number.longValue();
             case "INTEGER":
             case "INT":
                 return number;
             case "BIGDECIMAL":
-                return BigDecimal.ONE;
+                return BigDecimal.valueOf(number.doubleValue() + 0.5);
             case "DATE":
                 return new Date();
             case "LOCALDATETIME":
