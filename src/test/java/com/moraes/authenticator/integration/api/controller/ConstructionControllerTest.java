@@ -86,7 +86,7 @@ public class ConstructionControllerTest extends AbstractIntegrationTest {
         final Response response = given().spec(specification)
                 .header(AUTHORIZATION, ACCESS_TOKEN)
                 .when()
-                .get("/names");
+                .get("/name");
 
         response.then().statusCode(200);
 
