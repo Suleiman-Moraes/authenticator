@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MockConstruction extends AbstractMock<Construction> {
 
+    public static final String INTEGRATION_NAME = "Construction Name Integration Test";
+
     @Setter
     @Getter
     private int maxSize = 14;
@@ -56,5 +58,11 @@ public class MockConstruction extends AbstractMock<Construction> {
             log.warn(e.getMessage(), e);
         }
         return null;
+    }
+
+    public ConstructionDTO mockIntegrationConstructionDTO() {
+        return ConstructionDTO.builder()
+                .name(INTEGRATION_NAME)
+                .build();
     }
 }

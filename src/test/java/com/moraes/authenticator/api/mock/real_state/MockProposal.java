@@ -53,4 +53,18 @@ public class MockProposal extends AbstractMock<Proposal> {
                 .conditions(List.of(new MockCondition().mockConditionDTOWrongValues()))
                 .build();
     }
+
+    public ProposalDTO mockIntegrationProposalDTO() {
+        try {
+            ProposalDTO entity = new ProposalDTO();
+            MockUtil.toFill(entity, 99, ignoreFields);
+            // setOdersValues
+            entity.setEnterprise(new MockEnterprise().mockIntegrationEnterpriseDTO());
+            entity.setConditions(new MockCondition().mockConditionDTOList());
+            return entity;
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+        return null;
+    }
 }

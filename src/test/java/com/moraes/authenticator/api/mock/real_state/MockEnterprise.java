@@ -16,6 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MockEnterprise extends AbstractMock<Enterprise> {
 
+    public static final String INTEGRATION_NAME = "Enterprise Name Integration Test";
+    public static final String INTEGRATION_UNIT = "Enterprise Unit Integration Test";
+
     @Setter
     @Getter
     private int maxSize = 14;
@@ -60,5 +63,21 @@ public class MockEnterprise extends AbstractMock<Enterprise> {
                 .unit(MockUtil.getStringBySize(101))
                 .constructionName(MockUtil.getStringBySize(101))
                 .build();
+    }
+
+    public EnterpriseDTO mockIntegrationEnterpriseDTO() {
+        try {
+            EnterpriseDTO entity = new EnterpriseDTO();
+            MockUtil.toFill(entity, 99, ignoreFields);
+
+            entity.setName(INTEGRATION_NAME);
+            entity.setUnit(INTEGRATION_UNIT);
+            // setOdersValues
+            entity.setConstructionName(MockConstruction.INTEGRATION_NAME);
+            return entity;
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+        return null;
     }
 }
