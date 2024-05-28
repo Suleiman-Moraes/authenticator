@@ -38,6 +38,8 @@ import io.restassured.specification.RequestSpecification;
 public class AuxiliaryListControllerTest extends AbstractIntegrationTest {
 
     private static final String BASE_URL = "/api/v1/auxiliary-list";
+    private static final String PATH_KEY = "{enumName}";
+    private static final String NAME_KEY = "enumName";
 
     private static RequestSpecification specification;
     private static ObjectMapper mapper;
@@ -79,5 +81,31 @@ public class AuxiliaryListControllerTest extends AbstractIntegrationTest {
         assertEquals("ADMIN", list.get(0).getKey(), "Key is different");
         assertEquals("Common user", list.get(1).getDescription(), "Description is different");
         assertEquals("COMMON_USER", list.get(1).getKey(), "Key is different");
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("JUnit Integration test given YesNotEnum When getEnumList Then return list YesNotEnum")
+    void testIntegrationGivenYesNotEnumWhenGetEnumListThenReturnListYesNotEnum() throws Exception {
+        AuthTest.checkAuth(specification, mapper);
+        final Response response = given()
+                .spec(specification)
+                .pathParam(NAME_KEY, "YesNotEnum")
+                .header(AUTHORIZATION, ACCESS_TOKEN)
+                .when()
+                .get(PATH_KEY);
+
+        response.then()
+                .statusCode(200);
+
+        final List<KeyDescriptionDTO<String>> list = mapper.readValue(response.getBody().asString(),
+                new TypeReference<>() {
+                });
+
+        assertEquals(2, list.size(), "Size is different");
+        assertEquals("Not", list.get(0).getDescription(), "Description is different");
+        assertEquals("NOT", list.get(0).getKey(), "Key is different");
+        assertEquals("Yes", list.get(1).getDescription(), "Description is different");
+        assertEquals("YES", list.get(1).getKey(), "Key is different");
     }
 }

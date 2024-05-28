@@ -21,6 +21,8 @@ class AuxiliaryListControllerTest extends AbstractBasicControllerTest {
 
     private static final String BASE_URL = "/api/v1/auxiliary-list";
 
+    private static final String BASE_URL_KEY = BASE_URL + "/{key}";
+
     private MockKeyDescriptionDTO input;
 
     private MockSecurity mockSecurity;
@@ -41,6 +43,24 @@ class AuxiliaryListControllerTest extends AbstractBasicControllerTest {
 
         // When / Act
         ResultActions response = mockMvc.perform(get(BASE_URL + "/role-enum"));
+
+        // Then / Assert
+        response.andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(14)));
+    }
+
+    @Test
+    @DisplayName("JUnit test Given enumName When getEnumList Then return list")
+    void testGivenEnumNameWhenGetEnumListThenReturnList() throws Exception {
+        // Given / Arrange
+        final String enumName = "YesNotEnum";
+
+        // Mock Auth
+        mockSecurity.mockSuperUser();
+        given(auxiliaryListService.getEnumList(enumName)).willReturn(input.mockStringList());
+
+        // When / Act
+        ResultActions response = mockMvc.perform(get(BASE_URL_KEY, enumName));
 
         // Then / Assert
         response.andDo(print()).andExpect(status().isOk())
