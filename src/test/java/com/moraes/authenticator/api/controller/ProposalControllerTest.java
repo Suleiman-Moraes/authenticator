@@ -2,8 +2,10 @@ package com.moraes.authenticator.api.controller;
 
 import static com.moraes.authenticator.api.util.ConstantsTestUtil.USER_MESSAGES;
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -17,6 +19,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -114,5 +118,29 @@ class ProposalControllerTest extends AbstractBasicControllerTest {
         response.andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath(USER_MESSAGES.concat(".length()")).value(15));
+    }
+
+    @Test
+    @DisplayName("JUnit test Given Context When findAll Then return Page of ProposalFilterDTO")
+    void testGivenContextWhenFindAllThenReturnPageOfProposalFilterDTO() throws Exception {
+         // Mock Auth
+        mockSecurity.mockSuperUser();
+        final int size = 10;
+
+        // Given / Arrange
+        final PageRequest pageRequest = PageRequest.of(0, size);
+        given(proposalService.findPageAll(any()))
+                .willReturn(new PageImpl<>(input.mockProposalListDTOListWithKey(size), pageRequest,
+                        input.getMaxSize()));
+
+        // When / Act
+        ResultActions response = mockMvc.perform(get(BASE_URL));
+
+        // Then / Assert
+        response.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements", is(input.getMaxSize())))
+                .andExpect(jsonPath("$.size", is(size)))
+                .andExpect(jsonPath("$.content.size()", is(size)));
     }
 }

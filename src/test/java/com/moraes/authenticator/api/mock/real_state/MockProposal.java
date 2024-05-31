@@ -1,10 +1,12 @@
 package com.moraes.authenticator.api.mock.real_state;
 
 import java.math.BigDecimal;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.moraes.authenticator.api.mock.interfaces.AbstractMock;
 import com.moraes.authenticator.api.model.dto.real_state.proposal.ProposalDTO;
+import com.moraes.authenticator.api.model.dto.real_state.proposal.ProposalListDTO;
 import com.moraes.authenticator.api.model.real_state.Proposal;
 import com.moraes.authenticator.api.util.MockUtil;
 
@@ -61,6 +63,28 @@ public class MockProposal extends AbstractMock<Proposal> {
             // setOdersValues
             entity.setEnterprise(new MockEnterprise().mockIntegrationEnterpriseDTO());
             entity.setConditions(new MockCondition().mockConditionDTOList());
+            return entity;
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public List<ProposalListDTO> mockProposalListDTOListWithKey(int maxSize) {
+        List<ProposalListDTO> entitys = new LinkedList<>();
+        for (int i = 1; i <= maxSize; i++) {
+            ProposalListDTO entity = mockProposalListDTO(i);
+            entity.setKey(Integer.valueOf(i).longValue());
+            entitys.add(entity);
+        }
+        return entitys;
+    }
+
+    private ProposalListDTO mockProposalListDTO(int number) {
+        try {
+            ProposalListDTO entity = new ProposalListDTO();
+            MockUtil.toFill(entity, number, ignoreFields);
+            // setOdersValues
             return entity;
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
