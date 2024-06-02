@@ -33,7 +33,7 @@ import com.moraes.authenticator.api.model.enums.TypeFromEnum;
 import com.moraes.authenticator.api.model.menu.Question;
 
 @WebMvcTest
-public class QuestionControllerTest extends AbstractBasicControllerTest {
+class QuestionControllerTest extends AbstractBasicControllerTest {
 
     private static final String BASE_URL = "/api/v1/question";
 

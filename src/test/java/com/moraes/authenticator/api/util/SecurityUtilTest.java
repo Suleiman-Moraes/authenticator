@@ -4,12 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.moraes.authenticator.api.exception.UnauthorizedBasic;
 import com.moraes.authenticator.api.mock.MockSecurity;
 import com.moraes.authenticator.api.model.enums.RoleEnum;
 
@@ -74,5 +76,33 @@ class SecurityUtilTest {
     void testGetPrincipalNull() {
         mockSecurity.mockNullUser();
         assertNull(SecurityUtil.getPrincipal(), "Return null");
+    }
+
+    @Test
+    @DisplayName("Junit test given null context when getPrincipalOrThrow then throw UnauthorizedBasic")
+    void givenNullContextWhenGetPrincipalOrThrowThenThrowUnauthorizedBasic() {
+        mockSecurity.mockNullUser();
+        assertThrows(UnauthorizedBasic.class, SecurityUtil::getPrincipalOrThrow, "Throw UnauthorizedBasic");
+    }
+    
+    @Test
+    @DisplayName("Junit test given context when getPrincipalOrThrow then return User")
+    void givenContextWhenGetPrincipalOrThrowThenReturnUser() {
+        mockSecurity.mockSuperUser();
+        assertNotNull(SecurityUtil.getPrincipalOrThrow(), "Return not null");
+    }
+
+    @Test
+    @DisplayName("Junit test given null company when getCompanyPrincipalOrThrow then throw UnauthorizedBasic")
+    void givenNullCompanyWhenGetCompanyPrincipalOrThrowThenThrowUnauthorizedBasic() {
+        mockSecurity.mockSuperUserWithNullCompany();
+        assertThrows(UnauthorizedBasic.class, SecurityUtil::getCompanyPrincipalOrThrow, "Throw UnauthorizedBasic");
+    }
+
+    @Test
+    @DisplayName("Junit test given context when getCompanyPrincipalOrThrow then return User")
+    void givenContextWhenGetCompanyPrincipalOrThrowThenReturnUser() {
+        mockSecurity.mockSuperUser();
+        assertNotNull(SecurityUtil.getCompanyPrincipalOrThrow(), "Return not null");
     }
 }

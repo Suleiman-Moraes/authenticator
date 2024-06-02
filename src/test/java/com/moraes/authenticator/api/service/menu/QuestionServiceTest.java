@@ -21,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -57,9 +56,6 @@ class QuestionServiceTest {
 
     @Mock
     private IUserService userService;
-
-    @Captor
-    private ArgumentCaptor<Question> questionCaptor;
 
     private Question entity;
 

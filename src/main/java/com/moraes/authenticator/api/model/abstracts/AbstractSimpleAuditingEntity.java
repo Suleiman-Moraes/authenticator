@@ -27,7 +27,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @MappedSuperclass
-public class AbstractSimpleAuditingEntity implements IModel<Long> {
+public abstract class AbstractSimpleAuditingEntity implements IModel<Long> {
 
     @Id
     @Column(name = "id")
@@ -54,6 +54,7 @@ public class AbstractSimpleAuditingEntity implements IModel<Long> {
         Optional.ofNullable(SecurityUtil.getPrincipal())
                 .ifPresentOrElse(user -> createdBy = User.builder().key(user.getKey()).build(), () -> createdBy = null);
         prePersistAndUpdate();
+        prePersistOthers();
     }
 
     @PreUpdate
@@ -65,5 +66,9 @@ public class AbstractSimpleAuditingEntity implements IModel<Long> {
         lastModifiedDate = LocalDateTime.now();
         Optional.ofNullable(SecurityUtil.getPrincipal()).ifPresentOrElse(
                 user -> lastModifiedBy = User.builder().key(user.getKey()).build(), () -> lastModifiedBy = null);
+    }
+
+    protected void prePersistOthers() {
+        // Empty
     }
 }
