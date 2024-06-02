@@ -24,14 +24,17 @@ jobs:
       - name: Build Docker image
         run: docker build -t suleimanmoraes/authenticator:${{ env.VERSION }} .
 
+      - name: Tag Docker image as latest
+        run: docker tag suleimanmoraes/authenticator:${{ env.VERSION }} suleimanmoraes/authenticator:latest
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-      # - name: Push Docker image latest
-      #   run: docker push suleimanmoraes/authenticator
-
       - name: Push Docker image
         run: docker push suleimanmoraes/authenticator:${{ env.VERSION }}
+
+      - name: Push Docker image with latest tag
+        run: docker push suleimanmoraes/authenticator
