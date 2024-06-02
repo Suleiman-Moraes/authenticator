@@ -2,6 +2,8 @@ package com.moraes.authenticator.api.model;
 
 import java.util.List;
 
+import com.moraes.authenticator.api.model.menu.Question;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -39,6 +41,9 @@ public class Company {
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
     private List<User> users;
+
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    private List<Question> questions;
 
     public Company(Long key) {
         this.key = key;

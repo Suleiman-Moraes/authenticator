@@ -3,6 +3,7 @@ package com.moraes.authenticator.api.service;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.moraes.authenticator.api.mapper.PersonMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,12 +32,14 @@ public class PersonService implements IPersonService {
 
     private IUserService userService;
 
+    private PersonMapper personMapper;
+
     @Transactional
     @Override
     public void update(PersonDTO object, Long key) {
         Person entity = findByKeyAndCompanyKey(key);
         final Long userId = entity.getUser().getKey();
-        saveForUpdate(Mapper.parseObject(object, Person.class), entity);
+        saveForUpdate(Mapper.parseObjectForUpdate(object, entity), entity);
         userService.update(object.getUser(), userId);
     }
 
@@ -45,8 +48,10 @@ public class PersonService implements IPersonService {
     public Long updateMe(PersonDTO object) {
         Person entity = this.getMe();
         final Long userId = entity.getUser().getKey();
-        saveForUpdate(Mapper.parseObject(object, Person.class), entity);
-        userService.updateMe(object.getUser(), userId);
+        userService.validMe(userId, object.getUser().getUsername());
+        personMapper.updateFromPersonDTO(entity, object);
+        repository.save(entity);
+        userService.updateMe(object.getUser(), entity.getUser());
         return entity.getKey();
     }
 
@@ -63,7 +68,7 @@ public class PersonService implements IPersonService {
     public Long insert(Person object) {
         userService.validInsert(object.getUser());
         repository.save(object);
-        userService.insert(object.getUser(), object.getKey());
+        userService.insertForAdmin(object.getUser(), object.getKey());
         return object.getKey();
     }
 
@@ -71,7 +76,7 @@ public class PersonService implements IPersonService {
     @Override
     public Long insertMe(Person object) {
         userService.preInsertMe(object.getUser());
-        return this.insert(object);
+        return insert(object);
     }
 
     @Transactional(readOnly = true)
@@ -118,7 +123,6 @@ public class PersonService implements IPersonService {
      */
     private void saveForUpdate(Person entityNew, Person entity) {
         // validate here
-        entityNew.setKey(entity.getKey());
         repository.save(entityNew);
         // Set user = null for avoid unsaved transient instance
         entity.setUser(null);

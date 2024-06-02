@@ -47,7 +47,8 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 /**
- * This class definition defines a test integration class for the {@link PersonController}
+ * This class definition defines a test integration class for the
+ * {@link PersonController}
  */
 @SuppressWarnings("unchecked")
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
@@ -56,6 +57,7 @@ import io.restassured.specification.RequestSpecification;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PersonControllerTest extends AbstractIntegrationTest {
 
+    private static final String USERNAME_IS_NULL = "Username is null";
     private static final String NAME_KEY = "key";
     private static final String PATH_KEY = "{key}";
     private static final String BASE_URL = "/api/v1/person";
@@ -119,7 +121,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertNotNull(dtoResponse.getUser(), "User is null");
         assertNotNull(dto.getUser().getProfile(), "Profile is null");
         assertNull(dtoResponse.getUser().getPassword(), "Password is not null");
-        assertEquals(username, dtoResponse.getUser().getUsername(), "Username is null");
+        assertEquals(username, dtoResponse.getUser().getUsername(), USERNAME_IS_NULL);
         assertEquals(dto.getName(), dtoResponse.getName(), "Name is different");
         assertEquals(dto.getAddress(), dtoResponse.getAddress(), "Address is different");
         assertEquals(dto.getUser().getProfile().getKey(), dtoResponse.getUser().getProfile().getKey(),
@@ -179,7 +181,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertEquals(3, page.get("totalElements"), "Total elements is different");
         assertEquals(3, page.get("size"), "Size is different");
         assertEquals(0, page.get("number"), "Number is different");
-        assertEquals(username, content.get(0).getUsername(), "Username is null");
+        assertEquals(username, content.get(0).getUsername(), USERNAME_IS_NULL);
         assertEquals(dto.getName(), content.get(0).getName(), "Name is different");
         assertEquals(dto.getAddress(), content.get(0).getAddress(), "Address is different");
     }
@@ -216,7 +218,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
         assertEquals(3, page.get("totalElements"), "Total elements is different");
         assertEquals(2, page.get("size"), "Size is different");
         assertEquals(1, page.get("number"), "Number is different");
-        assertEquals(username, content.get(0).getUsername(), "Username is null");
+        assertEquals(username, content.get(0).getUsername(), USERNAME_IS_NULL);
         assertEquals(dto.getName(), content.get(0).getName(), "Name is different");
         assertEquals(dto.getAddress(), content.get(0).getAddress(), "Address is different");
     }
@@ -230,28 +232,28 @@ public class PersonControllerTest extends AbstractIntegrationTest {
 
     @Disabled("Test disabled because it makes no sense to delete this person in an integration test")
     @Test
-    @Order(7)
+    @Order(8)
     @DisplayName("JUnit Integration test Given key for any person When delete Then return no content")
     void testIntegrationGivenKeyForAnyPersonWhenDeleteThenReturnNoContent() throws Exception {
         delete(3l).then().statusCode(204);
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     @DisplayName("JUnit Integration test Given key for root person When delete Then return bad request")
     void testIntegrationGivenKeyForRootPersonWhenDeleteThenReturnBadRequest() throws Exception {
         delete(1l).then().statusCode(400);
     }
 
     @Test
-    @Order(8)
+    @Order(10)
     @DisplayName("JUnit Integration test Given Key When findByKey After delete Then return not found")
     void testIntegrationGivenKeyWhenFindByKeyAfterDeleteThenReturnNotFound() throws Exception {
         findByKey().then().statusCode(404);
     }
 
     @Test
-    @Order(9)
+    @Order(11)
     @DisplayName("JUnit Integration test Given PersonDTO with min values possible When insert Then return key")
     void testIntegrationGivenPersonDTOWithMinValuesPossibleWhenInsertThenReturnKey() throws Exception {
         AuthTest.checkAuth(specification, mapper);
@@ -274,7 +276,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(10)
+    @Order(12)
     @DisplayName("JUnit Integration test Given fake key When delete with COMMON_USER Role Then return Unauthorized")
     void testIntegrationGivenFakeKeyWhenDeleteWithCommonUserThenReturnBadRequest() throws Exception {
         AuthTest.checkAuthCommonUser(specification, mapper);
@@ -282,7 +284,7 @@ public class PersonControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(11)
+    @Order(13)
     @DisplayName("JUnit Integration test Given fake key When delete without Auth Then return Unauthorized")
     void testIntegrationGivenFakeKeyWhenDeleteWithoutAuthThenReturnBadRequest() throws Exception {
         given().spec(specification)
@@ -291,16 +293,21 @@ public class PersonControllerTest extends AbstractIntegrationTest {
                 .delete(PATH_KEY).then().statusCode(403);
     }
 
+    public static Response delete(RequestSpecification specification, Long key, String token) {
+        return given().spec(specification)
+                .basePath(BASE_URL)
+                .header(AUTHORIZATION, token)
+                .pathParam(NAME_KEY, key)
+                .when()
+                .delete(PATH_KEY);
+    }
+
     private Response delete(Long key) {
         return delete(key, ACCESS_TOKEN);
     }
 
     private Response delete(Long key, String token) {
-        return given().spec(specification)
-                .header(AUTHORIZATION, token)
-                .pathParam(NAME_KEY, key)
-                .when()
-                .delete(PATH_KEY);
+        return delete(specification, key, token);
     }
 
     private static Response findByKey() throws JsonProcessingException {

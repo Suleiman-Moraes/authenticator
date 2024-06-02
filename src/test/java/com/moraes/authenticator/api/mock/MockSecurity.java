@@ -14,6 +14,7 @@ public class MockSecurity {
         User user = new MockUser().mockEntity(1);
         user.setKey(1L);
         user.getProfile().setKey(2L);
+        user.getCompany().setKey(1L);
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, "test", user.getAuthorities()));
     }
     

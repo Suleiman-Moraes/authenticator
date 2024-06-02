@@ -10,6 +10,7 @@ import com.moraes.authenticator.api.service.interfaces.IPersonService;
 import com.moraes.authenticator.api.service.interfaces.IProfileService;
 import com.moraes.authenticator.api.service.interfaces.IUserService;
 import com.moraes.authenticator.api.service.interfaces.menu.IMenuService;
+import com.moraes.authenticator.api.service.interfaces.menu.IQuestionService;
 import com.moraes.authenticator.config.security.JwtTokenProvider;
 import com.moraes.authenticator.config.security.interfaces.IAuthService;
 
@@ -38,6 +39,9 @@ public abstract class AbstractBasicControllerTest {
 
     @MockBean
     protected IMenuService menuService;
+
+    @MockBean
+    protected IQuestionService questionService;
 
     @MockBean
     protected JwtTokenProvider jwtTokenProvider;

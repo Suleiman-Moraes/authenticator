@@ -1,11 +1,13 @@
 package com.moraes.authenticator.api.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 import com.moraes.authenticator.api.model.interfaces.IModel;
+import com.moraes.authenticator.api.model.menu.Answer;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +15,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -46,4 +49,8 @@ public class Person implements Serializable, IModel<Long> {
     @NotAudited
     @OneToOne(mappedBy = "person", fetch = FetchType.LAZY)
     private User user;
+
+    @NotAudited
+    @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
+    private List<Answer> answers;
 }

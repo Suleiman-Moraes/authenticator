@@ -2,6 +2,8 @@ package com.moraes.authenticator.api.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -60,5 +62,17 @@ class SecurityUtilTest {
     void givenNullContextWhenGetRolesThenReturnEmptyListOfRoles() {
         mockSecurity.mockNullUser();
         assertEquals(0, SecurityUtil.getRoles().size(), "List size is different from 0");
+    }
+
+    @Test
+    void testGetPrincipal() {
+        mockSecurity.mockSuperUser();
+        assertNotNull(SecurityUtil.getPrincipal(), "Return not null");
+    }
+
+    @Test
+    void testGetPrincipalNull() {
+        mockSecurity.mockNullUser();
+        assertNull(SecurityUtil.getPrincipal(), "Return null");
     }
 }

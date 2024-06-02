@@ -25,5 +25,6 @@ class UtilTest {
         assertFalse(Util.isNotEmptyAndGreaterThanZero(numDoubleN), "Return not equal");
         assertTrue(Util.isNotEmptyAndGreaterThanZero(numFloat), "Return not equal");
         assertFalse(Util.isNotEmptyAndGreaterThanZero(numFloatN), "Return not equal");
+        assertFalse(Util.isNotEmptyAndGreaterThanZero(null), "Return not equal");
     }
 }
