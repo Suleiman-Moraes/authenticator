@@ -20,12 +20,12 @@ spring:
 
 springdoc:
   api-docs:
-    enabled: ${SWAGGER_ENABLED:false}
+    enabled: true
   show-actuator: true
   pathsToMatch: 
     - /api/v1/**
   swagger-ui:
-    enabled: ${SWAGGER_ENABLED:false}
+    enabled: true
     use-root-path: true
 
 logging:
