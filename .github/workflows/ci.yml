@@ -38,3 +38,15 @@ jobs:
 
       - name: Push Docker image with latest tag
         run: docker push suleimanmoraes/authenticator
+
+      - name: SSH to Server and Deploy
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ${{ secrets.PATH_DOCKER_COMPOSE }}
+            docker-compose pull
+            docker-compose up -d
+            docker image prune -f
