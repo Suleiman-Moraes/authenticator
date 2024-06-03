@@ -33,7 +33,7 @@ logging:
     root: ${LOG_LEVEL:ERROR}
 
 cors:
-  originPatterns: http://localhost:8080,http://localhost:4200
+  originPatterns: ${ORIGIN_PATTERNS:http://localhost:8080,http://localhost:4200}
 
 security:
   jwt:
