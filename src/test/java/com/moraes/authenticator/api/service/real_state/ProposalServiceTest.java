@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -102,15 +104,38 @@ class ProposalServiceTest {
         assertNotNull(pages, "Return null");
         for (int index = 1; index <= maxSize; index++) {
             final var dto = pages.getContent().get(index - 1);
-            final var entity = list.get(index - 1);
+            final var row = list.get(index - 1);
             assertEquals(dto.getLinks().toList().get(0).getHref(), "/api/v1/proposal/" + index,
                     "Href not equal");
-            assertEquals(dto.getKey(), entity.getKey(), "Key not equal");
-            assertEquals(dto.getEnterpriseName(), entity.getEnterpriseName(), "EnterpriseName not equal");
-            assertEquals(dto.getEnterpriseUnit(), entity.getEnterpriseUnit(), "EnterpriseUnit not equal");
-            assertEquals(dto.getSizeM2(), entity.getSizeM2(), "SizeM2 not equal");
-            assertEquals(dto.getValue(), entity.getValue(), "Value not equal");
-            assertEquals(dto.getDate(), entity.getDate(), "Date not equal");
+            assertEquals(dto.getKey(), row.getKey(), "Key not equal");
+            assertEquals(dto.getEnterpriseName(), row.getEnterpriseName(), "EnterpriseName not equal");
+            assertEquals(dto.getEnterpriseUnit(), row.getEnterpriseUnit(), "EnterpriseUnit not equal");
+            assertEquals(dto.getSizeM2(), row.getSizeM2(), "SizeM2 not equal");
+            assertEquals(dto.getValue(), row.getValue(), "Value not equal");
+            assertEquals(dto.getDate(), row.getDate(), "Date not equal");
         }
+    }
+
+    @Test
+    @DisplayName("Junit Test Given Proposal When Parse Then Return ProposalDTO")
+    void testGivenProposalWhenParseThenReturnProposalDTO() {
+        final Proposal proposal = input.mockEntity(1);
+        final ProposalDTO dto = service.parse(proposal);
+
+        assertNotNull(dto, "Return null");
+        assertEquals(dto.getValue(), proposal.getValue(), "Value not equal");
+        assertEquals(dto.getVpl(), proposal.getVpl(), "Vpl not equal");
+        assertEquals(dto.getValueM2(), proposal.getValueM2(), "ValueM2 not equal");
+        assertEquals(dto.getSizeM2(), proposal.getSizeM2(), "SizeM2 not equal");
+    }
+
+    @Test
+    void testFindByKey() {
+        mockSecurity.mockSuperUser();
+        when(repository.findByIdAndEnterpriseConstructionCompanyKey(eq(KEY), anyLong()))
+                .thenReturn(Optional.of(entity));
+        final Proposal ret = service.findByKey(KEY);
+        assertNotNull(ret, "Return null");
+        assertEquals(entity, ret, "Entity not equal");
     }
 }

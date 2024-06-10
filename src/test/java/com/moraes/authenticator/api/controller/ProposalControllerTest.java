@@ -30,11 +30,14 @@ import com.moraes.authenticator.api.mock.real_state.MockProposal;
 import com.moraes.authenticator.api.model.dto.real_state.condition.ConditionDTO;
 import com.moraes.authenticator.api.model.dto.real_state.enterprise.EnterpriseDTO;
 import com.moraes.authenticator.api.model.dto.real_state.proposal.ProposalDTO;
+import com.moraes.authenticator.api.model.real_state.Proposal;
 
 @WebMvcTest
 class ProposalControllerTest extends AbstractBasicControllerTest {
 
     private static final String BASE_URL = "/api/v1/proposal";
+
+    private static final String BASE_URL_KEY = BASE_URL + "/{key}";
 
     private MockProposal input;
 
@@ -123,7 +126,7 @@ class ProposalControllerTest extends AbstractBasicControllerTest {
     @Test
     @DisplayName("JUnit test Given Context When findAll Then return Page of ProposalFilterDTO")
     void testGivenContextWhenFindAllThenReturnPageOfProposalFilterDTO() throws Exception {
-         // Mock Auth
+        // Mock Auth
         mockSecurity.mockSuperUser();
         final int size = 10;
 
@@ -142,5 +145,31 @@ class ProposalControllerTest extends AbstractBasicControllerTest {
                 .andExpect(jsonPath("$.totalElements", is(input.getMaxSize())))
                 .andExpect(jsonPath("$.size", is(size)))
                 .andExpect(jsonPath("$.content.size()", is(size)));
+    }
+
+    @Test
+    @DisplayName("JUnit test Given Proposal key When find by key Then return ProposalDTO")
+    void testGivenProposalKeyWhenFindByKeyThenReturnProposalDTO() throws Exception {
+
+        // Mock Auth
+        mockSecurity.mockSuperUser();
+
+        // Given / Arrange
+        final Proposal proposal = input.mockEntity(1);
+        final ProposalDTO proposalDTO = input.mockProposalDTO(1);
+
+        given(proposalService.findByKey(1L)).willReturn(proposal);
+        given(proposalService.parse(proposal)).willReturn(proposalDTO);
+
+        // When / Act
+        ResultActions response = mockMvc.perform(get(BASE_URL_KEY, 1L));
+
+        // Then / Assert
+        response.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.vpl", is(proposalDTO.getVpl().doubleValue())))
+                .andExpect(jsonPath("$.value", is(proposalDTO.getValue().doubleValue())))
+                .andExpect(jsonPath("$.valueM2", is(proposalDTO.getValueM2().doubleValue())))
+                .andExpect(jsonPath("$.sizeM2", is(proposalDTO.getSizeM2().doubleValue())));
     }
 }

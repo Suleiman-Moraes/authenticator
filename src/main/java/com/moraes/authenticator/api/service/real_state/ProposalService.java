@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.moraes.authenticator.api.controller.ProposalController;
+import com.moraes.authenticator.api.exception.ResourceNotFoundException;
 import com.moraes.authenticator.api.mapper.Mapper;
 import com.moraes.authenticator.api.model.dto.real_state.proposal.ProposalDTO;
 import com.moraes.authenticator.api.model.dto.real_state.proposal.ProposalFilterDTO;
@@ -29,7 +30,7 @@ import lombok.Getter;
 public class ProposalService implements IProposalService {
 
     @Getter
-    private IProposalRepository repository;
+    private final IProposalRepository repository;
 
     private final IEnterpriseService enterpriseService;
 
@@ -55,6 +56,22 @@ public class ProposalService implements IProposalService {
                 "x.enterprise.construction.company.key = :companyKey", parameters);
         page.getContent().forEach(dto -> addLinks(dto, (long) dto.getKey(), ProposalController.class));
         return page;
+    }
+
+    @Override
+    public Proposal findByKey(Long key) {
+        return repository
+                .findByIdAndEnterpriseConstructionCompanyKey(key, SecurityUtil.getCompanyPrincipalOrThrow().getKey())
+                .orElseThrow(ResourceNotFoundException::new);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProposalDTO parse(Proposal proposal) {
+        ProposalDTO proposalDTO = Mapper.parseObject(proposal, ProposalDTO.class);
+        proposalDTO.setEnterprise(
+                enterpriseService.parseOtherFields(proposalDTO.getEnterprise(), proposal.getEnterprise()));
+        return proposalDTO;
     }
 
     public Map<String, Class<?>> getMapOfFields() {

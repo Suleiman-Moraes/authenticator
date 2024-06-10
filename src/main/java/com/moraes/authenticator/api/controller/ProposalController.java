@@ -33,11 +33,11 @@ public class ProposalController implements IController<ProposalDTO, Long> {
         return ResponseEntity.created(URI.create(String.format("/api/v1/proposal/%s", id))).body(id);
     }
 
+    // TODO - Lacks integration testing
     @GetMapping(value = "/{key}")
     @Override
     public ResponseEntity<ProposalDTO> findByKey(@PathVariable Long key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByKey'");
+        return ResponseEntity.ok(service.parse(service.findByKey(key)));
     }
 
     // TODO - Lacks integration testing
