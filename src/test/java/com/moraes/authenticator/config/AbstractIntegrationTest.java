@@ -19,7 +19,7 @@ public abstract class AbstractIntegrationTest {
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-        static PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>("postgres");
+        static PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>("postgres:15.3-alpine");
 
         private static void startContainers() throws Exception {
             Startables.deepStart(Stream.of(postgresql)).join();
