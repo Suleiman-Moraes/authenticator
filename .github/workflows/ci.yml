@@ -2,7 +2,7 @@ name: Authenticator CI
 on:
   push:
     branches:
-      - develop
+      - master
 
 jobs:
   build:
