@@ -15,4 +15,6 @@ public interface IEnterpriseService extends IServiceInsert<Enterprise, Long> {
     Long insert(Enterprise object, String constructionName);
 
     EnterpriseDTO parseOtherFields(EnterpriseDTO dto, Enterprise entity);
+
+	void update(Enterprise enterprise, EnterpriseDTO enterpriseDTO);
 }

@@ -4,6 +4,7 @@ import static com.moraes.authenticator.api.util.SecurityUtil.getCompanyPrincipal
 
 import java.util.List;
 
+import com.moraes.authenticator.api.mapper.IEnterpriseMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,8 @@ public class EnterpriseService implements IEnterpriseService {
 
     @Getter
     private final IEnterpriseRepository repository;
+
+    private final IEnterpriseMapper enterpriseMapper;
 
     private final IConstructionService constructionService;
 
@@ -51,5 +54,14 @@ public class EnterpriseService implements IEnterpriseService {
             dto.setConstructionName(entity.getConstruction().getName());
         }
         return dto;
+    }
+
+    @Override
+    public void update(Enterprise enterprise, EnterpriseDTO enterpriseDTO) {
+        enterpriseMapper.updateFromEnterpriseDTO(enterprise, enterpriseDTO);
+
+        enterprise.setConstruction(constructionService.getOrInsertByName(enterpriseDTO.getConstructionName()));
+
+        repository.save(enterprise);
     }
 }

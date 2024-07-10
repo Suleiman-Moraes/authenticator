@@ -29,6 +29,7 @@
 		<java-jwt.version>4.4.0</java-jwt.version>
 		<hibernate-envers.version>6.3.0.Final</hibernate-envers.version>
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+		<jackson-datatype-jsr310.version>2.17.1</jackson-datatype-jsr310.version>
 	</properties>
 
 	<dependencies>
@@ -135,6 +136,12 @@
 			<artifactId>postgresql</artifactId>
 			<version>${testcontainers.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>${jackson-datatype-jsr310.version}</version>
 		</dependency>
 	</dependencies>
 

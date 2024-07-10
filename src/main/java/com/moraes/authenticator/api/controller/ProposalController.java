@@ -33,14 +33,12 @@ public class ProposalController implements IController<ProposalDTO, Long> {
         return ResponseEntity.created(URI.create(String.format("/api/v1/proposal/%s", id))).body(id);
     }
 
-    // TODO - Lacks integration testing
     @GetMapping(value = "/{key}")
     @Override
     public ResponseEntity<ProposalDTO> findByKey(@PathVariable Long key) {
         return ResponseEntity.ok(service.parse(service.findByKey(key)));
     }
 
-    // TODO - Lacks integration testing
     @GetMapping
     public ResponseEntity<Page<ProposalListDTO>> findAll(ProposalFilterDTO proposalFilter) {
         return ResponseEntity.ok(service.findPageAll(proposalFilter));

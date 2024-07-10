@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.moraes.authenticator.api.mapper.IEnterpriseMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,10 @@ class EnterpriseServiceTest {
     private IUserService userService;
 
     @Mock
-    private IConstructionService constructionService;;
+    private IConstructionService constructionService;
+
+    @Mock
+    private IEnterpriseMapper enterpriseMapper;
 
     private Enterprise entity;
 
@@ -144,6 +148,18 @@ class EnterpriseServiceTest {
 
         verify(dto, times(1)).setConstructionName(entity.getConstruction().getName());
         assertEquals(dto, enterpriseDTO, "EnterpriseDTO not equal");
+    }
+
+    @Test
+    @DisplayName("JUnit test Given Enterprise and EnterpriseDTO When update Then return void and update enterprise")
+    void testGivenEnterpriseAndEnterpriseDTOWhenUpdateThenReturnVoidAndUpdateEnterprise() {
+        final EnterpriseDTO enterpriseDTO = input.mockEnterpriseDTO(1);
+
+        service.update(entity, enterpriseDTO);
+
+        verify(enterpriseMapper, times(1)).updateFromEnterpriseDTO(entity, enterpriseDTO);
+        verify(constructionService, times(1)).getOrInsertByName(anyString());
+        verify(repository, times(1)).save(entity);
     }
 
     private static Stream<Arguments> provideParametersParseOtherFields() {

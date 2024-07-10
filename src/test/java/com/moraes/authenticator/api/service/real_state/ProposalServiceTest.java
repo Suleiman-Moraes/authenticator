@@ -132,7 +132,7 @@ class ProposalServiceTest {
     @Test
     void testFindByKey() {
         mockSecurity.mockSuperUser();
-        when(repository.findByIdAndEnterpriseConstructionCompanyKey(eq(KEY), anyLong()))
+        when(repository.findByKeyAndEnterpriseConstructionCompanyKey(eq(KEY), anyLong()))
                 .thenReturn(Optional.of(entity));
         final Proposal ret = service.findByKey(KEY);
         assertNotNull(ret, "Return null");

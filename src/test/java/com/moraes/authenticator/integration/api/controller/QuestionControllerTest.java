@@ -253,11 +253,11 @@ public class QuestionControllerTest extends AbstractIntegrationTest {
         return delete(key, ACCESS_TOKEN);
     }
 
-    private static Response findByKey() throws JsonProcessingException {
+    private static Response findByKey() {
         return findByKey(key);
     }
 
-    private static Response findByKey(Long key) throws JsonProcessingException {
+    private static Response findByKey(Long key) {
         return given().spec(specification)
                 .pathParam(NAME_KEY, key)
                 .header(AUTHORIZATION, ACCESS_TOKEN)
