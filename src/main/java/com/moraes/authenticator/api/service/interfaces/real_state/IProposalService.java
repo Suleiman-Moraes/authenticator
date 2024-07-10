@@ -19,4 +19,6 @@ public interface IProposalService
     Page<ProposalListDTO> findPageAll(ProposalFilterDTO filter);
 
     ProposalDTO parse(Proposal proposal);
+
+    void update(ProposalDTO proposalDTO, Long key);
 }

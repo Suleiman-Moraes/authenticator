@@ -74,6 +74,7 @@ public class ProposalService implements IProposalService {
 		return proposalDTO;
 	}
 
+	@Override
 	@Transactional
 	public void update(ProposalDTO proposalDTO, Long key) {
 		Proposal proposal = findByKey(key);
