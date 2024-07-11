@@ -6,7 +6,6 @@ import com.moraes.authenticator.api.model.dto.real_state.proposal.ProposalFilter
 import com.moraes.authenticator.api.model.dto.real_state.proposal.ProposalListDTO;
 import com.moraes.authenticator.api.service.interfaces.real_state.IProposalService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;

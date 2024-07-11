@@ -6,13 +6,7 @@ import java.util.List;
 
 import com.moraes.authenticator.api.model.abstracts.AbstractSimpleAuditingEntity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -52,6 +46,7 @@ public class Proposal extends AbstractSimpleAuditingEntity {
     @JoinColumn(name = "id_enterprise")
     private Enterprise enterprise;
 
+    @OrderBy("key ASC")
     @OneToMany(mappedBy = "proposal", fetch = FetchType.LAZY)
     private List<Condition> conditions;
 
