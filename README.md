@@ -62,7 +62,7 @@ You can upload this project using docker-compose
 
 ```
 mvn clean install
-docker-compose up
+docker-compose -f docker-compose-full.yaml up -d
 ```
 
 ## Database Model

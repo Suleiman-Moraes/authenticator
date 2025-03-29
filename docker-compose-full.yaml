@@ -17,7 +17,9 @@ services:
       - auth-net
 
   authenticator:
-    build: './'
+    build:
+      context: .
+      dockerfile: Dockerfile3
     # image: authenticator
     container_name: authenticator
     restart: always

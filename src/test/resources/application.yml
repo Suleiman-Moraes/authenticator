@@ -1,5 +1,6 @@
 server:
   port: 8180
+
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
@@ -16,6 +17,11 @@ spring:
   flyway:
     locations: db/postgresql
     schemas: authenticator
+
+  docker:
+    compose:
+      enabled: false
+      file: compose.yaml
 
 springdoc:
   pathsToMatch: 
