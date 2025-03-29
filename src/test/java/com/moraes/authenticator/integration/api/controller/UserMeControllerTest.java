@@ -40,12 +40,13 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import lombok.SneakyThrows;
 
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @Order(5)
 @TestMethodOrder(OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class UserMeControllerTest extends AbstractIntegrationTest {
+class UserMeControllerTest extends AbstractIntegrationTest {
 
     private static final String BASE_URL = "/api/v1/user/me";
 
@@ -59,7 +60,7 @@ public class UserMeControllerTest extends AbstractIntegrationTest {
     private IUserRepository repository;
 
     @BeforeAll
-    public static void setup() {
+    static void setup() {
         mapper = new ObjectMapper();
         mockPerson = new MockPerson();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -73,10 +74,11 @@ public class UserMeControllerTest extends AbstractIntegrationTest {
                 .build();
     }
 
+    @SneakyThrows
     @Test
     @Order(1)
     @DisplayName("JUnit Integration test Given UserNewPasswordDTO When changePasswordMe Then return no content")
-    void testIntegrationGivenUserNewPasswordDTOWhenChangePasswordMeThenReturnNoContent() throws Exception {
+    void testIntegrationGivenUserNewPasswordDTOWhenChangePasswordMeThenReturnNoContent()  {
         final String newPassword = String.valueOf(new Date().getTime());
         // Created PersonMeDTO
         personMeDTO = mockPerson.mockPersonMeDTO(1);
@@ -113,7 +115,7 @@ public class UserMeControllerTest extends AbstractIntegrationTest {
     @Test
     @Order(2)
     @DisplayName("JUnit Integration test Given UserResetPasswordDTO When resetPassword Then return no content")
-    void testIntegrationGivenUserResetPasswordDTOWhenResetPasswordThenReturnNoContent() throws Exception {
+    void testIntegrationGivenUserResetPasswordDTOWhenResetPasswordThenReturnNoContent()  {
         given().spec(specification)
                 .header(AUTHORIZATION, BASIC_TOKEN).contentType(APPLICATION_JSON)
                 .body(new UserResetPasswordDTO(personMeDTO.getUser().getUsername(), personMeDTO.getEmail()))
@@ -125,7 +127,7 @@ public class UserMeControllerTest extends AbstractIntegrationTest {
     @Test
     @Order(3)
     @DisplayName("JUnit Integration test Given UserResetPasswordTokenDTO When resetPasswordToken Then return no content")
-    void testIntegrationGivenUserResetPasswordTokenDTOWhenResetPasswordTokenThenReturnNoContent() throws Exception {
+    void testIntegrationGivenUserResetPasswordTokenDTOWhenResetPasswordTokenThenReturnNoContent()  {
         final String password = "1234567";
         final UUID token = repository.findByUsername(personMeDTO.getUser().getUsername()).orElse(new User())
                 .getTokenResetPassword();
@@ -142,7 +144,7 @@ public class UserMeControllerTest extends AbstractIntegrationTest {
     @Test
     @Order(4)
     @DisplayName("JUnit Integration test Given Context When updateDisabledMe for disabled Then return no content")
-    void testIntegrationGivenContextWhenUpdateDisabledMeForDisabledThenReturnNoContent() throws Exception {
+    void testIntegrationGivenContextWhenUpdateDisabledMeForDisabledThenReturnNoContent()  {
         // Update disabled that new PersonMeDTO
         given().spec(specification)
                 .header(AUTHORIZATION, bearerToken)
