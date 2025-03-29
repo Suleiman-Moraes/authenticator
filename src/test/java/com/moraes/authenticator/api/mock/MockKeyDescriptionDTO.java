@@ -18,7 +18,7 @@ public class MockKeyDescriptionDTO {
     public List<KeyDescriptionDTO<String>> mockStringList() {
         List<KeyDescriptionDTO<String>> entitys = new LinkedList<>();
         for (int i = 1; i <= 14; i++) {
-            entitys.add(mockString(RandomStringUtils.randomAlphabetic(5)));
+            entitys.add(mockString(RandomStringUtils.insecure().nextAlphabetic(5)));
         }
         return entitys;
     }

@@ -21,7 +21,6 @@ import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +50,7 @@ import io.restassured.specification.RequestSpecification;
 @Order(8)
 @TestMethodOrder(OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class QuestionControllerTest extends AbstractIntegrationTest {
+class QuestionControllerTest extends AbstractIntegrationTest {
 
     private static final String NAME_KEY = "key";
     private static final String PATH_KEY = "{key}";
@@ -66,7 +65,7 @@ public class QuestionControllerTest extends AbstractIntegrationTest {
     private static List<Long> keys;
 
     @BeforeAll
-    public static void setup() {
+    static void setup() {
         // Create an ObjectMapper instance
         mapper = new ObjectMapper();
         input = new MockQuestion();
@@ -222,21 +221,21 @@ public class QuestionControllerTest extends AbstractIntegrationTest {
     @Test
     @Order(7)
     @DisplayName("JUnit Integration test Given key When delete Then return no content")
-    void testIntegrationGivenKeyWhenDeleteThenReturnNoContent() throws Exception {
+    void testIntegrationGivenKeyWhenDeleteThenReturnNoContent() {
         delete(key).then().statusCode(204);
     }
 
     @Test
     @Order(8)
     @DisplayName("JUnit Integration test Given Key When findByKey After delete Then return not found")
-    void testIntegrationGivenKeyWhenFindByKeyAfterDeleteThenReturnNotFound() throws Exception {
+    void testIntegrationGivenKeyWhenFindByKeyAfterDeleteThenReturnNotFound() {
         findByKey().then().statusCode(404);
     }
 
     @Test
     @Order(100)
     @DisplayName("JUnit Integration test Given Nothing When After all Then clear database")
-    void testIntegrationGivenNothingWhenAfterAllThenClearDatabase() throws Exception {
+    void testIntegrationGivenNothingWhenAfterAllThenClearDatabase() {
         keys.forEach(this::clearByKey);
     }
 

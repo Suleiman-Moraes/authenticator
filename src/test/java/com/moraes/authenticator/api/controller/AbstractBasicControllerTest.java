@@ -1,7 +1,7 @@
 package com.moraes.authenticator.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.moraes.authenticator.api.service.interfaces.IAuxiliaryListService;
@@ -22,39 +22,39 @@ public abstract class AbstractBasicControllerTest {
     @Autowired
     protected MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     protected IAuxiliaryListService auxiliaryListService;
 
-    @MockBean
+    @MockitoBean
     protected IPersonService personService;
 
-    @MockBean
+    @MockitoBean
     protected IBasicTokenService basicTokenService;
 
-    @MockBean
+    @MockitoBean
     protected IProfileService profileService;
 
-    @MockBean
+    @MockitoBean
     protected IUserService userService;
 
-    @MockBean
+    @MockitoBean
     protected IAuthService authService;
 
-    @MockBean
+    @MockitoBean
     protected IMenuService menuService;
 
-    @MockBean
+    @MockitoBean
     protected IQuestionService questionService;
 
-    @MockBean
+    @MockitoBean
     protected JwtTokenProvider jwtTokenProvider;
 
-    @MockBean
+    @MockitoBean
     protected IProposalService proposalService;
 
-    @MockBean
+    @MockitoBean
     protected IConstructionService constructionService;
 
-    @MockBean
+    @MockitoBean
     protected IEnterpriseService enterpriseService;
 }
