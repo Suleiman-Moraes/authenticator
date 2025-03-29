@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moraes.authenticator.api.service.interfaces.IBasicTokenService;
 import com.moraes.authenticator.api.util.ConstantsUtil;
 import com.moraes.authenticator.api.util.MessagesUtil;
+import com.moraes.authenticator.api.validation.interfaces.IRequireBasicAuth;
 import com.moraes.authenticator.config.security.dto.AccountCredentialsDTO;
 import com.moraes.authenticator.config.security.dto.TokenDTO;
 import com.moraes.authenticator.config.security.interfaces.IAuthService;
@@ -26,11 +26,9 @@ public class AuthController {
 
     private IAuthService authService;
 
-    private IBasicTokenService basicTokenService;
-
+    @IRequireBasicAuth
     @PostMapping(value = "/signin")
     public ResponseEntity<Object> signin(@RequestBody AccountCredentialsDTO data) {
-        basicTokenService.validateBasicToken();
         if (data != null && StringUtils.hasText(data.getUsername()) && StringUtils.hasText(data.getPassword())) {
             final TokenDTO token = authService.signin(data);
             if (token != null) {

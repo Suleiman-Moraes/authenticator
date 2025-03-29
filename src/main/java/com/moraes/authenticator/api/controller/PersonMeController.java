@@ -13,8 +13,8 @@ import com.moraes.authenticator.api.mapper.Mapper;
 import com.moraes.authenticator.api.model.Person;
 import com.moraes.authenticator.api.model.dto.person.PersonDTO;
 import com.moraes.authenticator.api.model.dto.person.PersonMeDTO;
-import com.moraes.authenticator.api.service.interfaces.IBasicTokenService;
 import com.moraes.authenticator.api.service.interfaces.IPersonService;
+import com.moraes.authenticator.api.validation.interfaces.IRequireBasicAuth;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -26,8 +26,6 @@ public class PersonMeController {
 
     private final IPersonService service;
 
-    private final IBasicTokenService basicTokenService;
-
     @GetMapping
     public ResponseEntity<PersonDTO> getMe() {
         PersonDTO dto = Mapper.parseObject(service.getMe(), PersonDTO.class);
@@ -35,9 +33,9 @@ public class PersonMeController {
         return ResponseEntity.ok(dto);
     }
 
+    @IRequireBasicAuth
     @PostMapping(value = "/new")
     public ResponseEntity<Long> insertMe(@RequestBody @Valid PersonMeDTO object) {
-        basicTokenService.validateBasicToken();
         final Long id = service.insertMe(Mapper.parseObject(object, Person.class));
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
