@@ -1,5 +1,3 @@
----
-
 # Authenticator Project
 
 [![CircleCI](https://circleci.com/gh/Suleiman-Moraes/authenticator.svg?style=svg)](https://circleci.com/gh/Suleiman-Moraes/authenticator)
