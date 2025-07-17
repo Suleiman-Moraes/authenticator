@@ -157,7 +157,7 @@ public class ExtendedRepository<M, K extends Serializable> extends SimpleJpaRepo
             fromHql.append(" WHERE ").append(whereCustom);
         }
         query.append(fromHql);
-        query.append(String.format(" ORDER BY %s %s", property, filter.getDirection()));
+        query.append(" ORDER BY %s %s".formatted(property, filter.getDirection()));
     }
 
     /**

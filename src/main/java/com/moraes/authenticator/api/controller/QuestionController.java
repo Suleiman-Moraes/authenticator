@@ -57,7 +57,7 @@ public class QuestionController implements IController<QuestionDTO, Long> {
     @PostMapping
     public ResponseEntity<Long> insert(@RequestBody @Valid QuestionDTO object) {
         final Long id = service.insert(Mapper.parseObject(object, Question.class));
-        return ResponseEntity.created(URI.create(String.format("/api/v1/question/%s", id))).body(id);
+        return ResponseEntity.created(URI.create("/api/v1/question/%s".formatted(id))).body(id);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

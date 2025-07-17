@@ -14,10 +14,10 @@ public class IntegrationContextHolder {
     }
 
     public static void setAccessToken(String accessToken) {
-        ACCESS_TOKEN = String.format("Bearer %s", accessToken);
+        ACCESS_TOKEN = "Bearer %s".formatted(accessToken);
     }
 
     public static void setAccessTokenMe(String accessTokenMe) {
-        ACCESS_TOKEN_ME = String.format("Bearer %s", accessTokenMe);
+        ACCESS_TOKEN_ME = "Bearer %s".formatted(accessTokenMe);
     }
 }

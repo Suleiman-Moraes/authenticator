@@ -22,7 +22,7 @@ public final class MockUtil {
     }
 
     public static void setValue(Object entity, String name, Class<?> type, Object value) throws Exception {
-        name = String.format("set%s", name.replaceFirst("^.", ("" + name.charAt(0)).toUpperCase()));
+        name = "set%s".formatted(name.replaceFirst("^.", ("" + name.charAt(0)).toUpperCase()));
         entity.getClass().getMethod(name, type).invoke(entity, value);
     }
 

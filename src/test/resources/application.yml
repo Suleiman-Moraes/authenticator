@@ -13,6 +13,8 @@ spring:
       hibernate: 
         default-schema: authenticator
         formatSql: true
+        id:
+          db-structure-naming-strategy: legacy
 
   flyway:
     locations: db/postgresql

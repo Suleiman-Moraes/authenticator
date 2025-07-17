@@ -64,7 +64,7 @@ class BasicTokenServiceTest {
 
     @Test
     void testValidateBasicToken() {
-        final String basicAuthorization = String.format("%s %s", ConstantsUtil.BASIC,
+        final String basicAuthorization = "%s %s".formatted(ConstantsUtil.BASIC,
                 input.getBasicTokenHash());
 
         assertThrows(UnauthorizedBasic.class, () -> service.validateBasicToken(), "Return not equal");

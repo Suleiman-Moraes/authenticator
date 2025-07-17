@@ -27,7 +27,7 @@ public class MockBasicToken extends AbstractMock<BasicToken> {
     }
 
     public String getBasicTokenHash() {
-        return new String(Base64.getEncoder().encode(new String(String.format("%s:%s", USERNAME, PASSWORD_DECRYPTED)).getBytes()));
+        return new String(Base64.getEncoder().encode(new String("%s:%s".formatted(USERNAME, PASSWORD_DECRYPTED)).getBytes()));
     }
 
 }

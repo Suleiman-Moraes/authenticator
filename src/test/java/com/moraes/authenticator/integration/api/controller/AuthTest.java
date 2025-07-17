@@ -97,7 +97,7 @@ public class AuthTest extends AbstractIntegrationTest {
         final Response response = given()
                 .spec(specification)
                 .basePath(concatPath("/refresh"))
-                .header(ConstantsUtil.AUTHORIZATION, String.format("Bearer %s", REFRESH_TOKEN))
+                .header(ConstantsUtil.AUTHORIZATION, "Bearer %s".formatted(REFRESH_TOKEN))
                 .when()
                 .put();
 

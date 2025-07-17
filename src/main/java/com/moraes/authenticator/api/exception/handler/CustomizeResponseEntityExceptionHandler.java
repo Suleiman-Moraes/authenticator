@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpHeaders;
@@ -109,7 +108,7 @@ public class CustomizeResponseEntityExceptionHandler extends ResponseEntityExcep
                     }
                     return err;
                 })
-                .collect(Collectors.toList());
+                .toList();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.builder()
                 .userMessages(userMessages)
                 .devMessage(ExceptionUtils.getRootCauseMessage(ex))

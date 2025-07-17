@@ -1,7 +1,7 @@
 package com.moraes.authenticator.integration.swagger;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -47,7 +47,7 @@ public class PersonController implements IController<PersonDTO, Long> {
     @PostMapping
     public ResponseEntity<Long> insert(@RequestBody @Valid PersonDTO object) {
         final Long id = service.insert(Mapper.parseObject(object, Person.class));
-        return ResponseEntity.created(URI.create(String.format("/api/v1/person/%s", id))).body(id);
+        return ResponseEntity.created(URI.create("/api/v1/person/%s".formatted(id))).body(id);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

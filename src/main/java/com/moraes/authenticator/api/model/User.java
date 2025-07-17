@@ -6,8 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.CollectionUtils;
 
@@ -43,7 +41,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Audited
 @Entity
 @Table(name = "users", schema = "authenticator")
 public class User extends AbstractAuditingEntity implements IModel<Long>, UserDetails {
@@ -79,12 +76,10 @@ public class User extends AbstractAuditingEntity implements IModel<Long>, UserDe
     @Column(name = "token_reset_password_expiration_date")
     private LocalDateTime tokenResetPasswordExpirationDate;
 
-    @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_profile")
     private Profile profile;
 
-    @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_company")
     private Company company;

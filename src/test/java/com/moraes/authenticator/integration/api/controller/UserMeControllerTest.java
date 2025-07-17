@@ -94,7 +94,7 @@ class UserMeControllerTest extends AbstractIntegrationTest {
 
         // Get access token
         final TokenDTO token = mapper.readValue(authResponse.getBody().asString(), TokenDTO.class);
-        bearerToken = String.format("%s %s", BEARER, token.getAccessToken());
+        bearerToken = "%s %s".formatted(BEARER, token.getAccessToken());
 
         given().spec(specification)
                 .header(AUTHORIZATION, bearerToken)

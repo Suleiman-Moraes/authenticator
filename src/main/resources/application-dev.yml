@@ -12,6 +12,8 @@ spring:
       hibernate: 
         default-schema: authenticator
         formatSql: ${SHOW_SQL:false}
+        id:
+          db-structure-naming-strategy: legacy
 
   flyway:
     enabled: true

@@ -85,7 +85,7 @@ public class ProfileControllerTest extends AbstractIntegrationTest {
         AuthTest.checkAuth(specification, mapper);
         Response responseRoot = AuthTest.signin("root", "123456", specification);
         responseRoot.then().statusCode(200);
-        accessTokenRoot = String.format("%s %s", BEARER,
+        accessTokenRoot = "%s %s".formatted(BEARER,
                 mapper.readValue(responseRoot.getBody().asString(), TokenDTO.class).getAccessToken());
         dto = input.mockProfileDTO(1);
         final Response response = given().spec(specification)

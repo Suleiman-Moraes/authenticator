@@ -1,12 +1,17 @@
 package com.moraes.authenticator.api.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moraes.authenticator.api.mock.MockSecurity;
-import com.moraes.authenticator.api.mock.real_state.MockProposal;
-import com.moraes.authenticator.api.model.dto.real_state.condition.ConditionDTO;
-import com.moraes.authenticator.api.model.dto.real_state.enterprise.EnterpriseDTO;
-import com.moraes.authenticator.api.model.dto.real_state.proposal.ProposalDTO;
-import com.moraes.authenticator.api.model.real_state.Proposal;
+import static com.moraes.authenticator.api.util.ConstantsTestUtil.USER_MESSAGES;
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,17 +25,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.List;
-import java.util.stream.Stream;
-
-import static com.moraes.authenticator.api.util.ConstantsTestUtil.USER_MESSAGES;
-import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moraes.authenticator.api.mock.MockSecurity;
+import com.moraes.authenticator.api.mock.real_state.MockProposal;
+import com.moraes.authenticator.api.model.dto.real_state.condition.ConditionDTO;
+import com.moraes.authenticator.api.model.dto.real_state.enterprise.EnterpriseDTO;
+import com.moraes.authenticator.api.model.dto.real_state.proposal.ProposalDTO;
+import com.moraes.authenticator.api.model.real_state.Proposal;
 
 @WebMvcTest
 class ProposalControllerTest extends AbstractBasicControllerTest {
@@ -70,7 +71,7 @@ class ProposalControllerTest extends AbstractBasicControllerTest {
 
 		// Then / Assert
 		response.andDo(print()).andExpect(status().isCreated())
-				.andExpect(header().string("Location", String.format("%s/%s", BASE_URL, key)))
+				.andExpect(header().string("Location", "%s/%s".formatted(BASE_URL, key)))
 				.andExpect(jsonPath("$", is(key.intValue())));
 	}
 

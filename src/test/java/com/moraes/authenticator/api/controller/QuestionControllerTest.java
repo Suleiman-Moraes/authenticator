@@ -99,7 +99,7 @@ class QuestionControllerTest extends AbstractBasicControllerTest {
         // Then / Assert
         response.andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", String.format("%s/%s", BASE_URL, key)))
+                .andExpect(header().string("Location", "%s/%s".formatted(BASE_URL, key)))
                 .andExpect(jsonPath("$", is(key.intValue())));
     }
 

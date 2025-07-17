@@ -180,6 +180,6 @@ public class PersonMeControllerTest extends AbstractIntegrationTest {
     }
 
     private static void setAccessTokenMe(String accessTokenMe) {
-        ACCESS_TOKEN_ME = String.format("Bearer %s", accessTokenMe);
+        ACCESS_TOKEN_ME = "Bearer %s".formatted(accessTokenMe);
     }
 }

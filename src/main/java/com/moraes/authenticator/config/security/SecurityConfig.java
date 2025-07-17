@@ -1,6 +1,5 @@
 package com.moraes.authenticator.config.security;
 
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.context.annotation.Bean;
@@ -13,8 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.AllArgsConstructor;
 
@@ -27,31 +25,31 @@ public class SecurityConfig {
     private JwtTokenProvider jwtTokenProvider;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector)
-            throws Exception {
-        final AntPathRequestMatcher[] patterns = {
-                antMatcher("/actuator/**"),
-                antMatcher("/index.html"),
-                antMatcher("/swagger-ui/**"),
-                antMatcher("/v3/api-docs/**"),
-                antMatcher("/h2-console/**"),
-                antMatcher("/auth/signin"),
-                antMatcher("/auth/refresh/**"),
-                antMatcher("/api/v1/person/me/new"),
-                antMatcher("/api/v1/user/me/password/reset"),
-                antMatcher("/api/v1/user/me/password/reset/token")
-        };
-        http.httpBasic(basic -> basic.disable())
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        authorizeHttpRequests -> authorizeHttpRequests
-                                .requestMatchers(patterns).permitAll()
-                                .requestMatchers(antMatcher("/api/v1/**")).authenticated()
-                                .requestMatchers(antMatcher("/users")).denyAll())
-                .cors(withDefaults())
-                .with(new JwtConfigurer(jwtTokenProvider), dsl -> dsl.configure(http));
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(
+                                "/actuator/**",
+                                "/index.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/h2-console/**",
+                                "/auth/signin",
+                                "/auth/refresh/**",
+                                "/api/v1/person/me/new",
+                                "/api/v1/user/me/password/reset",
+                                "/api/v1/user/me/password/reset/token")
+                        .permitAll()
+                        .requestMatchers("/api/v1/**").authenticated()
+                        .requestMatchers("/users").denyAll())
+                .cors(withDefaults());
+
+        http.addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

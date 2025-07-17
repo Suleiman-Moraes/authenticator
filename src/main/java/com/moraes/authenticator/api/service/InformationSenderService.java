@@ -14,7 +14,7 @@ public class InformationSenderService implements IInformationSenderService {
 
     @Override
     public void sendEmailResetPassword(User user, String timeExpiration, Param paramUrlFrontend) {
-        buildResetPasswordEmail(user.getPerson().getName(), user.getTokenResetPassword().toString(), String.format("%s horas", timeExpiration), paramUrlFrontend);
+        buildResetPasswordEmail(user.getPerson().getName(), user.getTokenResetPassword().toString(), "%s horas".formatted(timeExpiration), paramUrlFrontend);
     }
 
     public String buildResetPasswordEmail(String name, String token, String timeExpiration, Param paramUrlFrontend) {
