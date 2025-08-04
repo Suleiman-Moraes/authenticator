@@ -1,13 +1,13 @@
-FROM maven:3.8.4-openjdk-17-slim AS build
+FROM maven:3.9.4-eclipse-temurin-21-alpine AS build
 COPY . /app
 WORKDIR /app
 RUN mvn clean install -DskipTests
 
 # Use the same maven image to copy the built JAR file
-FROM maven:3.8.4-openjdk-17-slim
+FROM maven:3.9.4-eclipse-temurin-21-alpine
 COPY --from=build /app/target/*.jar /app/app.jar
 
-FROM openjdk:17-alpine
+FROM eclipse-temurin:21-alpine
 
 # Copy the built JAR file from the previous stage
 COPY --from=1 /app/app.jar /app/app.jar
