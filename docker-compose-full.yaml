@@ -46,3 +46,4 @@ volumes:
   postgresdata:
 
 # docker build -f Dockerfile -t authenticator .
+# docker build -f Dockerfile3 -t suleimanmoraes/authenticator:1.0.0 -t suleimanmoraes/authenticator:latest .
